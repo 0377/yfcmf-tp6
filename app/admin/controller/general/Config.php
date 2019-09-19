@@ -36,7 +36,7 @@ class Config extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('Config');
+        $this->model = new ConfigModel;
     }
 
     /**
@@ -51,8 +51,7 @@ class Config extends Backend
             $siteList[$k]['title'] = $v;
             $siteList[$k]['list'] = [];
         }
-
-        foreach ($this->model->all() as $k => $v) {
+        foreach ($this->model->select() as $k => $v) {
             if (!isset($siteList[$v['group']])) {
                 continue;
             }
@@ -62,7 +61,7 @@ class Config extends Backend
                 $value['value'] = explode(',', $value['value']);
             }
             $value['content'] = json_decode($value['content'], TRUE);
-			$value['tip'] = htmlspecialchars($value['tip']);
+            $value['tip'] = htmlspecialchars($value['tip']);
             $siteList[$v['group']]['list'][] = $value;
         }
         $index = 0;
@@ -73,7 +72,8 @@ class Config extends Backend
         $this->view->assign('siteList', $siteList);
         $this->view->assign('typeList', ConfigModel::getTypeList());
         $this->view->assign('groupList', ConfigModel::getGroupList());
-        return $this->view->fetch();
+
+        return $this->view->fetch('general/config/index');
     }
 
     /**

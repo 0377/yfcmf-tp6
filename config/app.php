@@ -15,7 +15,7 @@ return [
     // 是否启用事件
     'with_event'            => true,
     // 自动多应用模式
-    'auto_multi_app'        => true,
+    'auto_multi_app'        => false,
     // 应用映射（自动多应用模式有效）
     'app_map'               => [],
     // 域名绑定（自动多应用模式有效）

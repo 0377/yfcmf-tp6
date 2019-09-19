@@ -209,7 +209,7 @@ class Backend extends BaseController
             'controllername' => $controllername,
             'actionname'     => $actionname,
             'jsname'         => 'backend/' . str_replace('.', '/', $controllername),
-            'moduleurl'      => rtrim(request()->rootUrl(), '/'),
+            'moduleurl'      => rtrim(request()->root(), '/'),
             'language'       => $lang,
             'fastadmin'      => Config::get('fastadmin'),
             'referer'        => Session::get("referer")
@@ -219,7 +219,7 @@ class Backend extends BaseController
         // 配置信息后
         Event::listen("config_init", $config);
         //加载当前控制器语言包
-        $this->loadlang($controllername);
+        $this->loadlang($this->request->pathinfo());
         //渲染站点配置
         $this->assign('site', $site);
         //渲染配置信息
@@ -236,8 +236,7 @@ class Backend extends BaseController
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . str_replace('.',
-                '/', $name) . '.php');
+        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . strtolower($name) . '.php');
     }
 
     /**
@@ -276,8 +275,8 @@ class Backend extends BaseController
         $tableName = '';
         if ($relationSearch) {
             if (!empty($this->model)) {
-                $name = parseName(basename(str_replace('\\', '/', get_class($this->model))));
-                $tableName = $name . '.';
+                $name = parseName(basename(str_replace('\\', ' / ', get_class($this->model))));
+                $tableName = $name . ' . ';
             }
             $sortArr = explode(',', $sort);
             foreach ($sortArr as $index => & $item) {
@@ -299,33 +298,34 @@ class Backend extends BaseController
             $where[] = [implode("|", $searcharr), "LIKE", "%{$search}%"];
         }
         foreach ($filter as $k => $v) {
-            $sym = isset($op[$k]) ? $op[$k] : '=';
+            $sym = isset($op[$k]) ? $op[$k] : ' = ';
             if (stripos($k, ".") === false) {
                 $k = $tableName . $k;
             }
             $v = !is_array($v) ? trim($v) : $v;
             $sym = strtoupper(isset($op[$k]) ? $op[$k] : $sym);
             switch ($sym) {
-                case '=':
-                case '<>':
+                case ' = ':
+                case ' <> ':
                     $where[] = [$k, $sym, (string)$v];
                     break;
                 case 'LIKE':
                 case 'NOT LIKE':
                 case 'LIKE %...%':
                 case 'NOT LIKE %...%':
-                    $where[] = [$k, trim(str_replace('%...%', '', $sym)), "%{$v}%"];
+                    $where[] = [$k, trim(str_replace(' %...%', '', $sym)), "%{$v}%"];
                     break;
-                case '>':
+                case ' > ':
                 case '>=':
-                case '<':
+                case ' < ':
                 case '<=':
                     $where[] = [$k, $sym, intval($v)];
                     break;
                 case 'FINDIN':
                 case 'FINDINSET':
                 case 'FIND_IN_SET':
-                    $where[] = "FIND_IN_SET('{$v}', " . ($relationSearch ? $k : '`' . str_replace('.', '`.`',
+                    $where[] = "FIND_IN_SET('{
+        $v}', " . ($relationSearch ? $k : '`' . str_replace('.', '` . `',
                                 $k) . '`') . ")";
                     break;
                 case 'IN':
@@ -342,10 +342,10 @@ class Backend extends BaseController
                     }
                     //当出现一边为空时改变操作符
                     if ($arr[0] === '') {
-                        $sym = $sym == 'BETWEEN' ? '<=' : '>';
+                        $sym = $sym == 'BETWEEN' ? ' <= ' : '>';
                         $arr = $arr[1];
                     } elseif ($arr[1] === '') {
-                        $sym = $sym == 'BETWEEN' ? '>=' : '<';
+                        $sym = $sym == 'BETWEEN' ? ' >= ' : '<';
                         $arr = $arr[0];
                     }
                     $where[] = [$k, $sym, $arr];
@@ -359,10 +359,10 @@ class Backend extends BaseController
                     }
                     //当出现一边为空时改变操作符
                     if ($arr[0] === '') {
-                        $sym = $sym == 'RANGE' ? '<=' : '>';
+                        $sym = $sym == 'RANGE' ? ' <= ' : '>';
                         $arr = $arr[1];
                     } elseif ($arr[1] === '') {
-                        $sym = $sym == 'RANGE' ? '>=' : '<';
+                        $sym = $sym == 'RANGE' ? ' >= ' : '<';
                         $arr = $arr[0];
                     }
                     $where[] = [$k, str_replace('RANGE', 'BETWEEN', $sym) . ' time', $arr];
@@ -463,7 +463,7 @@ class Backend extends BaseController
             $where = [$primarykey => ['in', $primaryvalue]];
         } else {
             $where = function ($query) use ($word, $andor, $field, $searchfield, $custom) {
-                $logic = $andor == 'AND' ? '&' : '|';
+                $logic = $andor == ' AND ' ? ' & ' : ' | ';
                 $searchfield = is_array($searchfield) ? implode($logic, $searchfield) : $searchfield;
                 foreach ($word as $k => $v) {
                     $query->where(str_replace(',', $logic, $searchfield), "like", "%{$v}%");
@@ -473,7 +473,7 @@ class Backend extends BaseController
                         if (is_array($v) && 2 == count($v)) {
                             $query->where($k, trim($v[0]), $v[1]);
                         } else {
-                            $query->where($k, '=', $v);
+                            $query->where($k, ' = ', $v);
                         }
                     }
                 }
@@ -508,7 +508,7 @@ class Backend extends BaseController
                 $list = $tree->getTreeList($tree->getTreeArray(0), $field);
                 if (!$ishtml) {
                     foreach ($list as &$item) {
-                        $item = str_replace('&nbsp;', ' ', $item);
+                        $item = str_replace(' & nbsp;', ' ', $item);
                     }
                     unset($item);
                 }
