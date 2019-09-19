@@ -2,6 +2,7 @@
 
 namespace app\common\event;
 
+use think\facade\Db;
 use think\facade\Route;
 
 class AutoRoute
@@ -9,10 +10,12 @@ class AutoRoute
     public function handle()
     {
         if (app()->http->getName() == 'admin') {
-            Route::get('general/config/check', '\app\admin\controller\general\Config@check');
-            Route::get('general/config/add', '\app\admin\controller\general\Config@add');
-            Route::get('general/config/index', '\app\admin\controller\general\Config@index');
-            Route::get('general/config', '\app\admin\controller\general\Config@index');
+            $routes = Db::name('auth_rule')->field(['name', 'route'])
+                ->where('status', '=', 'normal')
+                ->where('route', '<>', '')->select()->toArray();
+            foreach ($routes as $route) {
+                Route::get($route['name'], $route['route']);
+            }
         }
     }
 }
