@@ -19,7 +19,10 @@
         "php": ">=7.1.0",
         "topthink/framework": "6.0.*-dev",
         "topthink/think-orm": "2.0.*-dev",
-        "topthink/think-view": "^1.0"
+        "topthink/think-view": "^1.0",
+        "topthink/think-captcha": "3.0.x-dev",
+        "overtrue/pinyin": "^4.0",
+        "mtdowling/cron-expression": "^1.2"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2"
