@@ -132,7 +132,7 @@ trait Jump
             $params = [];
         }
 
-        $response = new Redirect($url);
+        $response = \redirect($url);
         $response->code($code)->params($params)->with($with);
 
         throw new HttpResponseException($response);

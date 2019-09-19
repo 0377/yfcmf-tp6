@@ -209,7 +209,7 @@ class Backend extends BaseController
             'controllername' => $controllername,
             'actionname'     => $actionname,
             'jsname'         => 'backend/' . str_replace('.', '/', $controllername),
-            'moduleurl'      => rtrim(request()->app(), '/'),
+            'moduleurl'      => rtrim(request()->rootUrl(), '/'),
             'language'       => $lang,
             'fastadmin'      => Config::get('fastadmin'),
             'referer'        => Session::get("referer")
