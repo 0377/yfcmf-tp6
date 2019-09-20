@@ -14,6 +14,7 @@
 namespace app\admin\controller;
 
 use app\common\controller\Backend;
+use app\common\model\Attachment;
 use fast\Random;
 use think\addons\Service;
 use think\facade\Cache;
@@ -144,7 +145,7 @@ class Ajax extends Backend
                 'sha1'        => $sha1,
                 'extparam'    => json_encode($extparam),
             );
-            $attachment = model("attachment");
+            $attachment = new Attachment();
             $attachment->data(array_filter($params));
             $attachment->save();
             \think\facade\Event::listen("upload_after", $attachment);

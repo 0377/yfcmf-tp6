@@ -27,7 +27,7 @@ class Admin extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('Admin');
+        $this->model = new \app\admin\model\Admin;
 
         $this->childrenAdminIds = $this->auth->getChildrenAdminIds(true);
         $this->childrenGroupIds = $this->auth->getChildrenGroupIds(true);
@@ -136,7 +136,7 @@ class Admin extends Backend
                 foreach ($group as $value) {
                     $dataset[] = ['uid' => $this->model->id, 'group_id' => $value];
                 }
-                model('AuthGroupAccess')->saveAll($dataset);
+                AuthGroupAccess::saveAll($dataset);
                 $this->success();
             }
             $this->error();
@@ -149,7 +149,7 @@ class Admin extends Backend
      */
     public function edit($ids = null)
     {
-        $row = $this->model->get(['id' => $ids]);
+        $row = $this->model->find($ids);
         if (!$row) {
             $this->error(__('No Results were found'));
         }
@@ -174,7 +174,7 @@ class Admin extends Backend
                 }
 
                 // 先移除所有权限
-                model('AuthGroupAccess')->where('uid', $row->id)->delete();
+                AuthGroupAccess::where('uid', $row->id)->delete();
 
                 $group = $this->request->post("group/a");
 
@@ -185,7 +185,7 @@ class Admin extends Backend
                 foreach ($group as $value) {
                     $dataset[] = ['uid' => $row->id, 'group_id' => $value];
                 }
-                model('AuthGroupAccess')->saveAll($dataset);
+                AuthGroupAccess::saveAll($dataset);
                 $this->success();
             }
             $this->error();
@@ -220,7 +220,7 @@ class Admin extends Backend
                 $deleteIds = array_diff($deleteIds, [$this->auth->id]);
                 if ($deleteIds) {
                     $this->model->destroy($deleteIds);
-                    model('AuthGroupAccess')->where('uid', 'in', $deleteIds)->delete();
+                    AuthGroupAccess::where('uid', 'in', $deleteIds)->delete();
                     $this->success();
                 }
             }

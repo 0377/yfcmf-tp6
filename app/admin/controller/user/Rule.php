@@ -24,7 +24,7 @@ class Rule extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('UserRule');
+        $this->model = new \app\admin\model\UserRule;
         $this->view->assign("statusList", $this->model->getStatusList());
         // 必须将结果集转换为数组
         $ruleList = $this->model->order('weigh', 'desc')->select()->toArray();

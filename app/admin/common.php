@@ -104,7 +104,7 @@ if (!function_exists('build_toolbar')) {
     function build_toolbar($btns = null, $attr = [])
     {
         $auth = \app\admin\library\Auth::instance();
-        $controller = str_replace('.', '/', strtolower(think\Request::instance()->controller()));
+        $controller = str_replace('.', '/', strtolower(think\facade\Request::instance()->controller()));
         $btns = $btns ? $btns : ['refresh', 'add', 'edit', 'del', 'import'];
         $btns = is_array($btns) ? $btns : explode(',', $btns);
         $index = array_search('delete', $btns);

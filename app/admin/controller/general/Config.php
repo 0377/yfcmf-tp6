@@ -60,7 +60,7 @@ class Config extends Backend
             if (in_array($value['type'], ['select', 'selects', 'checkbox', 'radio'])) {
                 $value['value'] = explode(',', $value['value']);
             }
-            $value['content'] = json_decode($value['content'], TRUE);
+            $value['content'] = json_decode($value['content'], true);
             $value['tip'] = htmlspecialchars($value['tip']);
             $siteList[$v['group']]['list'][] = $value;
         }
@@ -89,7 +89,8 @@ class Config extends Backend
                 }
                 try {
                     if (in_array($params['type'], ['select', 'selects', 'checkbox', 'radio', 'array'])) {
-                        $params['content'] = json_encode(ConfigModel::decode($params['content']), JSON_UNESCAPED_UNICODE);
+                        $params['content'] = json_encode(ConfigModel::decode($params['content']),
+                            JSON_UNESCAPED_UNICODE);
                     } else {
                         $params['content'] = '';
                     }
@@ -117,13 +118,13 @@ class Config extends Backend
      * 编辑
      * @param null $ids
      */
-    public function edit($ids = NULL)
+    public function edit($ids = null)
     {
         if ($this->request->isPost()) {
             $row = $this->request->post("row/a");
             if ($row) {
                 $configList = [];
-                foreach ($this->model->all() as $v) {
+                foreach ($this->model->select() as $v) {
                     if (isset($row[$v['name']])) {
                         $value = $row[$v['name']];
                         if (is_array($value) && isset($value['field'])) {
@@ -135,7 +136,7 @@ class Config extends Backend
                         $configList[] = $v->toArray();
                     }
                 }
-                $this->model->allowField(true)->saveAll($configList);
+                $this->model->saveAll($configList);
                 try {
                     $this->refreshFile();
                 } catch (Exception $e) {
@@ -170,18 +171,19 @@ class Config extends Backend
     protected function refreshFile()
     {
         $config = [];
-        foreach ($this->model->all() as $k => $v) {
+        foreach ($this->model->select() as $k => $v) {
 
             $value = $v->toArray();
             if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) {
                 $value['value'] = explode(',', $value['value']);
             }
             if ($value['type'] == 'array') {
-                $value['value'] = (array)json_decode($value['value'], TRUE);
+                $value['value'] = (array)json_decode($value['value'], true);
             }
             $config[$value['name']] = $value['value'];
         }
-        file_put_contents(APP_PATH . 'extra' . DIRECTORY_SEPARATOR . 'site.php', '<?php' . "\n\nreturn " . var_export($config, true) . ";");
+        file_put_contents(app()->getConfigPath() . 'site.php',
+            '<?php' . "\n\nreturn " . var_export($config, true) . ";");
     }
 
     /**
@@ -193,7 +195,7 @@ class Config extends Backend
         $params = $this->request->post("row/a");
         if ($params) {
 
-            $config = $this->model->get($params);
+            $config = $this->model->find($params);
             if (!$config) {
                 return $this->success();
             } else {
@@ -211,7 +213,7 @@ class Config extends Backend
     public function emailtest()
     {
         $row = $this->request->post('row/a');
-        \think\Config::set('site', array_merge(\think\Config::get('site'), $row));
+        \think\facade\Config::set('site', array_merge(\think\facade\Config::get('site'), $row));
         $receiver = $this->request->request("receiver");
         $email = new Email;
         $result = $email

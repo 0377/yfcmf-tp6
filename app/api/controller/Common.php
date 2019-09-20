@@ -15,6 +15,7 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\model\Area;
+use app\common\model\Attachment;
 use app\common\model\Version;
 use fast\Random;
 use think\facade\Config;
@@ -31,8 +32,8 @@ class Common extends Api
      * 加载初始化
      *
      * @param string $version 版本号
-     * @param string $lng     经度
-     * @param string $lat     纬度
+     * @param string $lng 经度
+     * @param string $lat 纬度
      */
     public function init()
     {
@@ -87,14 +88,17 @@ class Common extends Api
         if ($upload['mimetype'] !== '*' &&
             (
                 !in_array($suffix, $mimetypeArr)
-                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'], $mimetypeArr) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
+                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'],
+                            $mimetypeArr) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
             )
         ) {
             $this->error(__('Uploaded file format is limited'));
         }
         //验证是否为图片文件
         $imagewidth = $imageheight = 0;
-        if (in_array($fileInfo['type'], ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']) || in_array($suffix, ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp'])) {
+        if (in_array($fileInfo['type'],
+                ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']) || in_array($suffix,
+                ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp'])) {
             $imgInfo = getimagesize($fileInfo['tmp_name']);
             if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
                 $this->error(__('Uploaded file is not a valid image'));
@@ -111,7 +115,8 @@ class Common extends Api
             '{sec}'      => date("s"),
             '{random}'   => Random::alnum(16),
             '{random32}' => Random::alnum(32),
-            '{filename}' => $suffix ? substr($fileInfo['name'], 0, strripos($fileInfo['name'], '.')) : $fileInfo['name'],
+            '{filename}' => $suffix ? substr($fileInfo['name'], 0,
+                strripos($fileInfo['name'], '.')) : $fileInfo['name'],
             '{suffix}'   => $suffix,
             '{.suffix}'  => $suffix ? '.' . $suffix : '',
             '{filemd5}'  => md5_file($fileInfo['tmp_name']),
@@ -138,7 +143,7 @@ class Common extends Api
                 'storage'     => 'local',
                 'sha1'        => $sha1,
             );
-            $attachment = model("attachment");
+            $attachment = new Attachment();
             $attachment->data(array_filter($params));
             $attachment->save();
             \think\facade\Event::listen("upload_after", $attachment);

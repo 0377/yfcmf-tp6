@@ -21,11 +21,9 @@ class Category extends Model
         'flag_text',
     ];
 
-    protected static function init()
+    protected function onAfterInsert($row)
     {
-        self::afterInsert(function ($row) {
-            $row->save(['weigh' => $row['id']]);
-        });
+        $row->save(['weigh' => $row['id']]);
     }
 
     public function setFlagAttr($value, $data)

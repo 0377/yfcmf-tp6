@@ -25,7 +25,7 @@ class Category extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('app\common\model\Category');
+        $this->model = new \app\common\model\Category;
 
         $tree = Tree::instance();
         $tree->init($this->model->order('weigh desc,id desc')->select()->toArray(), 'pid');
@@ -116,7 +116,7 @@ class Category extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validate($validate);
                     }
-                    $result = $row->allowField(true)->save($params);
+                    $result = $row->save($params);
                     if ($result !== false) {
                         $this->success();
                     } else {

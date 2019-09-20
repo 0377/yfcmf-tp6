@@ -26,7 +26,7 @@ class Rule extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('AuthRule');
+        $this->model = new \app\admin\model\AuthRule;
         // 必须将结果集转换为数组
         $ruleList = $this->model->order('weigh', 'desc')->order('id', 'asc')->select()->toArray();
         foreach ($ruleList as $k => &$v) {
@@ -60,7 +60,7 @@ class Rule extends Backend
 
             return json($result);
         }
-        return $this->view->fetch();
+        return $this->view->fetch('auth/rule/index');
     }
 
     /**

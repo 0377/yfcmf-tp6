@@ -131,7 +131,7 @@ trait Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
                     }
-                    $result = $this->model->allowField(true)->save($params);
+                    $result = $this->model->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
                     Db::rollback();
@@ -182,7 +182,7 @@ trait Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
-                    $result = $row->allowField(true)->save($params);
+                    $result = $row->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
                     Db::rollback();
@@ -333,7 +333,7 @@ trait Backend
                     try {
                         $list = $this->model->where($this->model->getPk(), 'in', $ids)->select();
                         foreach ($list as $index => $item) {
-                            $count += $item->allowField(true)->isUpdate(true)->save($values);
+                            $count += $item->isUpdate(true)->save($values);
                         }
                         Db::commit();
                     } catch (PDOException $e) {

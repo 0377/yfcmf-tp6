@@ -32,7 +32,7 @@ class Attachment extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('Attachment');
+        $this->model = new \app\common\model\Attachment;
     }
 
     /**
@@ -45,7 +45,7 @@ class Attachment extends Backend
         if ($this->request->isAjax()) {
             $mimetypeQuery = [];
             $filter = $this->request->request('filter');
-            $filterArr = (array)json_decode($filter, TRUE);
+            $filterArr = (array)json_decode($filter, true);
             if (isset($filterArr['mimetype']) && stripos($filterArr['mimetype'], ',') !== false) {
                 $this->request->get(['filter' => json_encode(array_merge($filterArr, ['mimetype' => '']))]);
                 $mimetypeQuery = function ($query) use ($filterArr) {

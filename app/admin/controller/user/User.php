@@ -23,7 +23,7 @@ class User extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('User');
+        $this->model = new \app\admin\model\User;
     }
 
     /**
@@ -63,12 +63,15 @@ class User extends Backend
     /**
      * 编辑
      */
-    public function edit($ids = NULL)
+    public function edit($ids = null)
     {
         $row = $this->model->get($ids);
-        if (!$row)
+        if (!$row) {
             $this->error(__('No Results were found'));
-        $this->view->assign('groupList', build_select('row[group_id]', \app\admin\model\UserGroup::column('id,name'), $row['group_id'], ['class' => 'form-control selectpicker']));
+        }
+        $this->view->assign('groupList',
+            build_select('row[group_id]', \app\admin\model\UserGroup::column('id,name'), $row['group_id'],
+                ['class' => 'form-control selectpicker']));
         return parent::edit($ids);
     }
 

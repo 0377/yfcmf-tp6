@@ -3,6 +3,8 @@
 namespace app\admin\controller\auth;
 
 use app\admin\model\AuthGroup;
+use app\admin\model\AuthGroupAccess;
+use app\admin\model\AuthRule;
 use app\common\controller\Backend;
 use fast\Tree;
 
@@ -29,7 +31,7 @@ class Group extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = model('AuthGroup');
+        $this->model = new AuthGroup();
 
         $this->childrenGroupIds = $this->auth->getChildrenGroupIds(true);
 
@@ -95,7 +97,7 @@ class Group extends Backend
             if (!in_array($params['pid'], $this->childrenGroupIds)) {
                 $this->error(__('The parent group can not be its own child'));
             }
-            $parentmodel = model("AuthGroup")->get($params['pid']);
+            $parentmodel = AuthGroup::find($params['pid']);
             if (!$parentmodel) {
                 $this->error(__('The parent group can not found'));
             }
@@ -135,7 +137,7 @@ class Group extends Backend
             }
             $params['rules'] = explode(',', $params['rules']);
 
-            $parentmodel = model("AuthGroup")->get($params['pid']);
+            $parentmodel = AuthGroup::find($params['pid']);
             if (!$parentmodel) {
                 $this->error(__('The parent group can not found'));
             }
@@ -176,16 +178,16 @@ class Group extends Backend
 
             // 循环判断每一个组别是否可删除
             $grouplist = $this->model->where('id', 'in', $ids)->select();
-            $groupaccessmodel = model('AuthGroupAccess');
+            $groupaccessmodel = new AuthGroupAccess();
             foreach ($grouplist as $k => $v) {
                 // 当前组别下有管理员
-                $groupone = $groupaccessmodel->get(['group_id' => $v['id']]);
+                $groupone = $groupaccessmodel->where(['group_id' => $v['id']])->find();
                 if ($groupone) {
                     $ids = array_diff($ids, [$v['id']]);
                     continue;
                 }
                 // 当前组别下有子组别
-                $groupone = $this->model->get(['pid' => $v['id']]);
+                $groupone = $this->model->where(['pid' => $v['id']])->find();
                 if ($groupone) {
                     $ids = array_diff($ids, [$v['id']]);
                     continue;
@@ -221,17 +223,17 @@ class Group extends Backend
     {
         $this->loadlang('auth/group');
 
-        $model = model('AuthGroup');
+        $model = new AuthGroup;
         $id = $this->request->post("id");
         $pid = $this->request->post("pid");
-        $parentGroupModel = $model->get($pid);
+        $parentGroupModel = $model->find($pid);
         $currentGroupModel = null;
         if ($id) {
-            $currentGroupModel = $model->get($id);
+            $currentGroupModel = $model->find($id);
         }
         if (($pid || $parentGroupModel) && (!$id || $currentGroupModel)) {
             $id = $id ? $id : null;
-            $ruleList = model('AuthRule')->order('weigh', 'desc')->order('id', 'asc')->select()->toArray();
+            $ruleList = AuthRule::order('weigh', 'desc')->order('id', 'asc')->select()->toArray();
             //读取父类角色所有节点列表
             $parentRuleList = [];
             if (in_array('*', explode(',', $parentGroupModel->rules))) {
@@ -250,7 +252,7 @@ class Group extends Backend
             //当前所有正常规则列表
             $ruleTree->init($parentRuleList);
             //角色组列表
-            $groupTree->init(model('AuthGroup')->where('id', 'in',
+            $groupTree->init(AuthGroup::where('id', 'in',
                 $this->childrenGroupIds)->select()->toArray());
 
             //读取当前角色下规则ID集合
