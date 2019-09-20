@@ -9,7 +9,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'upload'], function (
                 advancedSearch: true,
                 pagination: true,
                 extend: {
-                    "index_url": "general/profile/index",
+                    "index_url": "general.profile/index",
                     "add_url": "",
                     "edit_url": "",
                     "del_url": "",
@@ -27,8 +27,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'upload'], function (
                         {field: 'id', title: 'ID'},
                         {field: 'title', title: __('Title')},
                         {field: 'url', title: __('Url'), align: 'left', formatter: Table.api.formatter.url},
-                        {field: 'ip', title: __('ip'), formatter:Table.api.formatter.search},
-                        {field: 'createtime', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
+                        {field: 'ip', title: __('ip'), formatter: Table.api.formatter.search},
+                        {
+                            field: 'createtime',
+                            title: __('Createtime'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true
+                        },
                     ]
                 ],
                 commonSearch: false
@@ -43,7 +50,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'upload'], function (
                 $(".profile-user-img").prop("src", url);
                 Toastr.success("上传成功！");
             });
-            
+
             // 给表单绑定事件
             Form.api.bindevent($("#update-form"), function () {
                 $("input[name='row[password]']").val('');

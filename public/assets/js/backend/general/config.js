@@ -5,11 +5,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'general/config/index',
-                    add_url: 'general/config/add',
-                    edit_url: 'general/config/edit',
-                    del_url: 'general/config/del',
-                    multi_url: 'general/config/multi',
+                    index_url: 'general.config/index',
+                    add_url: 'general.config/add',
+                    edit_url: 'general.config/edit',
+                    del_url: 'general.config/del',
+                    multi_url: 'general.config/multi',
                     table: 'config',
                 }
             });
@@ -67,7 +67,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 var that = this;
                 Layer.prompt({title: __('Please input your email'), formType: 0}, function (value, index) {
                     Backend.api.ajax({
-                        url: "general/config/emailtest?receiver=" + value,
+                        url: "general.config/emailtest?receiver=" + value,
                         data: $(that).closest("form").serialize()
                     });
                 });
@@ -77,7 +77,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             //删除配置
             $(document).on("click", ".btn-delcfg", function () {
                 var that = this;
-                Layer.confirm(__('Are you sure you want to delete this item?'), {icon: 3, title:'提示'}, function (index) {
+                Layer.confirm(__('Are you sure you want to delete this item?'), {
+                    icon: 3,
+                    title: '提示'
+                }, function (index) {
                     Backend.api.ajax({
                         url: "general/config/del?receiver=" + value,
                         data: {name: $(that).data("name")}

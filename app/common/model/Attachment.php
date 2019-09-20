@@ -21,13 +21,11 @@ class Attachment extends Model
         return is_numeric($value) ? $value : strtotime($value);
     }
 
-    protected static function init()
+    protected function onBeforeInsert($model)
     {
         // 如果已经上传该资源，则不再记录
-        self::beforeInsert(function ($model) {
-            if (self::where('url', '=', $model['url'])->find()) {
-                return false;
-            }
-        });
+        if (self::where('url', '=', $model['url'])->find()) {
+            return false;
+        }
     }
 }

@@ -5,11 +5,11 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'general/attachment/index',
-                    add_url: 'general/attachment/add',
-                    edit_url: 'general/attachment/edit',
-                    del_url: 'general/attachment/del',
-                    multi_url: 'general/attachment/multi',
+                    index_url: 'general.attachment/index',
+                    add_url: 'general.attachment/add',
+                    edit_url: 'general.attachment/edit',
+                    del_url: 'general.attachment/del',
+                    multi_url: 'general.attachment/multi',
                     table: 'attachment'
                 }
             });
@@ -24,8 +24,20 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                     [
                         {field: 'state', checkbox: true,},
                         {field: 'id', title: __('Id')},
-                        {field: 'admin_id', title: __('Admin_id'), visible: false, addClass: "selectpage", extend: "data-source='auth/admin/index' data-field='nickname'"},
-                        {field: 'user_id', title: __('User_id'), visible: false, addClass: "selectpage", extend: "data-source='user/user/index' data-field='nickname'"},
+                        {
+                            field: 'admin_id',
+                            title: __('Admin_id'),
+                            visible: false,
+                            addClass: "selectpage",
+                            extend: "data-source='auth/admin/index' data-field='nickname'"
+                        },
+                        {
+                            field: 'user_id',
+                            title: __('User_id'),
+                            visible: false,
+                            addClass: "selectpage",
+                            extend: "data-source='user.user/index' data-field='nickname'"
+                        },
                         {field: 'url', title: __('Preview'), formatter: Controller.api.formatter.thumb, operate: false},
                         {field: 'url', title: __('Url'), formatter: Controller.api.formatter.url},
                         {field: 'imagewidth', title: __('Imagewidth'), sortable: true},
@@ -61,7 +73,7 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'general/attachment/select',
+                    index_url: 'general.attachment/select',
                 }
             });
 
@@ -88,7 +100,14 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                                 return value.replace(/\*/g, '%');
                             }
                         },
-                        {field: 'createtime', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
+                        {
+                            field: 'createtime',
+                            title: __('Createtime'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true
+                        },
                         {
                             field: 'operate', title: __('Operate'), events: {
                                 'click .btn-chooseone': function (e, value, row, index) {

@@ -5,7 +5,7 @@ namespace app\admin\controller\auth;
 use app\admin\model\AuthRule;
 use app\common\controller\Backend;
 use fast\Tree;
-use think\Cache;
+use think\facade\Cache;
 
 /**
  * 规则管理
@@ -60,7 +60,7 @@ class Rule extends Backend
 
             return json($result);
         }
-        return $this->view->fetch('auth/rule/index');
+        return $this->view->fetch();
     }
 
     /**
@@ -74,11 +74,11 @@ class Rule extends Backend
                 if (!$params['ismenu'] && !$params['pid']) {
                     $this->error(__('The non-menu rule must have parent'));
                 }
-                $result = $this->model->validate()->save($params);
+                $result = $this->model->save($params);
                 if ($result === false) {
                     $this->error($this->model->getError());
                 }
-                Cache::rm('__menu__');
+                Cache::delete('__menu__');
                 $this->success();
             }
             $this->error();
@@ -91,7 +91,7 @@ class Rule extends Backend
      */
     public function edit($ids = null)
     {
-        $row = $this->model->get(['id' => $ids]);
+        $row = $this->model->find(['id' => $ids]);
         if (!$row) {
             $this->error(__('No Results were found'));
         }
@@ -108,7 +108,7 @@ class Rule extends Backend
                     }
                 }
                 //这里需要针对name做唯一验证
-                $ruleValidate = \think\Loader::validate('AuthRule');
+                $ruleValidate = validate('AuthRule');
                 $ruleValidate->rule([
                     'name' => 'require|format|unique:AuthRule,name,' . $row->id,
                 ]);

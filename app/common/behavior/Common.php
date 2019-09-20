@@ -46,7 +46,7 @@ class Common
         if (!Config::get('upload.cdnurl')) {
             Config::set('upload.cdnurl', $url);
         }
-        if (Config::get('app_debug')) {
+        if (Config::get('app.app_debug')) {
             // 如果是调试模式将version置为当前的时间戳可避免缓存
             Config::set('site.version', time());
             // 如果是开发模式那么将异常模板修改成官方的

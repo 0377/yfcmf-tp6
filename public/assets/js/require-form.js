@@ -20,7 +20,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                     },
                     dataFilter: function (data) {
                         if (data.code === 1) {
-                            return data.msg ? { "ok": data.msg } : '';
+                            return data.msg ? {"ok": data.msg} : '';
                         } else {
                             return data.msg;
                         }
@@ -228,7 +228,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                         var mimetype = $(this).data("mimetype") ? $(this).data("mimetype") : '';
                         var admin_id = $(this).data("admin-id") ? $(this).data("admin-id") : '';
                         var user_id = $(this).data("user-id") ? $(this).data("user-id") : '';
-                        parent.Fast.api.open("general/attachment/select?element_id=" + $(this).attr("id") + "&multiple=" + multiple + "&mimetype=" + mimetype + "&admin_id=" + admin_id + "&user_id=" + user_id, __('Choose'), {
+                        parent.Fast.api.open("general.attachment/select?element_id=" + $(this).attr("id") + "&multiple=" + multiple + "&mimetype=" + mimetype + "&admin_id=" + admin_id + "&user_id=" + user_id, __('Choose'), {
                             callback: function (data) {
                                 var button = $("#" + $(that).attr("id"));
                                 var maxcount = $(button).data("maxcount");

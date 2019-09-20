@@ -15,6 +15,7 @@ declare (strict_types=1);
 namespace app\common\middleware;
 
 use Closure;
+use think\facade\Env;
 use think\facade\View;
 use think\Request;
 use think\Response;
@@ -53,9 +54,9 @@ class FastInit
         if (!Config::get('upload.cdnurl')) {
             Config::set(['cdnurl' => $url], 'upload');
         }
-        if (Config::get('app.app_debug')) {
+        if (Env::get('APP_DEBUG')) {
             // 如果是调试模式将version置为当前的时间戳可避免缓存
-            Config::set(['version' => time(), 'site']);
+            Config::set(['version' => time()], 'site');
             //如果是调试模式将关闭视图缓存
             Config::set(['tpl_cache' => false], 'view');
             // 如果是开发模式那么将异常模板修改成官方的

@@ -14,7 +14,6 @@ class User extends Backend
 
     protected $relationSearch = true;
 
-
     /**
      * @var \app\admin\model\User
      */

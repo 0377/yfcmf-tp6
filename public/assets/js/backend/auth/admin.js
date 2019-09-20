@@ -5,11 +5,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'auth/admin/index',
-                    add_url: 'auth/admin/add',
-                    edit_url: 'auth/admin/edit',
-                    del_url: 'auth/admin/del',
-                    multi_url: 'auth/admin/multi',
+                    index_url: 'auth.admin/index',
+                    add_url: 'auth.admin/add',
+                    edit_url: 'auth.admin/edit',
+                    del_url: 'auth.admin/del',
+                    multi_url: 'auth.admin/multi',
                 }
             });
 
@@ -29,20 +29,38 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 columns: [
                     [
-                        {field: 'state', checkbox: true, },
+                        {field: 'state', checkbox: true,},
                         {field: 'id', title: 'ID'},
                         {field: 'username', title: __('Username')},
                         {field: 'nickname', title: __('Nickname')},
-                        {field: 'groups_text', title: __('Group'), operate:false, formatter: Table.api.formatter.label},
+                        {
+                            field: 'groups_text',
+                            title: __('Group'),
+                            operate: false,
+                            formatter: Table.api.formatter.label
+                        },
                         {field: 'email', title: __('Email')},
                         {field: 'status', title: __("Status"), formatter: Table.api.formatter.status},
-                        {field: 'logintime', title: __('Login time'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: function (value, row, index) {
-                                if(row.id == Config.admin.id){
+                        {
+                            field: 'logintime',
+                            title: __('Login time'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true
+                        },
+                        {
+                            field: 'operate',
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            formatter: function (value, row, index) {
+                                if (row.id == Config.admin.id) {
                                     return '';
                                 }
                                 return Table.api.formatter.operate.call(this, value, row, index);
-                            }}
+                            }
+                        }
                     ]
                 ]
             });

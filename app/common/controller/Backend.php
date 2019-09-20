@@ -15,6 +15,7 @@ namespace app\common\controller;
 
 use app\admin\library\Auth;
 use think\facade\Config;
+use think\facade\Env;
 use think\facade\Event;
 use think\facade\Lang;
 use think\facade\Session;
@@ -125,7 +126,7 @@ class Backend extends BaseController
     public function _initialize()
     {
         $modulename = $this->request->app();
-        $controllername = parseName($this->request->controller());
+        $controllername = $this->request->controller();
         $actionname = strtolower($this->request->action());
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
@@ -194,14 +195,13 @@ class Backend extends BaseController
         $lang = strip_tags(Lang::getLangSet());
 
         $site = Config::get("site");
-
         $upload = \app\common\model\Config::upload();
 
         // 上传信息配置后
         Event::listen("upload_config_init", $upload);
-
         // 配置信息
         $config = [
+            'app_debug'      => Env::get('APP_DEBUG'),
             'site'           => array_intersect_key($site,
                 array_flip(['name', 'indexurl', 'cdnurl', 'version', 'timezone', 'languages'])),
             'upload'         => $upload,
@@ -215,11 +215,10 @@ class Backend extends BaseController
             'referer'        => Session::get("referer")
         ];
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
-
         // 配置信息后
         Event::listen("config_init", $config);
         //加载当前控制器语言包
-        $this->loadlang($this->request->pathinfo());
+        $this->loadlang($this->request->controller());
         //渲染站点配置
         $this->assign('site', $site);
         //渲染配置信息
@@ -236,7 +235,8 @@ class Backend extends BaseController
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . strtolower($name) . '.php');
+        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . str_replace('.', '/',
+                strtolower($name)) . '.php');
     }
 
     /**
@@ -381,7 +381,7 @@ class Backend extends BaseController
                     break;
             }
         }
-        $where = function ($query) use ($where) {
+        /*$where = function ($query) use ($where) {
             foreach ($where as $k => $v) {
                 if (is_array($v)) {
                     call_user_func_array([$query, 'where'], $v);
@@ -389,7 +389,7 @@ class Backend extends BaseController
                     $query->where($v);
                 }
             }
-        };
+        };*/
         return [$where, $sort, $order, $offset, $limit];
     }
 

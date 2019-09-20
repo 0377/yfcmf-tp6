@@ -5,11 +5,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'user/rule/index',
-                    add_url: 'user/rule/add',
-                    edit_url: 'user/rule/edit',
-                    del_url: 'user/rule/del',
-                    multi_url: 'user/rule/multi',
+                    index_url: 'user.rule/index',
+                    add_url: 'user.rule/add',
+                    edit_url: 'user.rule/edit',
+                    del_url: 'user.rule/del',
+                    multi_url: 'user.rule/multi',
                     table: 'user_rule',
                 }
             });
@@ -31,11 +31,33 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'name', title: __('Name'), align: 'left'},
                         {field: 'remark', title: __('Remark')},
                         {field: 'ismenu', title: __('Ismenu'), formatter: Table.api.formatter.toggle},
-                        {field: 'createtime', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true, visible: false},
-                        {field: 'updatetime', title: __('Updatetime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true, visible: false},
+                        {
+                            field: 'createtime',
+                            title: __('Createtime'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true,
+                            visible: false
+                        },
+                        {
+                            field: 'updatetime',
+                            title: __('Updatetime'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true,
+                            visible: false
+                        },
                         {field: 'weigh', title: __('Weigh')},
                         {field: 'status', title: __('Status'), formatter: Table.api.formatter.status},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {
+                            field: 'operate',
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            formatter: Table.api.formatter.operate
+                        }
                     ]
                 ],
                 pagination: false,

@@ -20,11 +20,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    "index_url": "auth/group/index",
-                    "add_url": "auth/group/add",
-                    "edit_url": "auth/group/edit",
-                    "del_url": "auth/group/del",
-                    "multi_url": "auth/group/multi",
+                    "index_url": "auth.group/index",
+                    "add_url": "auth.group/add",
+                    "edit_url": "auth.group/edit",
+                    "del_url": "auth.group/del",
+                    "multi_url": "auth.group/multi",
                 }
             });
 
@@ -51,7 +51,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
                         {field: 'name', title: __('Name'), align: 'left'},
                         {field: 'status', title: __('Status'), formatter: Table.api.formatter.status},
                         {
-                            field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: function (value, row, index) {
+                            field: 'operate',
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            formatter: function (value, row, index) {
                                 if (Config.admin.group_ids.indexOf(parseInt(row.id)) > -1) {
                                     return '';
                                 }

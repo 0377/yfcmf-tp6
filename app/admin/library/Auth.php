@@ -409,7 +409,11 @@ class Auth extends \fast\Auth
             }
             $v['icon'] = $v['icon'] . ' fa-fw';
             //$v['url'] = '/' . $module . '/' . $v['name'];
-            $v['url'] = \request()->rootUrl() . '/' . $v['name'];
+            if (!empty($v['route'])) {
+                $v['url'] = \request()->rootUrl() . '/' . $v['route'];
+            } else {
+                $v['url'] = \request()->rootUrl() . '/' . $v['name'];
+            }
             $v['badge'] = isset($badgeList[$v['name']]) ? $badgeList[$v['name']] : '';
             $v['py'] = $pinyin->abbr($v['title'], '');
             $v['pinyin'] = $pinyin->permalink($v['title'], '');

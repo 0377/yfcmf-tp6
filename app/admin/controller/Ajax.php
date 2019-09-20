@@ -16,7 +16,7 @@ namespace app\admin\controller;
 use app\common\controller\Backend;
 use app\common\model\Attachment;
 use fast\Random;
-use think\addons\Service;
+//use think\addons\Service;
 use think\facade\Cache;
 use think\facade\Config;
 use think\facade\Db;
@@ -58,7 +58,7 @@ class Ajax extends Backend
      */
     public function upload()
     {
-        Config::set('default_return_type', 'json');
+        //Config::set('default_return_type', 'json');
         $file = $this->request->file('file');
         if (empty($file)) {
             $this->error(__('No file upload or server upload limit exceeded'));
@@ -230,24 +230,24 @@ class Ajax extends Backend
         switch ($type) {
             case 'all':
             case 'content':
-                rmdirs(CACHE_PATH, false);
+                rmdirs(app()->getRuntimePath(), false);
                 Cache::clear();
                 if ($type == 'content') {
                     break;
                 }
             case 'template':
-                rmdirs(TEMP_PATH, false);
+                rmdirs(app()->getRuntimePath(), false);
                 if ($type == 'template') {
                     break;
                 }
             case 'addons':
-                Service::refresh();
+                //Service::refresh();
                 if ($type == 'addons') {
                     break;
                 }
         }
 
-        \think\facade\Event::listen("wipecache_after");
+        //\think\facade\Event::listen("wipecache_after");
         $this->success();
     }
 

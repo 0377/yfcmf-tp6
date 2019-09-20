@@ -10,12 +10,12 @@ class AutoRoute
     public function handle()
     {
         if (app()->http->getName() == 'admin') {
-            $routes = Db::name('auth_rule')->field(['name', 'route'])
-                ->where('status', '=', 'normal')
-                ->where('route', '<>', '')->select()->toArray();
-            foreach ($routes as $route) {
-                Route::get($route['name'], $route['route']);
-            }
+            /* $routes = Db::name('auth_rule')->field(['name', 'route'])
+                 ->where('status', '=', 'normal')
+                 ->where('route', '<>', '')->select()->toArray();
+             foreach ($routes as $route) {
+                 Route::get($route['name'], $route['route']);
+             }*/
         }
     }
 }

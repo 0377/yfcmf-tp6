@@ -20,11 +20,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'user/group/index',
-                    add_url: 'user/group/add',
-                    edit_url: 'user/group/edit',
-                    del_url: 'user/group/del',
-                    multi_url: 'user/group/multi',
+                    index_url: 'user.group/index',
+                    add_url: 'user.group/add',
+                    edit_url: 'user.group/edit',
+                    del_url: 'user.group/del',
+                    multi_url: 'user.group/multi',
                     table: 'user_group',
                 }
             });
@@ -41,10 +41,30 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
                         {field: 'name', title: __('Name')},
-                        {field: 'createtime', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'updatetime', title: __('Updatetime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
+                        {
+                            field: 'createtime',
+                            title: __('Createtime'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true
+                        },
+                        {
+                            field: 'updatetime',
+                            title: __('Updatetime'),
+                            formatter: Table.api.formatter.datetime,
+                            operate: 'RANGE',
+                            addclass: 'datetimerange',
+                            sortable: true
+                        },
                         {field: 'status', title: __('Status'), formatter: Table.api.formatter.status},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {
+                            field: 'operate',
+                            title: __('Operate'),
+                            table: table,
+                            events: Table.api.events.operate,
+                            formatter: Table.api.formatter.operate
+                        }
                     ]
                 ]
             });
@@ -82,31 +102,31 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
             },
             rendertree: function (content) {
                 $("#treeview")
-                        .on('redraw.jstree', function (e) {
-                            $(".layer-footer").attr("domrefresh", Math.random());
-                        })
-                        .jstree({
-                            "themes": {"stripes": true},
-                            "checkbox": {
-                                "keep_selected_style": false,
+                    .on('redraw.jstree', function (e) {
+                        $(".layer-footer").attr("domrefresh", Math.random());
+                    })
+                    .jstree({
+                        "themes": {"stripes": true},
+                        "checkbox": {
+                            "keep_selected_style": false,
+                        },
+                        "types": {
+                            "root": {
+                                "icon": "fa fa-folder-open",
                             },
-                            "types": {
-                                "root": {
-                                    "icon": "fa fa-folder-open",
-                                },
-                                "menu": {
-                                    "icon": "fa fa-folder-open",
-                                },
-                                "file": {
-                                    "icon": "fa fa-file-o",
-                                }
+                            "menu": {
+                                "icon": "fa fa-folder-open",
                             },
-                            "plugins": ["checkbox", "types"],
-                            "core": {
-                                'check_callback': true,
-                                "data": content
+                            "file": {
+                                "icon": "fa fa-file-o",
                             }
-                        });
+                        },
+                        "plugins": ["checkbox", "types"],
+                        "core": {
+                            'check_callback': true,
+                            "data": content
+                        }
+                    });
             }
         }
     };

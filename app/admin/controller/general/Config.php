@@ -73,7 +73,7 @@ class Config extends Backend
         $this->view->assign('typeList', ConfigModel::getTypeList());
         $this->view->assign('groupList', ConfigModel::getGroupList());
 
-        return $this->view->fetch('general/config/index');
+        return $this->view->fetch();
     }
 
     /**

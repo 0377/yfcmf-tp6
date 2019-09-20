@@ -87,16 +87,16 @@ class Admin extends Backend
                 $adminGroupName[$this->auth->id][$n['id']] = $n['name'];
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            //halt($this->childrenAdminIds);
             $total = $this->model
                 ->where($where)
                 ->where('id', 'in', $this->childrenAdminIds)
                 ->order($sort, $order)
                 ->count();
-
             $list = $this->model
                 ->where($where)
                 ->where('id', 'in', $this->childrenAdminIds)
-                ->field(['password', 'salt', 'token'], true)
+                ->hidden(['password', 'salt', 'token'])
                 ->order($sort, $order)
                 ->limit($offset, $limit)
                 ->select();
@@ -163,7 +163,7 @@ class Admin extends Backend
                     unset($params['password'], $params['salt']);
                 }
                 //这里需要针对username和email做唯一验证
-                $adminValidate = \think\Loader::validate('Admin');
+                $adminValidate = validate('Admin');
                 $adminValidate->rule([
                     'username' => 'require|max:50|unique:admin,username,' . $row->id,
                     'email'    => 'require|email|unique:admin,email,' . $row->id
