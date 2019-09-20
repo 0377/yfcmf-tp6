@@ -15,9 +15,7 @@ namespace app\admin\controller;
 
 use app\common\controller\Backend;
 use fast\Http;
-use think\addons\AddonException;
-use think\addons\Service;
-use think\Cache;
+use think\facade\Cache;
 use think\facade\Config;
 use think\Exception;
 
@@ -223,7 +221,8 @@ class Addon extends Backend
                     throw new Exception(__('Addon info file was not found'));
                 }
 
-                $config = Config::parse($infoFile, '', $tmpName);
+                //$config = Config::parse($infoFile, '', $tmpName);
+                $config = parse_ini_file($infoFile, true, INI_SCANNER_TYPED) ?: [];
                 $name = isset($config['name']) ? $config['name'] : '';
                 if (!$name) {
                     throw new Exception(__('Addon info file data incorrect'));

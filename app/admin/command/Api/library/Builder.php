@@ -42,7 +42,7 @@ class Builder
     public function __construct($classes = [])
     {
         $this->classes = array_merge($this->classes, $classes);
-        $this->view = new \think\View(Config::get('template'), Config::get('view_replace_str'));
+        $this->view = new \think\View(Config::get('view'), Config::get('view_replace_str'));
     }
 
     protected function extractAnnotations()
@@ -243,7 +243,7 @@ class Builder
     /**
      * 渲染
      * @param string $template
-     * @param array  $vars
+     * @param array $vars
      * @return string
      */
     public function render($template, $vars = [])

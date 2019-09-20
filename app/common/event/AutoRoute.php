@@ -9,6 +9,8 @@ class AutoRoute
 {
     public function handle()
     {
+        // 插件目录
+
         if (app()->http->getName() == 'admin') {
             /* $routes = Db::name('auth_rule')->field(['name', 'route'])
                  ->where('status', '=', 'normal')
