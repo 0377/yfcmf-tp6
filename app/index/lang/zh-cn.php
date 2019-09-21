@@ -95,7 +95,7 @@ return [
     'Module'                                                 => '模块化开发',
     'Extension'                                              => '自由可扩展',
     'Auth'                                                   => '权限管理',
-    'The fastest framework based on ThinkPHP5 and Bootstrap' => '基于ThinkPHP5和Bootstrap的极速后台开发框架',
+    'The fastest framework based on ThinkPHP6 and Bootstrap' => '基于ThinkPHP6和Bootstrap的极速后台开发框架',
     'Features'                                               => '功能特性',
     'Home'                                                   => '首页',
     'Store'                                                  => '插件市场',

@@ -122,7 +122,7 @@ class Frontend extends BaseController
         // 配置信息后
         Event::listen("config_init", $config);
         // 加载当前控制器语言包
-        $this->loadlang($controllername);
+        $this->loadlang($this->request->controller());
         $this->assign('site', $site);
         $this->assign('config', $config);
     }
@@ -133,8 +133,8 @@ class Frontend extends BaseController
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . str_replace('.',
-                '/', $name) . '.php');
+        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . str_replace('.', '/',
+                strtolower($name)) . '.php');
     }
 
     /**
