@@ -15,6 +15,7 @@ namespace app\admin\controller;
 
 use app\common\controller\Backend;
 use fast\Http;
+use think\AddonService;
 use think\facade\Cache;
 use think\facade\Config;
 use think\Exception;
@@ -88,7 +89,7 @@ class Addon extends Backend
                 try {
                     //更新配置文件
                     set_addon_fullconfig($name, $config);
-                    Service::refresh();
+                    AddonService::refresh();
                     $this->success();
                 } catch (Exception $e) {
                     $this->error(__($e->getMessage()));
@@ -133,14 +134,12 @@ class Addon extends Backend
                 'version'   => $version,
                 'faversion' => $faversion
             ];
-            Service::install($name, $force, $extend);
+            AddonService::install($name, $force, $extend);
             $info = get_addon_info($name);
             $info['config'] = get_addon_config($name) ? 1 : 0;
             $info['state'] = 1;
             $this->success(__('Install successful'), null, ['addon' => $info]);
-        } catch (AddonException $e) {
-            $this->result($e->getData(), $e->getCode(), __($e->getMessage()));
-        } catch (Exception $e) {
+        }  catch (Exception $e) {
             $this->error(__($e->getMessage()), $e->getCode());
         }
     }
@@ -159,10 +158,8 @@ class Addon extends Backend
             $this->error(__('Addon name incorrect'));
         }
         try {
-            Service::uninstall($name, $force);
+            AddonService::uninstall($name, $force);
             $this->success(__('Uninstall successful'));
-        } catch (AddonException $e) {
-            $this->result($e->getData(), $e->getCode(), __($e->getMessage()));
         } catch (Exception $e) {
             $this->error(__($e->getMessage()));
         }
@@ -185,11 +182,9 @@ class Addon extends Backend
         try {
             $action = $action == 'enable' ? $action : 'disable';
             //调用启用、禁用的方法
-            Service::$action($name, $force);
-            Cache::rm('__menu__');
+            AddonService::$action($name, $force);
+            Cache::delete('__menu__');
             $this->success(__('Operate successful'));
-        } catch (AddonException $e) {
-            $this->result($e->getData(), $e->getCode(), __($e->getMessage()));
         } catch (Exception $e) {
             $this->error(__($e->getMessage()));
         }
@@ -203,7 +198,7 @@ class Addon extends Backend
         Config::set('default_return_type', 'json');
 
         $file = $this->request->file('file');
-        $addonTmpDir = RUNTIME_PATH . 'addons' . DIRECTORY_SEPARATOR;
+        $addonTmpDir = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
         if (!is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
         }
@@ -213,7 +208,7 @@ class Addon extends Backend
             $tmpAddonDir = ADDON_PATH . $tmpName . DIRECTORY_SEPARATOR;
             $tmpFile = $addonTmpDir . $info->getSaveName();
             try {
-                Service::unzip($tmpName);
+                AddonService::unzip($tmpName);
                 unset($info);
                 @unlink($tmpFile);
                 $infoFile = $tmpAddonDir . 'info.ini';
@@ -254,7 +249,7 @@ class Addon extends Backend
                     }
 
                     //导入SQL
-                    Service::importsql($name);
+                    AddonService::importsql($name);
 
                     $info['config'] = get_addon_config($name) ? 1 : 0;
                     $this->success(__('Offline installed tips'), null, ['addon' => $info]);
@@ -298,11 +293,9 @@ class Addon extends Backend
                 'faversion' => $faversion
             ];
             //调用更新的方法
-            Service::upgrade($name, $extend);
-            Cache::rm('__menu__');
+            AddonService::upgrade($name, $extend);
+            Cache::delete('__menu__');
             $this->success(__('Operate successful'));
-        } catch (AddonException $e) {
-            $this->result($e->getData(), $e->getCode(), __($e->getMessage()));
         } catch (Exception $e) {
             $this->error(__($e->getMessage()));
         }

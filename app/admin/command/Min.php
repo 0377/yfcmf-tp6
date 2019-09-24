@@ -59,7 +59,7 @@ class Min extends Command
         $resourceArr = $resource == 'all' ? ['js', 'css'] : [$resource];
 
         $minPath = __DIR__ . DIRECTORY_SEPARATOR . 'Min' . DIRECTORY_SEPARATOR;
-        $publicPath = ROOT_PATH . 'public' . DIRECTORY_SEPARATOR;
+        $publicPath = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR;
         $tempFile = $minPath . 'temp.js';
 
         $nodeExec = '';
@@ -95,8 +95,8 @@ class Min extends Command
                     'jsBaseUrl'   => $this->options['jsBaseUrl'],
                     'cssBaseName' => str_replace('{module}', $mod, $this->options['cssBaseName']),
                     'cssBaseUrl'  => $this->options['cssBaseUrl'],
-                    'jsBasePath'  => str_replace(DS, '/', ROOT_PATH . $this->options['jsBaseUrl']),
-                    'cssBasePath' => str_replace(DS, '/', ROOT_PATH . $this->options['cssBaseUrl']),
+                    'jsBasePath'  => str_replace(DS, '/', app()->getRootPath() . $this->options['jsBaseUrl']),
+                    'cssBasePath' => str_replace(DS, '/', app()->getRootPath() . $this->options['cssBaseUrl']),
                     'optimize'    => $optimize,
                     'ds'          => DIRECTORY_SEPARATOR,
                 ];

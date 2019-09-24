@@ -14,7 +14,7 @@ class AuthRule extends Model
     protected $createTime = 'createtime';
     protected $updateTime = 'updatetime';
 
-    protected function onAfterWrite($model)
+    protected static function onAfterWrite($model)
     {
         Cache::delete('__menu__');
     }

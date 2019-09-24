@@ -126,7 +126,7 @@ class Backend extends BaseController
     public function _initialize()
     {
         $modulename = $this->request->app();
-        $controllername = $this->request->controller();
+        $controllername = strtolower($this->request->controller());
         $actionname = strtolower($this->request->action());
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
@@ -305,8 +305,8 @@ class Backend extends BaseController
             $v = !is_array($v) ? trim($v) : $v;
             $sym = strtoupper(isset($op[$k]) ? $op[$k] : $sym);
             switch ($sym) {
-                case ' = ':
-                case ' <> ':
+                case ' = ':case '=':
+                case ' <> ':case '<>':
                     $where[] = [$k, $sym, (string)$v];
                     break;
                 case 'LIKE':
@@ -315,9 +315,9 @@ class Backend extends BaseController
                 case 'NOT LIKE %...%':
                     $where[] = [$k, trim(str_replace(' %...%', '', $sym)), "%{$v}%"];
                     break;
-                case ' > ':
+                case ' > ':case '>':
                 case '>=':
-                case ' < ':
+                case ' < ':case '<':
                 case '<=':
                     $where[] = [$k, $sym, intval($v)];
                     break;
@@ -366,10 +366,6 @@ class Backend extends BaseController
                         $arr = $arr[0];
                     }
                     $where[] = [$k, str_replace('RANGE', 'BETWEEN', $sym) . ' time', $arr];
-                    break;
-                case 'LIKE':
-                case 'LIKE %...%':
-                    $where[] = [$k, 'LIKE', "%{$v}%"];
                     break;
                 case 'NULL':
                 case 'IS NULL':

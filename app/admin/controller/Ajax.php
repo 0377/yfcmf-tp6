@@ -16,7 +16,7 @@ namespace app\admin\controller;
 use app\common\controller\Backend;
 use app\common\model\Attachment;
 use fast\Random;
-//use think\addons\Service;
+use think\AddonService;
 use think\facade\Cache;
 use think\facade\Config;
 use think\facade\Db;
@@ -128,7 +128,7 @@ class Ajax extends Backend
         $uploadDir = substr($savekey, 0, strripos($savekey, '/') + 1);
         $fileName = substr($savekey, strripos($savekey, '/') + 1);
         //
-        $splInfo = $file->validate(['size' => $size])->move(ROOT_PATH . '/public' . $uploadDir, $fileName);
+        $splInfo = $file->validate(['size' => $size])->move(app()->getRootPath() . '/public' . $uploadDir, $fileName);
         if ($splInfo) {
             $params = array(
                 'admin_id'    => (int)$this->auth->id,
@@ -230,18 +230,18 @@ class Ajax extends Backend
         switch ($type) {
             case 'all':
             case 'content':
-                rmdirs(app()->getRuntimePath(), false);
+                rmdirs(app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR, false);
                 Cache::clear();
                 if ($type == 'content') {
                     break;
                 }
             case 'template':
-                rmdirs(app()->getRuntimePath(), false);
+                rmdirs(app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR, false);
                 if ($type == 'template') {
                     break;
                 }
             case 'addons':
-                //Service::refresh();
+                AddonService::refresh();
                 if ($type == 'addons') {
                     break;
                 }

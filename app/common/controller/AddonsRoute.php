@@ -58,7 +58,7 @@ class AddonsRoute
                 throw new HttpException(404, __('addon controller %s not found', parseName($controller, 1)));
             }
 
-            $instance = new $class($request);
+            $instance = new $class(app());
 
             $vars = [];
             if (is_callable([$instance, $action])) {

@@ -21,7 +21,7 @@ class Category extends Model
         'flag_text',
     ];
 
-    protected function onAfterInsert($row)
+    protected static function onAfterInsert($row)
     {
         $row->save(['weigh' => $row['id']]);
     }

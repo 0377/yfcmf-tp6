@@ -54,7 +54,7 @@ class Frontend extends BaseController
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
         $modulename = $this->request->app();
-        $controllername = parseName($this->request->controller());
+        $controllername = strtolower($this->request->controller());
         $actionname = strtolower($this->request->action());
 
         // 如果有使用模板布局
@@ -65,7 +65,7 @@ class Frontend extends BaseController
 
         // token
         $token = $this->request->server('HTTP_TOKEN',
-            $this->request->request('token', \think\facade\Cookie::get('token')));
+            $this->request->request('token', \think\facade\Cookie::get('token'))?:'');
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
         // 设置当前请求的URI

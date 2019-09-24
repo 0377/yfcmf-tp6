@@ -1,18 +1,13 @@
 <?php
-/**
- * *
- *  * ============================================================================
- *  * Created by PhpStorm.
- *  * User: Ice
- *  * 邮箱: ice@sbing.vip
- *  * 网址: https://sbing.vip
- *  * Date: 2019/9/19 下午3:39
- *  * ============================================================================
- *
- */
 
-return [
-    'autoload' => false,
-    'hooks'    => [],
-    'route'    => [],
-];
+return array (
+  'autoload' => false,
+  'hooks' => 
+  array (
+  ),
+  'route' => 
+  array (
+    '/qrcode$' => 'qrcode/index/index',
+    '/qrcode/build$' => 'qrcode/index/build',
+  ),
+);

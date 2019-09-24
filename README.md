@@ -1,6 +1,8 @@
 FastAdmin-TP6是一款基于ThinkPHP6+Bootstrap的极速后台开发框架。
 
-
+## **升级注意事项**
+* 多层控制器路径“/”改成“.”，例如：auth/admin/index改成auth.admin/index，js文件里面同样要这样调整
+* auth_rule表增加route字段，为访问的url
 ## **主要特性**
 
 * 基于`Auth`验证的权限管理系统

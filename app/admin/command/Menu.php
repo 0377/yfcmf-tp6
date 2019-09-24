@@ -104,7 +104,7 @@ class Menu extends Command
             }
             AuthRule::destroy($ids);
 
-            Cache::rm("__menu__");
+            Cache::delete("__menu__");
             $output->info("Delete Successed");
             return;
         }
@@ -140,7 +140,7 @@ class Menu extends Command
             // 扫描新的节点信息并导入
             $treelist = $this->import($this->scandir($controllerDir));
         }
-        Cache::rm("__menu__");
+        Cache::delete("__menu__");
         $output->info("Build Successed!");
     }
 
@@ -210,7 +210,7 @@ class Menu extends Command
 
         $pathArr = $controllerArr;
         array_unshift($pathArr, '', 'application', 'admin', 'controller');
-        $classFile = ROOT_PATH . implode(DS, $pathArr) . $classSuffix . ".php";
+        $classFile = app()->getRootPath() . implode(DS, $pathArr) . $classSuffix . ".php";
         $classContent = file_get_contents($classFile);
         $uniqueName = uniqid("FastAdmin") . $classSuffix;
         $classContent = str_replace("class " . $controllerArr[$key] . $classSuffix . " ", 'class ' . $uniqueName . ' ',

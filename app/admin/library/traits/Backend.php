@@ -365,7 +365,7 @@ trait Backend
         if (!$file) {
             $this->error(__('Parameter %s can not be empty', 'file'));
         }
-        $filePath = ROOT_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $file;
+        $filePath = app()->getRootPath() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $file;
         if (!is_file($filePath)) {
             $this->error(__('No results were found'));
         }

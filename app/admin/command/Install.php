@@ -99,7 +99,7 @@ class Install extends Command
         // 写入数据库配置
         file_put_contents($dbConfigFile, $config);
 
-        \think\Cache::rm('__menu__');
+        \think\facede\Cache::delete('__menu__');
 
         $output->info("Install Successed!");
     }

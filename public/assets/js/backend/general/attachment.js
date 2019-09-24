@@ -29,7 +29,7 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                             title: __('Admin_id'),
                             visible: false,
                             addClass: "selectpage",
-                            extend: "data-source='auth/admin/index' data-field='nickname'"
+                            extend: "data-source='auth.admin/index' data-field='nickname'"
                         },
                         {
                             field: 'user_id',

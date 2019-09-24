@@ -32,26 +32,27 @@ class AddonService
      * @param string $name 插件名称
      * @param array $extend 扩展参数
      * @return  string
-     * @throws  AddonException
      * @throws  Exception
      */
     public static function download($name, $extend = [])
     {
-        $addonTmpDir = app()->getRuntimePath() . 'addons' . DIRECTORY_SEPARATOR;
+        $addonTmpDir = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
         if (!is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
         }
         $tmpFile = $addonTmpDir . $name . ".zip";
         $options = [
-            'CURLOPT_CONNECTTIMEOUT' => 30,
-            'CURLOPT_TIMEOUT'        => 30,
-            'CURLOPT_SSL_VERIFYPEER' => false,
-            'CURLOPT_HTTPHEADER'     => [
+            CURLOPT_CONNECTTIMEOUT => 30,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_HTTPHEADER     => [
                 'X-REQUESTED-WITH: XMLHttpRequest'
             ]
         ];
+
         $ret = Http::sendRequest(self::getServerUrl() . '/addon/download', array_merge(['name' => $name], $extend),
             'GET', $options);
+
         if ($ret['ret']) {
             if (substr($ret['msg'], 0, 1) == '{') {
                 $json = (array)json_decode($ret['msg'], true);
@@ -87,7 +88,7 @@ class AddonService
      */
     public static function unzip($name)
     {
-        $file = app()->getRuntimePath() . 'addons' . DIRECTORY_SEPARATOR . $name . '.zip';
+        $file = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . $name . '.zip';
         $dir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
         if (class_exists('ZipArchive')) {
             $zip = new ZipArchive();
@@ -112,7 +113,7 @@ class AddonService
      */
     public static function backup($name)
     {
-        $file = app()->getRuntimePath() . 'addons' . DIRECTORY_SEPARATOR . $name . '-backup-' . date("YmdHis") . '.zip';
+        $file = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR . $name . '-backup-' . date("YmdHis") . '.zip';
         $dir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
         if (class_exists('ZipArchive')) {
             $zip = new ZipArchive();
@@ -222,7 +223,7 @@ class AddonService
         $addons = get_addon_list();
         $bootstrapArr = [];
         foreach ($addons as $name => $addon) {
-            $bootstrapFile = ADDON_PATH . $name . DS . 'bootstrap.js';
+            $bootstrapFile = ADDON_PATH . $name . DIRECTORY_SEPARATOR . 'bootstrap.js';
             if ($addon['state'] && is_file($bootstrapFile)) {
                 $bootstrapArr[] = file_get_contents($bootstrapFile);
             }
@@ -268,7 +269,6 @@ EOD;
      * @param array $extend 扩展参数
      * @return  boolean
      * @throws  Exception
-     * @throws  AddonException
      */
     public static function install($name, $force = false, $extend = [])
     {
@@ -277,24 +277,19 @@ EOD;
         }
 
         // 远程下载插件
-        $tmpFile = Service::download($name, $extend);
-
+        $tmpFile = AddonService::download($name, $extend);
         // 解压插件
-        $addonDir = Service::unzip($name);
-
+        $addonDir = AddonService::unzip($name);
         // 移除临时文件
         @unlink($tmpFile);
 
         try {
             // 检查插件是否完整
-            Service::check($name);
+            AddonService::check($name);
 
             if (!$force) {
-                Service::noconflict($name);
+                AddonService::noconflict($name);
             }
-        } catch (AddonException $e) {
-            @rmdirs($addonDir);
-            throw new AddonException($e->getMessage(), $e->getCode(), $e->getData());
         } catch (Exception $e) {
             @rmdirs($addonDir);
             throw new Exception($e->getMessage());
@@ -308,7 +303,7 @@ EOD;
         }
         foreach (self::getCheckDirs() as $k => $dir) {
             if (is_dir($addonDir . $dir)) {
-                copydirs($addonDir . $dir, ROOT_PATH . $dir);
+                copydirs($addonDir . $dir, app()->getRootPath() . $dir);
             }
         }
 
@@ -331,10 +326,10 @@ EOD;
         }
 
         // 导入
-        Service::importsql($name);
+        AddonService::importsql($name);
 
         // 刷新
-        Service::refresh();
+        AddonService::refresh();
         return true;
     }
 
@@ -353,7 +348,7 @@ EOD;
         }
 
         if (!$force) {
-            Service::noconflict($name);
+            AddonService::noconflict($name);
         }
 
         // 移除插件基础资源目录
@@ -364,9 +359,9 @@ EOD;
 
         // 移除插件全局资源文件
         if ($force) {
-            $list = Service::getGlobalFiles($name);
+            $list = AddonService::getGlobalFiles($name);
             foreach ($list as $k => $v) {
-                @unlink(ROOT_PATH . $v);
+                @unlink(app()->getRootPath() . $v);
             }
         }
 
@@ -385,7 +380,7 @@ EOD;
         rmdirs(ADDON_PATH . $name);
 
         // 刷新
-        Service::refresh();
+        AddonService::refresh();
         return true;
     }
 
@@ -402,10 +397,10 @@ EOD;
         }
 
         if (!$force) {
-            Service::noconflict($name);
+            AddonService::noconflict($name);
         }
 
-        $addonDir = ADDON_PATH . $name . DS;
+        $addonDir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
 
         // 复制文件
         $sourceAssetsDir = self::getSourceAssetsDir($name);
@@ -415,7 +410,7 @@ EOD;
         }
         foreach (self::getCheckDirs() as $k => $dir) {
             if (is_dir($addonDir . $dir)) {
-                copydirs($addonDir . $dir, ROOT_PATH . $dir);
+                copydirs($addonDir . $dir, app()->getRootPath() . $dir);
             }
         }
 
@@ -439,7 +434,7 @@ EOD;
         set_addon_info($name, $info);
 
         // 刷新
-        Service::refresh();
+        AddonService::refresh();
         return true;
     }
 
@@ -457,7 +452,7 @@ EOD;
             throw new Exception('Addon not exists');
         }
         if (!$force) {
-            Service::noconflict($name);
+            AddonService::noconflict($name);
         }
 
         // 移除插件基础资源目录
@@ -467,9 +462,9 @@ EOD;
         }
 
         // 移除插件全局资源文件
-        $list = Service::getGlobalFiles($name);
+        $list = AddonService::getGlobalFiles($name);
         foreach ($list as $k => $v) {
-            @unlink(ROOT_PATH . $v);
+            @unlink(app()->getRootPath() . $v);
         }
 
         $info = get_addon_info($name);
@@ -493,7 +488,7 @@ EOD;
         }
 
         // 刷新
-        Service::refresh();
+        AddonService::refresh();
         return true;
     }
 
@@ -515,13 +510,13 @@ EOD;
         }
 
         // 备份插件文件
-        Service::backup($name);
+        AddonService::backup($name);
 
         // 远程下载插件
-        $tmpFile = Service::download($name, $extend);
+        $tmpFile = AddonService::download($name, $extend);
 
         // 解压插件
-        $addonDir = Service::unzip($name);
+        $addonDir = AddonService::unzip($name);
 
         // 移除临时文件
         @unlink($tmpFile);
@@ -532,7 +527,7 @@ EOD;
         }
 
         // 导入
-        Service::importsql($name);
+        AddonService::importsql($name);
 
         // 执行升级脚本
         try {
@@ -549,7 +544,7 @@ EOD;
         }
 
         // 刷新
-        Service::refresh();
+        AddonService::refresh();
 
         return true;
     }
@@ -563,10 +558,10 @@ EOD;
     public static function getGlobalFiles($name, $onlyconflict = false)
     {
         $list = [];
-        $addonDir = ADDON_PATH . $name . DS;
+        $addonDir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
         // 扫描插件目录是否有覆盖的文件
         foreach (self::getCheckDirs() as $k => $dir) {
-            $checkDir = ROOT_PATH . DS . $dir . DS;
+            $checkDir = app()->getRootPath() . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR;
             if (!is_dir($checkDir)) {
                 continue;
             }
@@ -583,7 +578,7 @@ EOD;
                         $filePath = $fileinfo->getPathName();
                         $path = str_replace($addonDir, '', $filePath);
                         if ($onlyconflict) {
-                            $destPath = ROOT_PATH . $path;
+                            $destPath = app()->getRootPath() . $path;
                             if (is_file($destPath)) {
                                 if (filesize($filePath) != filesize($destPath) || md5_file($filePath) != md5_file($destPath)) {
                                     $list[] = $path;
@@ -606,7 +601,7 @@ EOD;
      */
     protected static function getSourceAssetsDir($name)
     {
-        return ADDON_PATH . $name . DS . 'assets' . DS;
+        return ADDON_PATH . $name . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -616,7 +611,7 @@ EOD;
      */
     protected static function getDestAssetsDir($name)
     {
-        $assetsDir = ROOT_PATH . str_replace("/", DS, "public/assets/addons/{$name}/");
+        $assetsDir = app()->getRootPath() . str_replace("/", DIRECTORY_SEPARATOR, "public/assets/addons/{$name}/");
         if (!is_dir($assetsDir)) {
             mkdir($assetsDir, 0755, true);
         }
@@ -639,7 +634,7 @@ EOD;
     protected static function getCheckDirs()
     {
         return [
-            'application',
+            'app',
             'public'
         ];
     }

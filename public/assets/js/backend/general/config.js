@@ -82,7 +82,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     title: '提示'
                 }, function (index) {
                     Backend.api.ajax({
-                        url: "general/config/del?receiver=" + value,
+                        url: "general.config/del?receiver=" + value,
                         data: {name: $(that).data("name")}
                     }, function () {
                         $(that).closest("tr").remove();

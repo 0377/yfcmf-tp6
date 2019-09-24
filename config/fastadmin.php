@@ -29,5 +29,5 @@ return [
     //版本号
     'version'             => '1.0.0.20190705_beta',
     //API接口地址
-    'api_url'             => 'https://api.fastadmin.net',
+    'api_url'             => 'https://fast-api.sbing.vip',
 ];

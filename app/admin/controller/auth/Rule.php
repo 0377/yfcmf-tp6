@@ -116,7 +116,7 @@ class Rule extends Backend
                 if ($result === false) {
                     $this->error($row->getError());
                 }
-                Cache::rm('__menu__');
+                Cache::delete('__menu__');
                 $this->success();
             }
             $this->error();
@@ -138,7 +138,7 @@ class Rule extends Backend
             $delIds = array_unique($delIds);
             $count = $this->model->where('id', 'in', $delIds)->delete();
             if ($count) {
-                Cache::rm('__menu__');
+                Cache::delete('__menu__');
                 $this->success();
             }
         }

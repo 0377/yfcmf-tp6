@@ -153,6 +153,7 @@ function get_addon_class($name, $type = 'hook', $class = null)
     } else {
         $class = parseName(is_null($class) ? $name : $class, 1);
     }
+    //halt($class,$name);
     switch ($type) {
         case 'controller':
             $namespace = "\\app\\addons\\" . $name . "\\controller\\" . $class;

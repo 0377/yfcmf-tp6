@@ -127,7 +127,7 @@ class Common extends Api
         $uploadDir = substr($savekey, 0, strripos($savekey, '/') + 1);
         $fileName = substr($savekey, strripos($savekey, '/') + 1);
         //
-        $splInfo = $file->validate(['size' => $size])->move(ROOT_PATH . '/public' . $uploadDir, $fileName);
+        $splInfo = $file->validate(['size' => $size])->move(app()->getRootPath() . '/public' . $uploadDir, $fileName);
         if ($splInfo) {
             $params = array(
                 'admin_id'    => 0,

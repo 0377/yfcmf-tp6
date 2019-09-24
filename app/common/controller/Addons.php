@@ -15,9 +15,12 @@ namespace app\common\controller;
 
 
 use app\common\library\Auth;
+use think\App;
 use think\facade\Config;
+use think\facade\Event;
 use think\facade\Lang;
 use think\facade\Request;
+use think\facade\View;
 
 /**
  * 插件基类控制器
@@ -59,16 +62,11 @@ class Addons extends BaseController
 
     /**
      * 架构函数
-     * @param Request $request Request对象
      * @access public
      */
-    public function __construct(Request $request = null)
+    public function __construct(App $app)
     {
-        if (is_null($request)) {
-            $request = Request::instance();
-        }
-        // 生成request对象
-        $this->request = $request;
+        parent::__construct($app);
 
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
@@ -78,30 +76,21 @@ class Addons extends BaseController
 
         $filter = $convert ? 'strtolower' : 'trim';
         // 处理路由参数
-        $param = $this->request->param();
-        $dispatch = $this->request->dispatch();
-        $var = isset($dispatch['var']) ? $dispatch['var'] : [];
-        $var = array_merge($param, $var);
-        if (isset($dispatch['method']) && substr($dispatch['method'][0], 0, 7) == "\\addons") {
-            $arr = explode("\\", $dispatch['method'][0]);
-            $addon = strtolower($arr[2]);
-            $controller = strtolower(end($arr));
-            $action = $dispatch['method'][1];
-        } else {
-            $addon = isset($var['addon']) ? $var['addon'] : '';
-            $controller = isset($var['controller']) ? $var['controller'] : '';
-            $action = isset($var['action']) ? $var['action'] : '';
-        }
+        $var = $param = $this->request->param();
+        $addon = isset($var['addon']) ? $var['addon'] : '';
+        $controller = isset($var['controller']) ? $var['controller'] : '';
+        $action = isset($var['action']) ? $var['action'] : '';
+
 
         $this->addon = $addon ? call_user_func($filter, $addon) : '';
         $this->controller = $controller ? call_user_func($filter, $controller) : 'index';
         $this->action = $action ? call_user_func($filter, $action) : 'index';
 
         // 重置配置
-        Config::set('template.view_path', ADDON_PATH . $this->addon . DS . 'view' . DS);
+        Config::set(['view_path'=> ADDON_PATH . $this->addon . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR],'view');
 
         // 父类的调用必须放在设置模板路径之后
-        parent::__construct($this->request);
+
     }
 
     protected function _initialize()
@@ -112,16 +101,19 @@ class Addons extends BaseController
 
         // 加载系统语言包
         Lang::load([
-            ADDON_PATH . $this->addon . DS . 'lang' . DS . $this->request->langset() . EXT,
+            ADDON_PATH . $this->addon . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . Lang::getLangset() . '.php',
         ]);
 
         // 设置替换字符串
         $cdnurl = Config::get('site.cdnurl');
-        $this->view->replace('__ADDON__', $cdnurl . "/assets/addons/" . $this->addon);
+        View::filter(function ($content) use ($cdnurl) {
+            return str_replace('__ADDON__', $cdnurl . "/assets/addons/" . $this->addon, $content);
+        });
 
         $this->auth = Auth::instance();
         // token
-        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\Cookie::get('token')));
+        $token = $this->request->server('HTTP_TOKEN',
+            $this->request->request('token', \think\facade\Cookie::get('token')) ?: '');
 
         $path = 'addons/' . $this->addon . '/' . str_replace('.', '/', $this->controller) . '/' . $this->action;
         // 设置当前请求的URI
@@ -160,8 +152,8 @@ class Addons extends BaseController
         $upload = \app\common\model\Config::upload();
 
         // 上传信息配置后
-        Hook::listen("upload_config_init", $upload);
-        Config::set('upload', array_merge(Config::get('upload'), $upload));
+        Event::listen("upload_config_init", $upload);
+        Config::set(array_merge(Config::get('upload'), $upload), 'upload');
 
         // 加载当前控制器语言包
         $this->assign('site', $site);
@@ -178,18 +170,18 @@ class Addons extends BaseController
      */
     protected function fetch($template = '', $vars = [], $replace = [], $config = [])
     {
-        $controller = Loader::parseName($this->controller);
+        $controller = parseName($this->controller);
         if ('think' == strtolower(Config::get('template.type')) && $controller && 0 !== strpos($template, '/')) {
             $depr = Config::get('template.view_depr');
             $template = str_replace(['/', ':'], $depr, $template);
             if ('' == $template) {
                 // 如果模板文件名为空 按照默认规则定位
-                $template = str_replace('.', DS, $controller) . $depr . $this->action;
+                $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $this->action;
             } elseif (false === strpos($template, $depr)) {
-                $template = str_replace('.', DS, $controller) . $depr . $template;
+                $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
             }
         }
-        return parent::fetch($template, $vars, $replace, $config);
+        return View::fetch($template, $vars);
     }
 
 }

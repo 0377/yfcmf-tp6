@@ -9,6 +9,8 @@ return array (
   'forbiddenip' => '',
   'languages' => 
   array (
+    'backend' => 'zh-cn',
+    'frontend' => 'zh-cn',
   ),
   'fixedpage' => 'dashboard',
   'categorytype' => 

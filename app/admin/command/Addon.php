@@ -13,8 +13,8 @@
 
 namespace app\admin\command;
 
-use think\addons\AddonException;
-use think\addons\Service;
+
+use think\AddonService;
 use think\facade\Config;
 use think\console\Command;
 use think\console\Input;
@@ -119,8 +119,8 @@ class Addon extends Command
             case 'enable':
                 try {
                     //调用启用、禁用的方法
-                    Service::$action($name, 0);
-                } catch (AddonException $e) {
+                    AddonService::$action($name, 0);
+                } catch (Exception $e) {
                     if ($e->getCode() != -3) {
                         throw new Exception($e->getMessage());
                     }
@@ -137,9 +137,7 @@ class Addon extends Command
                         }
                     }
                     //调用启用、禁用的方法
-                    Service::$action($name, 1);
-                } catch (Exception $e) {
-                    throw new Exception($e->getMessage());
+                    AddonService::$action($name, 1);
                 }
                 $output->info(ucfirst($action) . " Successed!");
                 break;
@@ -155,8 +153,8 @@ class Addon extends Command
                 // 获取本地路径
                 $local = $input->getOption('local');
                 try {
-                    Service::install($name, 0, ['version' => $release], $local);
-                } catch (AddonException $e) {
+                    AddonService::install($name, 0, ['version' => $release], $local);
+                } catch (Exception $e) {
                     if ($e->getCode() != -3) {
                         throw new Exception($e->getMessage());
                     }
@@ -172,9 +170,7 @@ class Addon extends Command
                             throw new Exception("Operation is aborted!");
                         }
                     }
-                    Service::install($name, 1, ['version' => $release, 'uid' => $uid, 'token' => $token], $local);
-                } catch (Exception $e) {
-                    throw new Exception($e->getMessage());
+                    AddonService::install($name, 1, ['version' => $release, 'uid' => $uid, 'token' => $token], $local);
                 }
 
                 $output->info("Install Successed!");
@@ -185,8 +181,8 @@ class Addon extends Command
                     throw new Exception("If you need to uninstall addon, use the parameter --force=true ");
                 }
                 try {
-                    Service::uninstall($name, 0);
-                } catch (AddonException $e) {
+                    AddonService::uninstall($name, 0);
+                } catch (Exception $e) {
                     if ($e->getCode() != -3) {
                         throw new Exception($e->getMessage());
                     }
@@ -202,19 +198,17 @@ class Addon extends Command
                             throw new Exception("Operation is aborted!");
                         }
                     }
-                    Service::uninstall($name, 1);
-                } catch (Exception $e) {
-                    throw new Exception($e->getMessage());
+                    AddonService::uninstall($name, 1);
                 }
 
                 $output->info("Uninstall Successed!");
                 break;
             case 'refresh':
-                Service::refresh();
+                AddonService::refresh();
                 $output->info("Refresh Successed!");
                 break;
             case 'upgrade':
-                Service::upgrade($name, ['version' => $release, 'uid' => $uid, 'token' => $token]);
+                AddonService::upgrade($name, ['version' => $release, 'uid' => $uid, 'token' => $token]);
                 $output->info("Upgrade Successed!");
                 break;
             case 'package':
@@ -237,7 +231,7 @@ class Addon extends Command
                     throw new Exception(__('Addon info version incorrect'));
                 }
 
-                $addonTmpDir = RUNTIME_PATH . 'addons' . DIRECTORY_SEPARATOR;
+                $addonTmpDir = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
                 if (!is_dir($addonTmpDir)) {
                     @mkdir($addonTmpDir, 0755, true);
                 }

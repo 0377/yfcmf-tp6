@@ -386,7 +386,7 @@ class Crud extends Command
         }
 
         //根据表名匹配对应的Fontawesome图标
-        $iconPath = ROOT_PATH . str_replace('/', DIRECTORY_SEPARATOR, '/public/assets/libs/font-awesome/less/variables.less');
+        $iconPath = app()->getRootPath() . str_replace('/', DIRECTORY_SEPARATOR, '/public/assets/libs/font-awesome/less/variables.less');
         $iconName = is_file($iconPath) && stripos(file_get_contents($iconPath), '@fa-var-' . $table . ':') ? 'fa fa-' . $table : 'fa fa-circle-o';
 
         //控制器
@@ -411,7 +411,7 @@ class Crud extends Command
         $viewDir = $adminPath . strtolower(implode(DS, $viewArr)) . DIRECTORY_SEPARATOR;
 
         //最终将生成的文件路径
-        $javascriptFile = ROOT_PATH . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . $controllerBaseName . '.js';
+        $javascriptFile = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . $controllerBaseName . '.js';
         $addFile = $viewDir . 'add.html';
         $editFile = $viewDir . 'edit.html';
         $indexFile = $viewDir . 'index.html';
