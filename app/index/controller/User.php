@@ -6,7 +6,7 @@ use app\common\controller\Frontend;
 use think\facade\Config;
 use think\Cookie;
 use think\facade\Event;
-use think\Session;
+use think\facade\Session;
 use think\Validate;
 
 /**

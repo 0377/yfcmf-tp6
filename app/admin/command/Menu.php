@@ -20,7 +20,7 @@ namespace app\admin\command;
 use app\admin\model\AuthRule;
 use ReflectionClass;
 use ReflectionMethod;
-use think\Cache;
+use think\facade\Cache;
 use think\facade\Config;
 use think\console\Command;
 use think\console\Input;

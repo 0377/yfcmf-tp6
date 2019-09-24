@@ -6,7 +6,7 @@ use app\admin\model\Admin;
 use app\admin\model\AdminLog;
 use app\common\controller\Backend;
 use fast\Random;
-use think\Session;
+use think\facade\Session;
 
 /**
  * 个人配置

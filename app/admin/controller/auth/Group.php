@@ -65,7 +65,7 @@ class Group extends Backend
     public function index()
     {
         if ($this->request->isAjax()) {
-            $list = AuthGroup::all(array_keys($this->groupdata));
+            $list = AuthGroup::select(array_keys($this->groupdata));
             $list = $list->toArray();
             $groupList = [];
             foreach ($list as $k => $v) {
@@ -125,7 +125,7 @@ class Group extends Backend
      */
     public function edit($ids = null)
     {
-        $row = $this->model->get(['id' => $ids]);
+        $row = $this->model->find(['id' => $ids]);
         if (!$row) {
             $this->error(__('No Results were found'));
         }

@@ -14,7 +14,7 @@
 namespace app\common\behavior;
 
 use think\facade\Config;
-use think\Lang;
+use think\facade\Cache;
 use think\Loader;
 
 class Common

@@ -3,7 +3,7 @@
 namespace app\admin\model;
 
 use think\Model;
-use think\Session;
+use think\facade\Session;
 
 class Admin extends Model
 {

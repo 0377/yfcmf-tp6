@@ -18,7 +18,7 @@ use think\facade\Config;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\facade\Event;
-use think\Lang;
+use think\facade\Cache;
 use think\Loader;
 use think\Request;
 use think\Response;

@@ -17,4 +17,8 @@ namespace app\common\provider;
 class Addons
 {
     public $a = 'b';
+    public function __construct()
+    {
+        exit('aaaaaaaaaaa');
+    }
 }

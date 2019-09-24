@@ -99,13 +99,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
                         return false;
                     }
                     $.ajax({
-                        url: "auth/group/roletree",
+                        url: "auth.group/roletree",
                         type: 'post',
                         dataType: 'json',
                         data: {id: id, pid: $(this).val()},
                         success: function (ret) {
                             if (ret.hasOwnProperty("code")) {
-                                var data = ret.hasOwnProperty("data") && ret.data != "" ? ret.data : "";
+                                var data = ret.hasOwnProperty("data") && ret.data !== "" ? ret.data : "";
                                 if (ret.code === 1) {
                                     //销毁已有的节点树
                                     $("#treeview").jstree("destroy");

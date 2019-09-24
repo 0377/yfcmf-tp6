@@ -23,10 +23,10 @@ use think\console\Command;
 use think\console\Input;
 use think\console\input\Option;
 use think\console\Output;
-use think\Db;
+use think\facade\Db;
 use think\Exception;
 use think\exception\ErrorException;
-use think\Lang;
+use think\facade\Cache;
 use think\Loader;
 
 class Crud extends Command
