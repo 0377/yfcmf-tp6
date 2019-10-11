@@ -5,7 +5,7 @@ namespace app\common\library;
 use app\common\library\token\Driver;
 use think\App;
 use think\facade\Config;
-use think\Log;
+use think\facade\Log;
 
 /**
  * Token操作类
@@ -43,7 +43,7 @@ class Token
                 $type;
 
             // 记录初始化信息
-            App::$debug && Log::record('[ TOKEN ] INIT ' . $type, 'info');
+            env('APP_DEBUG') && Log::record('[ TOKEN ] INIT ' . $type, 'info');
 
             if (true === $name) {
                 return new $class($options);

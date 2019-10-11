@@ -32,9 +32,9 @@ class Mysql extends Driver
             $this->options = array_merge($this->options, $options);
         }
         if ($this->options['connection']) {
-            $this->handler = \think\Db::connect($this->options['connection'])->name($this->options['table']);
+            $this->handler = \think\facade\Db::connect($this->options['connection'])->name($this->options['table']);
         } else {
-            $this->handler = \think\Db::name($this->options['table']);
+            $this->handler = \think\facade\Db::name($this->options['table']);
         }
     }
 

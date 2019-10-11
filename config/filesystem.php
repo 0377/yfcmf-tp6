@@ -9,10 +9,14 @@ return [
             'type' => 'local',
             'root' => app()->getRuntimePath() . 'storage',
         ],
+        'runtime'  => [
+            'type' => 'local',
+            'root' => app()->getRootPath() . 'runtime',
+        ],
         'public' => [
             'type'       => 'local',
-            'root'       => app()->getRootPath() . 'public/storage',
-            'url'        => '/storage',
+            'root'       => app()->getRootPath() . 'public',
+            'url'        => '/',
             'visibility' => 'public',
         ],
         // 更多的磁盘配置信息

@@ -18,6 +18,7 @@ use fast\Http;
 use think\AddonService;
 use think\facade\Cache;
 use think\facade\Config;
+use think\facade\Filesystem;
 use think\Exception;
 
 /**
@@ -139,7 +140,7 @@ class Addon extends Backend
             $info['config'] = get_addon_config($name) ? 1 : 0;
             $info['state'] = 1;
             $this->success(__('Install successful'), null, ['addon' => $info]);
-        }  catch (Exception $e) {
+        } catch (Exception $e) {
             $this->error(__($e->getMessage()), $e->getCode());
         }
     }
@@ -195,18 +196,23 @@ class Addon extends Backend
      */
     public function local()
     {
-        Config::set('default_return_type', 'json');
-
+        Config::set(['default_return_type' => 'json'], 'app');
         $file = $this->request->file('file');
-        $addonTmpDir = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
+        $addonTmpDir = app()->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR;
         if (!is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
         }
-        $info = $file->rule('uniqid')->validate(['size' => 10240000, 'ext' => 'zip'])->move($addonTmpDir);
+        $validate = validate(['zip' => 'filesize:10240000|fileExt:zip'], [], false, false);
+        if (!$validate->check(['zip' => $file])) {
+            $this->error(__($validate->getError()));
+        }
+        $info = Filesystem::disk('runtime')->putFile('addons', $file, function ($file) {
+            return str_replace('.' . $file->getOriginalExtension(), '', $file->getOriginalName());
+        });
         if ($info) {
-            $tmpName = substr($info->getFilename(), 0, stripos($info->getFilename(), '.'));
+            $tmpName = str_replace('.' . $file->getOriginalExtension(), '', $file->getOriginalName());
             $tmpAddonDir = ADDON_PATH . $tmpName . DIRECTORY_SEPARATOR;
-            $tmpFile = $addonTmpDir . $info->getSaveName();
+            $tmpFile = $addonTmpDir . $info;
             try {
                 AddonService::unzip($tmpName);
                 unset($info);
@@ -227,6 +233,7 @@ class Addon extends Backend
                 }
 
                 $newAddonDir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
+
                 if (is_dir($newAddonDir)) {
                     throw new Exception(__('Addon already exists'));
                 }

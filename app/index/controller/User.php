@@ -4,10 +4,10 @@ namespace app\index\controller;
 
 use app\common\controller\Frontend;
 use think\facade\Config;
-use think\Cookie;
+use think\facade\Cookie;
 use think\facade\Event;
 use think\facade\Session;
-use think\Validate;
+use think\facade\Validate;
 
 /**
  * 会员中心
@@ -28,20 +28,20 @@ class User extends Frontend
         }
 
         //监听注册登录注销的事件
-        Hook::add('user_login_successed', function ($user) use ($auth) {
+        Event::listen('user_login_successed', function ($user) use ($auth) {
             $expire = input('post.keeplogin') ? 30 * 86400 : 0;
             Cookie::set('uid', $user->id, $expire);
             Cookie::set('token', $auth->getToken(), $expire);
         });
-        Hook::add('user_register_successed', function ($user) use ($auth) {
+        Event::listen('user_register_successed', function ($user) use ($auth) {
             Cookie::set('uid', $user->id);
             Cookie::set('token', $auth->getToken());
         });
-        Hook::add('user_delete_successed', function ($user) use ($auth) {
+        Event::listen('user_delete_successed', function ($user) use ($auth) {
             Cookie::delete('uid');
             Cookie::delete('token');
         });
-        Hook::add('user_logout_successed', function ($user) use ($auth) {
+        Event::listen('user_logout_successed', function ($user) use ($auth) {
             Cookie::delete('uid');
             Cookie::delete('token');
         });
@@ -54,7 +54,7 @@ class User extends Frontend
      */
     public function _empty($name)
     {
-        $data = Event::listen("user_request_empty", $name);
+        $data = Event::trigger("user_request_empty", $name);
         foreach ($data as $index => $datum) {
             $this->view->assign($datum);
         }

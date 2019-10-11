@@ -147,7 +147,7 @@ class Backend extends BaseController
         if (!$this->auth->match($this->noNeedLogin)) {
             //检测是否登录
             if (!$this->auth->isLogin()) {
-                Event::listen('admin_nologin', $this);
+                Event::trigger('admin_nologin', $this);
                 $url = Session::get('referer');
                 $url = $url ? $url : $this->request->url();
                 if ($url == '/') {
@@ -160,7 +160,7 @@ class Backend extends BaseController
             if (!$this->auth->match($this->noNeedRight)) {
                 // 判断控制器和方法判断是否有对应权限
                 if (!$this->auth->check($path)) {
-                    Event::listen('admin_nopermission', $this);
+                    Event::trigger('admin_nopermission', $this);
                     $this->error(__('You have no permission'), '');
                 }
             }
@@ -198,7 +198,7 @@ class Backend extends BaseController
         $upload = \app\common\model\Config::upload();
         //halt(request());
         // 上传信息配置后
-        Event::listen("upload_config_init", $upload);
+        Event::trigger("upload_config_init", $upload);
         // 配置信息
         $config = [
             'app_debug'      => Env::get('APP_DEBUG'),
@@ -216,7 +216,7 @@ class Backend extends BaseController
         ];
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
         // 配置信息后
-        Event::listen("config_init", $config);
+        Event::trigger("config_init", $config);
         //加载当前控制器语言包
         $this->loadlang($this->request->controller());
         //渲染站点配置

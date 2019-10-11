@@ -15,7 +15,20 @@
 use think\facade\Config;
 use think\facade\Event;
 use think\facade\Lang;
+if (!function_exists('model')) {
+    /**
+     * 实例化Model
+     * @param string    $name Model名称
+     * @param string    $layer 业务层名称
+     * @param bool      $appendSuffix 是否添加类名后缀
+     * @return \think\Model
+     */
+    function model($name = '', $layer = 'model', $appendSuffix = false)
+    {
+        $uid = $name . $layer;
 
+    }
+}
 /**
  * 处理插件钩子
  * @param string $hook 钩子名称
@@ -24,7 +37,7 @@ use think\facade\Lang;
  */
 function hook($hook, $params = [])
 {
-    Event::listen($hook, $params);
+    Event::trigger($hook, $params);
 }
 
 /**
@@ -156,10 +169,10 @@ function get_addon_class($name, $type = 'hook', $class = null)
     //halt($class,$name);
     switch ($type) {
         case 'controller':
-            $namespace = "\\app\\addons\\" . $name . "\\controller\\" . $class;
+            $namespace = "\\addons\\" . $name . "\\controller\\" . $class;
             break;
         default:
-            $namespace = "\\app\\addons\\" . $name . "\\" . $class;
+            $namespace = "\\addons\\" . $name . "\\" . $class;
     }
     return class_exists($namespace) ? $namespace : '';
 }
@@ -253,8 +266,10 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
     $config = get_addon_config($addon);
 
     $rewrite = $config && isset($config['rewrite']) && $config['rewrite'] ? $config['rewrite'] : [];
+
     if ($rewrite) {
         $path = substr($url, stripos($url, '/') + 1);
+        //dump($addon,$url,$rewrite,$path);
         if (isset($rewrite[$path]) && $rewrite[$path]) {
             $val = $rewrite[$path];
             array_walk($params, function ($value, $key) use (&$val) {
@@ -281,6 +296,7 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
             $vars[substr($k, 1)] = $v;
         }
     }
+    //var_dump($val);
     $url = url($val, [], $suffix, $domain) . ($vars ? '?' . http_build_query($vars) : '');
     $url = preg_replace("/\/((?!index)[\w]+)\.php\//i", "/", $url);
     return $url;

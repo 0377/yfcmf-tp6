@@ -102,7 +102,7 @@ class Frontend extends BaseController
         $upload = \app\common\model\Config::upload();
 
         // 上传信息配置后
-        Event::listen("upload_config_init", $upload);
+        Event::trigger("upload_config_init", $upload);
 
         // 配置信息
         $config = [
@@ -120,7 +120,7 @@ class Frontend extends BaseController
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
 
         // 配置信息后
-        Event::listen("config_init", $config);
+        Event::trigger("config_init", $config);
         // 加载当前控制器语言包
         $this->loadlang($this->request->controller());
         $this->assign('site', $site);

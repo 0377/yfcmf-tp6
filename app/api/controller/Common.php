@@ -146,7 +146,7 @@ class Common extends Api
             $attachment = new Attachment();
             $attachment->data(array_filter($params));
             $attachment->save();
-            \think\facade\Event::listen("upload_after", $attachment);
+            \think\facade\Event::trigger("upload_after", $attachment);
             $this->success(__('Upload successful'), [
                 'url' => $uploadDir . $splInfo->getSaveName()
             ]);

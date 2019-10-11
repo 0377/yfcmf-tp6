@@ -191,18 +191,17 @@ class AddonService
             $lines = file($sqlFile);
             $templine = '';
             foreach ($lines as $line) {
-                if (substr($line, 0, 2) == '--' || $line == '' || substr($line, 0, 2) == '/*') {
+                if (substr($line, 0, 2) == '--' || trim($line) == '' || substr($line, 0, 2) == '/*') {
                     continue;
                 }
-
                 $templine .= $line;
                 if (substr(trim($line), -1, 1) == ';') {
-                    $templine = str_ireplace('__PREFIX__', config('database.prefix'), $templine);
+                    $templine = str_ireplace('__PREFIX__', env('database.prefix'), $templine);
                     $templine = str_ireplace('INSERT INTO ', 'INSERT IGNORE INTO ', $templine);
                     try {
                         Db::execute($templine);
-                    } catch (\PDOException $e) {
-                        //$e->getMessage();
+                    }catch (\PDOException $PDOException){
+                    }catch (\Exception $exception){
                     }
                     $templine = '';
                 }
@@ -302,8 +301,8 @@ EOD;
             copydirs($sourceAssetsDir, $destAssetsDir);
         }
         foreach (self::getCheckDirs() as $k => $dir) {
-            if (is_dir($addonDir . $dir)) {
-                copydirs($addonDir . $dir, app()->getRootPath() . $dir);
+            if (is_dir($addonDir . $k)) {
+                copydirs($addonDir . $k, app()->getRootPath() . $dir);
             }
         }
 
@@ -409,8 +408,8 @@ EOD;
             copydirs($sourceAssetsDir, $destAssetsDir);
         }
         foreach (self::getCheckDirs() as $k => $dir) {
-            if (is_dir($addonDir . $dir)) {
-                copydirs($addonDir . $dir, app()->getRootPath() . $dir);
+            if (is_dir($addonDir . $k)) {
+                copydirs($addonDir . $k, app()->getRootPath() . $dir);
             }
         }
 
@@ -560,7 +559,7 @@ EOD;
         $list = [];
         $addonDir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
         // 扫描插件目录是否有覆盖的文件
-        foreach (self::getCheckDirs() as $k => $dir) {
+        foreach (self::getCheckDirs() as $dir => $app_dir) {
             $checkDir = app()->getRootPath() . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR;
             if (!is_dir($checkDir)) {
                 continue;
@@ -572,11 +571,11 @@ EOD;
                     new RecursiveDirectoryIterator($addonDir . $dir, RecursiveDirectoryIterator::SKIP_DOTS),
                     RecursiveIteratorIterator::CHILD_FIRST
                 );
-
                 foreach ($files as $fileinfo) {
                     if ($fileinfo->isFile()) {
                         $filePath = $fileinfo->getPathName();
                         $path = str_replace($addonDir, '', $filePath);
+
                         if ($onlyconflict) {
                             $destPath = app()->getRootPath() . $path;
                             if (is_file($destPath)) {
@@ -587,6 +586,7 @@ EOD;
                         } else {
                             $list[] = $path;
                         }
+
                     }
                 }
             }
@@ -634,8 +634,8 @@ EOD;
     protected static function getCheckDirs()
     {
         return [
-            'app',
-            'public'
+            'application'=>'app',
+            'public'=>'public'
         ];
     }
 

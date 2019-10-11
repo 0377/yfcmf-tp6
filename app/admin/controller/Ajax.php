@@ -148,7 +148,7 @@ class Ajax extends Backend
             $attachment = new Attachment();
             $attachment->data(array_filter($params));
             $attachment->save();
-            \think\facade\Event::listen("upload_after", $attachment);
+            \think\facade\Event::trigger("upload_after", $attachment);
             $this->success(__('Upload successful'), null, [
                 'url' => $uploadDir . $splInfo->getSaveName()
             ]);
@@ -247,7 +247,7 @@ class Ajax extends Backend
                 }
         }
 
-        //\think\facade\Event::listen("wipecache_after");
+        \think\facade\Event::trigger("wipecache_after");
         $this->success();
     }
 

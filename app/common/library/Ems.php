@@ -46,7 +46,7 @@ class Ems
         where(['email' => $email, 'event' => $event])
             ->order('id', 'DESC')
             ->find();
-        Event::listen('ems_get', $ems, null, true);
+        Event::trigger('ems_get', $ems, null, true);
         return $ems ? $ems : null;
     }
 
@@ -64,7 +64,7 @@ class Ems
         $time = time();
         $ip = request()->ip();
         $ems = \app\common\model\Ems::create(['event' => $event, 'email' => $email, 'code' => $code, 'ip' => $ip, 'createtime' => $time]);
-        $result = Event::listen('ems_send', $ems, null, true);
+        $result = Event::trigger('ems_send', $ems, null, true);
         if (!$result) {
             $ems->delete();
             return false;
@@ -87,7 +87,7 @@ class Ems
             'msg'      => $msg,
             'template' => $template
         ];
-        $result = Event::listen('ems_notice', $params, null, true);
+        $result = Event::trigger('ems_notice', $params, null, true);
         return $result ? true : false;
     }
 
@@ -113,7 +113,7 @@ class Ems
                     $ems->save();
                     return false;
                 } else {
-                    $result = Event::listen('ems_check', $ems, null, true);
+                    $result = Event::trigger('ems_check', $ems, null, true);
                     return true;
                 }
             } else {
@@ -138,7 +138,7 @@ class Ems
         \app\common\model\Ems::
         where(['email' => $email, 'event' => $event])
             ->delete();
-        Event::listen('ems_flush');
+        Event::trigger('ems_flush');
         return true;
     }
 }

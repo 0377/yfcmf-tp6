@@ -23,18 +23,32 @@ class Menu
         } else {
             $pid = $parent;
         }
-        $allow = array_flip(['file', 'name', 'title', 'icon', 'condition', 'remark', 'ismenu']);
+        $allow = array_flip(['file', 'name', 'title', 'icon', 'condition', 'remark', 'ismenu', 'route']);
         foreach ($menu as $k => $v) {
             $hasChild = isset($v['sublist']) && $v['sublist'] ? true : false;
-
             $data = array_intersect_key($v, $allow);
-
+            if (!isset($data['route'])) {
+                if (empty($data['route'])) {
+                    $_arr = explode('/', $data['name']);
+                    if (count($_arr) >= 3) {
+                        $route = '';
+                        foreach ($_arr as $_k => $_v) {
+                            $route .= $_v;
+                            ($_k == 0) ? $route .= '.' : $route .= '/';
+                        }
+                        $route = rtrim($route, "/");
+                        $data['route'] = $route;
+                    }elseif (count($_arr) ==2){
+                        $data['route'] = implode('.',$_arr).'/index';
+                    }
+                }
+            }
             $data['ismenu'] = isset($data['ismenu']) ? $data['ismenu'] : ($hasChild ? 1 : 0);
             $data['icon'] = isset($data['icon']) ? $data['icon'] : ($hasChild ? 'fa fa-list' : 'fa fa-circle-o');
             $data['pid'] = $pid;
             $data['status'] = 'normal';
             try {
-                $menu = AuthRule::create($data);
+                $menu = AuthRule::create($data, [], true);
                 if ($hasChild) {
                     self::create($v['sublist'], $menu->id);
                 }

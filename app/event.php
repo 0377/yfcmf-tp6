@@ -5,7 +5,7 @@ return [
     ],
 
     'listen' => [
-        'AppInit'  => [app\common\event\AutoRoute::class],
+        'AppInit'  => [app\common\event\AddAddons::class],
         'HttpRun'  => [],
         'HttpEnd'  => [],
         'LogLevel' => [],
