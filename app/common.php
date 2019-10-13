@@ -17,6 +17,30 @@ use think\facade\Event;
 use think\facade\Lang;
 use think\Model;
 
+!defined('DS') && define('DS', DIRECTORY_SEPARATOR);
+if (!function_exists('tp5ControllerToTp6Controller')) {
+    /**
+     * TP5二级目录转TP6二级目录
+     * @param string $class
+     * @return string
+     */
+    function tp5ControllerToTp6Controller($class = '')
+    {
+        $_arr = explode('/', $class);
+        $route = $class;
+        if (count($_arr) >= 3) {
+            $route = '';
+            foreach ($_arr as $_k => $_v) {
+                $route .= $_v;
+                ($_k == 0) ? $route .= '.' : $route .= '/';
+            }
+            $route = rtrim($route, "/");
+        } elseif (count($_arr) == 2) {
+            $route = implode('.', $_arr) . '/index';
+        }
+        return $route;
+    }
+}
 if (!function_exists('model')) {
     /**
      * 实例化Model
@@ -28,14 +52,17 @@ if (!function_exists('model')) {
      */
     function model($name = '', $layer = 'model', $appendSuffix = false)
     {
-        $class=app()->getNamespace()."\\".$layer."\\".$name;
-        if(class_exists($class)){
+        if (strpos($name, app()->getNamespace())) {
+            return new $name;
+        }
+        $class = app()->getNamespace() . "\\" . $layer . "\\" . $name;
+        if (class_exists($class)) {
             return new $class();
         }
-        $class="app\\common\\".$layer."\\".$name;
-        if(class_exists($class)){
+        $class = "app\\common\\" . $layer . "\\" . $name;
+        if (class_exists($class)) {
             return new $class();
-        }else{
+        } else {
             throw new \think\Exception('model not found');
         }
     }

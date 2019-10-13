@@ -95,8 +95,8 @@ class Min extends Command
                     'jsBaseUrl'   => $this->options['jsBaseUrl'],
                     'cssBaseName' => str_replace('{module}', $mod, $this->options['cssBaseName']),
                     'cssBaseUrl'  => $this->options['cssBaseUrl'],
-                    'jsBasePath'  => str_replace(DS, '/', app()->getRootPath() . $this->options['jsBaseUrl']),
-                    'cssBasePath' => str_replace(DS, '/', app()->getRootPath() . $this->options['cssBaseUrl']),
+                    'jsBasePath'  => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath() . $this->options['jsBaseUrl']),
+                    'cssBasePath' => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath() . $this->options['cssBaseUrl']),
                     'optimize'    => $optimize,
                     'ds'          => DIRECTORY_SEPARATOR,
                 ];

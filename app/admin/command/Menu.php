@@ -28,9 +28,11 @@ use think\console\input\Option;
 use think\console\Output;
 use think\Exception;
 use think\Loader;
+use think\Model;
 
 class Menu extends Command
 {
+    /** @var Model null */
     protected $model = null;
 
     protected function configure()
@@ -122,7 +124,7 @@ class Menu extends Command
                 } else {
                     $controllerArr = [ucfirst($item)];
                 }
-                $adminPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . implode(DS,
+                $adminPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
                         $controllerArr) . '.php';
                 if (!is_file($adminPath)) {
                     $output->error("controller not found");
@@ -133,7 +135,7 @@ class Menu extends Command
         } else {
             $authRuleList = AuthRule::select();
             //生成权限规则备份文件
-            file_put_contents(RUNTIME_PATH . 'authrule.json', json_encode($authRuleList->toArray()));
+            file_put_contents(app()->getRuntimePath() . 'authrule.json', json_encode($authRuleList->toArray()));
 
             $this->model->where('id', '>', 0)->delete();
             $controllerDir = $adminPath . 'controller' . DIRECTORY_SEPARATOR;
@@ -209,8 +211,8 @@ class Menu extends Command
         $className = "\\app\\admin\\controller\\" . implode("\\", $controllerArr) . $classSuffix;
 
         $pathArr = $controllerArr;
-        array_unshift($pathArr, '', 'application', 'admin', 'controller');
-        $classFile = app()->getRootPath() . implode(DS, $pathArr) . $classSuffix . ".php";
+        array_unshift($pathArr, '', 'app', 'admin', 'controller');
+        $classFile = app()->getRootPath() . implode(DIRECTORY_SEPARATOR, $pathArr) . $classSuffix . ".php";
         $classContent = file_get_contents($classFile);
         $uniqueName = uniqid("FastAdmin") . $classSuffix;
         $classContent = str_replace("class " . $controllerArr[$key] . $classSuffix . " ", 'class ' . $uniqueName . ' ',
@@ -242,7 +244,6 @@ class Menu extends Command
         $modelRegex = preg_match($modelRegexArr[0], $classContent) ? $modelRegexArr[0] : $modelRegexArr[1];
         preg_match_all($modelRegex, $classContent, $matches);
         if (isset($matches[1]) && isset($matches[1][0]) && $matches[1][0]) {
-            \think\Request::instance()->module('admin');
             $model = model($matches[1][0]);
             if (in_array('trashed', get_class_methods($model))) {
                 $withSofeDelete = true;
@@ -275,7 +276,7 @@ class Menu extends Command
         ), '', $classComment));
 
         //导入中文语言包
-        \think\Lang::load(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lang/zh-cn.php');
+        \think\facade\Lang::load(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lang/zh-cn.php');
 
         //先导入菜单的数据
         $pid = 0;
@@ -295,18 +296,17 @@ class Menu extends Command
             $rulemodel = $this->model->get(['name' => $name]);
             if (!$rulemodel) {
                 $this->model
-                    ->data([
+                    ->insert([
                         'pid'    => $pid,
                         'name'   => $name,
+                        'route'  => tp5ControllerToTp6Controller($name),
                         'title'  => $title,
                         'icon'   => $icon,
                         'remark' => $remark,
                         'ismenu' => 1,
                         'status' => 'normal'
-                    ])
-                    ->isUpdate(false)
-                    ->save();
-                $pid = $this->model->id;
+                    ]);
+                $pid = $this->model->getLastInsID();
             } else {
                 $pid = $rulemodel->id;
             }
@@ -322,7 +322,7 @@ class Menu extends Command
                 continue;
             }
             //只匹配符合的方法
-            if (!preg_match('/^(\w+)' . Config::get('action_suffix') . '/', $n->name, $matchtwo)) {
+            if (!preg_match('/^(\w+)' . Config::get('route.action_suffix') . '/', $n->name, $matchtwo)) {
                 unset($methods[$m]);
                 continue;
             }
@@ -344,13 +344,14 @@ class Menu extends Command
                 'id'     => $id,
                 'pid'    => $pid,
                 'name'   => $name . "/" . strtolower($n->name),
+                'route'  => tp5ControllerToTp6Controller($name . "/" . strtolower($n->name)),
                 'icon'   => 'fa fa-circle-o',
                 'title'  => $title,
                 'ismenu' => 0,
                 'status' => 'normal'
             );
         }
-        $this->model->isUpdate(false)->saveAll($ruleArr);
+        $this->model->insertAll($ruleArr);
     }
 
     //获取主键

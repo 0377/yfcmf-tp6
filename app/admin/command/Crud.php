@@ -404,7 +404,7 @@ class Crud extends Command
         array_push($baseNameArr, $baseFileName);
         $controllerBaseName = strtolower(implode(DIRECTORY_SEPARATOR, $baseNameArr));
         $controllerUrl = strtolower(implode('/', $baseNameArr));
-
+        $controllerUrl = $_controllerUrl =preg_replace("/\//",".",$controllerUrl,1);
         //视图文件
         $viewArr = $controllerArr;
         $lastValue = array_pop($viewArr);
@@ -794,7 +794,7 @@ class Crud extends Command
                         $javascriptList[] = "{checkbox: true}";
                     }
                     if ($this->deleteTimeField == $field) {
-                        $recyclebinHtml = $this->getReplacedStub('html/recyclebin-html', ['controllerUrl' => $controllerUrl]);
+                        $recyclebinHtml = $this->getReplacedStub('html/recyclebin-html', ['controllerUrl' => $_controllerUrl]);
                         continue;
                     }
                     if (!$fields || in_array($field, explode(',', $fields))) {
@@ -968,7 +968,7 @@ class Crud extends Command
                 $this->writeToFile('recyclebin', $data, $recyclebinFile);
                 $recyclebinTitle = in_array('title', $fieldArr) ? 'title' : (in_array('name', $fieldArr) ? 'name' : '');
                 $recyclebinTitleJs = $recyclebinTitle ? "\n                        {field: '{$recyclebinTitle}', title: __('" . (ucfirst($recyclebinTitle)) . "'), align: 'left'}," : '';
-                $data['recyclebinJs'] = $this->getReplacedStub('mixins/recyclebinjs', ['recyclebinTitleJs' => $recyclebinTitleJs, 'controllerUrl' => $controllerUrl]);
+                $data['recyclebinJs'] = $this->getReplacedStub('mixins/recyclebinjs', ['recyclebinTitleJs' => $recyclebinTitleJs, 'controllerUrl' => $_controllerUrl]);
             }
             // 生成JS文件
             $this->writeToFile('javascript', $data, $javascriptFile);
