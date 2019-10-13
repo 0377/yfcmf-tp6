@@ -27,7 +27,7 @@ class User extends BaseModel
         return $this->origin;
     }
 
-    protected static function init()
+    /*protected static function init()
     {
         self::beforeUpdate(function ($row) {
             $changed = $row->getChangedData();
@@ -51,6 +51,27 @@ class User extends BaseModel
                 MoneyLog::create(['user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'], 'before' => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额']);
             }
         });
+    }*/
+
+    public static function onBeforeUpdate($row)
+    {
+        $changed = $row->getChangedData();
+        //如果有修改密码
+        if (isset($changed['password'])) {
+            if ($changed['password']) {
+                $salt = \fast\Random::alnum();
+                $row->password = \app\common\library\Auth::instance()->getEncryptPassword($changed['password'], $salt);
+                $row->salt = $salt;
+            } else {
+                unset($row->password);
+            }
+        }
+
+        $changedata = $row->getChangedData();
+        if (isset($changedata['money'])) {
+            $origin = $row->getOrigin();
+            MoneyLog::create(['user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'], 'before' => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额']);
+        }
     }
 
     public function getGenderList()
@@ -98,7 +119,7 @@ class User extends BaseModel
 
     public function group()
     {
-        return $this->belongsTo('UserGroup', 'group_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('UserGroup', 'group_id', 'id', [], 'LEFT');
     }
 
 }

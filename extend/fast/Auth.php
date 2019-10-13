@@ -158,7 +158,7 @@ class Auth
             ->join($this->config['auth_group'] . ' ag', 'aga.group_id = ag.id', 'LEFT')
             ->field('aga.uid,aga.group_id,ag.id,ag.pid,ag.name,ag.rules')
             ->where("aga.uid='{$uid}' and ag.status='normal'")
-            ->select();
+            ->select()->toArray();
         $groups[$uid] = $user_groups ?: [];
         return $groups[$uid];
     }

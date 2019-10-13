@@ -20,12 +20,10 @@ class UserRule extends BaseModel
         'status_text'
     ];
 
-    protected static function init()
+    public static function onAfterInsert($row)
     {
-        self::afterInsert(function ($row) {
-            $pk = $row->getPk();
-            $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
-        });
+        $pk = $row->getPk();
+        $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
     }
 
     public function getStatusList()

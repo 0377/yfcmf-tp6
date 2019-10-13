@@ -21,7 +21,7 @@ class Attachment extends BaseModel
         return is_numeric($value) ? $value : strtotime($value);
     }
 
-    protected function onBeforeInsert($model)
+    protected static function onBeforeInsert($model)
     {
         // 如果已经上传该资源，则不再记录
         if (self::where('url', '=', $model['url'])->find()) {

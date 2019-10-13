@@ -71,7 +71,7 @@ class Admin extends Backend
             }
             $childrenGroupIds = $this->childrenGroupIds;
             $groupName = AuthGroup::where('id', 'in', $childrenGroupIds)
-                ->column('id,name');
+                ->column('name','id');
             $authGroupList = AuthGroupAccess::where('group_id', 'in', $childrenGroupIds)
                 ->field('uid,group_id')
                 ->select();
@@ -124,7 +124,12 @@ class Admin extends Backend
                 $params['salt'] = Random::alnum();
                 $params['password'] = md5(md5($params['password']) . $params['salt']);
                 $params['avatar'] = '/assets/img/avatar.png'; //设置新管理员默认头像。
-                $result = $this->model->validate('Admin.add')->save($params);
+                try {
+                    validate('Admin.add')->check($params);
+                }catch (\Exception $e) {
+                    $this->error($e->getMessage());
+                }
+                $result = $this->model->save($params);
                 if ($result === false) {
                     $this->error($this->model->getError());
                 }
@@ -136,7 +141,9 @@ class Admin extends Backend
                 foreach ($group as $value) {
                     $dataset[] = ['uid' => $this->model->id, 'group_id' => $value];
                 }
-                AuthGroupAccess::saveAll($dataset);
+                //AuthGroupAccess::saveAll($dataset);
+                $model=new AuthGroupAccess();
+                $model->saveAll($dataset);
                 $this->success();
             }
             $this->error();
@@ -163,12 +170,17 @@ class Admin extends Backend
                     unset($params['password'], $params['salt']);
                 }
                 //这里需要针对username和email做唯一验证
-                $adminValidate = validate('Admin');
+                $adminValidate = validate('Admin.edit',[],false,false);
                 $adminValidate->rule([
                     'username' => 'require|max:50|unique:admin,username,' . $row->id,
                     'email'    => 'require|email|unique:admin,email,' . $row->id
                 ]);
-                $result = $row->validate('Admin.edit')->save($params);
+                $rs=$adminValidate->check($params);
+                if (!$rs){
+                    $this->error($adminValidate->getError());
+                }
+
+                $result = $row->save($params);
                 if ($result === false) {
                     $this->error($row->getError());
                 }
@@ -185,7 +197,9 @@ class Admin extends Backend
                 foreach ($group as $value) {
                     $dataset[] = ['uid' => $row->id, 'group_id' => $value];
                 }
-                AuthGroupAccess::saveAll($dataset);
+                //AuthGroupAccess::saveAll($dataset);
+                $model=new AuthGroupAccess();
+                $model->saveAll($dataset);
                 $this->success();
             }
             $this->error();

@@ -333,7 +333,7 @@ trait Backend
                     try {
                         $list = $this->model->where($this->model->getPk(), 'in', $ids)->select();
                         foreach ($list as $index => $item) {
-                            $count += $item->isUpdate(true)->save($values);
+                            $count += $item->save($values);
                         }
                         Db::commit();
                     } catch (PDOException $e) {

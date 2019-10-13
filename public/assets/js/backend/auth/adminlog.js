@@ -53,7 +53,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 text: __('Detail'),
                                 icon: 'fa fa-list',
                                 classname: 'btn btn-info btn-xs btn-detail btn-dialog',
-                                url: 'auth/adminlog/detail'
+                                url: 'auth.adminlog/detail'
                             }],
                             formatter: Table.api.formatter.operate
                         }

@@ -69,7 +69,7 @@ class User extends Backend
             $this->error(__('No Results were found'));
         }
         $this->view->assign('groupList',
-            build_select('row[group_id]', \app\admin\model\UserGroup::column('id,name'), $row['group_id'],
+            build_select('row[group_id]', \app\admin\model\UserGroup::column('name','id'), $row['group_id'],
                 ['class' => 'form-control selectpicker']));
         return parent::edit($ids);
     }

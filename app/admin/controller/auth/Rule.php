@@ -108,11 +108,15 @@ class Rule extends Backend
                     }
                 }
                 //这里需要针对name做唯一验证
-                $ruleValidate = validate('AuthRule');
+                $ruleValidate = validate('AuthRule',[],false,false);
                 $ruleValidate->rule([
                     'name' => 'require|format|unique:AuthRule,name,' . $row->id,
                 ]);
-                $result = $row->validate()->save($params);
+                $rs=$ruleValidate->check($params);
+                if (!$rs){
+                    $this->error($ruleValidate->getError());
+                }
+                $result = $row->save($params);
                 if ($result === false) {
                     $this->error($row->getError());
                 }
