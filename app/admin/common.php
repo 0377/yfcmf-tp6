@@ -209,40 +209,42 @@ if (!function_exists('build_heading')) {
     }
 }
 
+if (!function_exists('upload_file')) {
+    /**
+     * 上传文件
+     *
+     * @param string $file 上传的文件
+     * @param string $name 上传的位置
+     * @param string $path 上传的文件夹
+     * @param string $validate 规则验证
+     * @return string|boolean
+     * @author niu
+     */
+    function upload_file($file = null, $name= 'local',$path='',$validate='')
+    {
+        //文件
+        if (!$file){
+            return false;
+        }
+        //上传配置
+        $config_name='filesystem.disks.'.$name;
+        $filesystem=config($config_name);
+        if (!$filesystem){
+            return false;
+        }
+        //上传文件
+        if ($validate){
+            validate(['file'=>$validate])->check(['file'=>$file]);
+        }
+        $savename = \think\facade\Filesystem::disk($name)->putFile( $path, $file,function ($file){
+            //重命名
+            return date('Ymd') . '/' . md5((string) microtime(true));
+        });
+        if (isset($filesystem['url'])){
+            $savename=$filesystem['url'].$savename;
+        }
 
-/**
- * 上传文件
- *
- * @param string $file 上传的文件
- * @param string $name 上传的位置
- * @param string $path 上传的文件夹
- * @param string $validate 规则验证
- * @return string|boolean
- * @author niu
- */
-function upload_file($file = null, $name= 'local',$path='',$validate='')
-{
-    //文件
-    if (!$file){
-        return false;
+        return $savename;
     }
-    //上传配置
-    $config_name='filesystem.disks.'.$name;
-    $filesystem=config($config_name);
-    if (!$filesystem){
-        return false;
-    }
-    //上传文件
-    if ($validate){
-        validate(['file'=>$validate])->check(['file'=>$file]);
-    }
-    $savename = \think\facade\Filesystem::disk($name)->putFile( $path, $file,function ($file){
-        //重命名
-        return date('Ymd') . '/' . md5((string) microtime(true));
-    });
-    if (isset($filesystem['url'])){
-        $savename=$filesystem['url'].$savename;
-    }
-
-    return $savename;
 }
+

@@ -458,7 +458,7 @@ class Backend extends BaseController
 
         //如果有primaryvalue,说明当前是初始化传值
         if ($primaryvalue !== null) {
-            $where = [$primarykey => ['in', $primaryvalue]];
+            $where = [$primarykey =>  explode(',',$primaryvalue)];
         } else {
             $where = function ($query) use ($word, $andor, $field, $searchfield, $custom) {
                 $logic = $andor == ' AND ' ? ' & ' : ' | ';
@@ -471,7 +471,7 @@ class Backend extends BaseController
                         if (is_array($v) && 2 == count($v)) {
                             $query->where($k, trim($v[0]), $v[1]);
                         } else {
-                            $query->where($k, ' = ', $v);
+                            $query->where($k, '=', $v);
                         }
                     }
                 }
