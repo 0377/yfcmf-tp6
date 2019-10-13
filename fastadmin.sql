@@ -159,7 +159,7 @@ CREATE TABLE `fa_auth_rule` (
   `type` enum('menu','file') NOT NULL DEFAULT 'file' COMMENT 'menu为菜单,file为权限节点',
   `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父ID',
   `name` varchar(100) NOT NULL DEFAULT '' COMMENT '规则名称',
-  `route` varchar(255) NOT NULL COMMENT '路由规则',
+  `route` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '路由规则',
   `title` varchar(50) NOT NULL DEFAULT '' COMMENT '规则名称',
   `icon` varchar(50) NOT NULL DEFAULT '' COMMENT '图标',
   `condition` varchar(255) NOT NULL DEFAULT '' COMMENT '条件',
