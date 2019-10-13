@@ -471,7 +471,7 @@ class Backend extends BaseController
                         if (is_array($v) && 2 == count($v)) {
                             $query->where($k, trim($v[0]), $v[1]);
                         } else {
-                            $query->where($k, ' = ', $v);
+                            $query->where($k, '=', $v);
                         }
                     }
                 }
