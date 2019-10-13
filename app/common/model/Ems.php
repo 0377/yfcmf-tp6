@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 邮箱验证码
  */
-class Ems Extends Model
+class Ems extends BaseModel
 {
 
     // 开启自动写入时间戳字段

@@ -3,9 +3,9 @@
 namespace app\admin\model;
 
 use app\common\model\MoneyLog;
-use think\Model;
+use app\common\model\BaseModel;
 
-class User extends Model
+class User extends BaseModel
 {
 
     // 表名

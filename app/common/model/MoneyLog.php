@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 会员余额日志模型
  */
-class MoneyLog Extends Model
+class MoneyLog extends BaseModel
 {
 
     // 表名

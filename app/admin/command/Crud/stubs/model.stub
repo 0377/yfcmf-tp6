@@ -2,10 +2,10 @@
 
 namespace {%modelNamespace%};
 
-use think\Model;
+use app\common\model\BaseModel;
 {%sofeDeleteClassPath%}
 
-class {%modelName%} extends Model
+class {%modelName%} extends BaseModel
 {
 
     {%softDelete%}

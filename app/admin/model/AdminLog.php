@@ -3,9 +3,9 @@
 namespace app\admin\model;
 
 use app\admin\library\Auth;
-use think\Model;
+use app\common\model\BaseModel;
 
-class AdminLog extends Model
+class AdminLog extends BaseModel
 {
 
     // 开启自动写入时间戳字段
@@ -64,6 +64,6 @@ class AdminLog extends Model
 
     public function admin()
     {
-        return $this->belongsTo('Admin', 'admin_id')->setEagerlyType(0);
+        return $this->belongsTo('Admin', 'admin_id');
     }
 }

@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 配置模型
  */
-class Config extends Model
+class Config extends BaseModel
 {
 
     // 表名,不含前缀

@@ -275,8 +275,8 @@ class Backend extends BaseController
         $tableName = '';
         if ($relationSearch) {
             if (!empty($this->model)) {
-                $name = parseName(basename(str_replace('\\', ' / ', get_class($this->model))));
-                $tableName = $name . ' . ';
+                $name = parseName(trim(basename(str_replace('\\', ' / ',  get_class($this->model)))));
+                $tableName = Env::get('database.prefix').trim($name) . '.';
             }
             $sortArr = explode(',', $sort);
             foreach ($sortArr as $index => & $item) {
@@ -377,7 +377,7 @@ class Backend extends BaseController
                     break;
             }
         }
-        /*$where = function ($query) use ($where) {
+        $where = function ($query) use ($where) {
             foreach ($where as $k => $v) {
                 if (is_array($v)) {
                     call_user_func_array([$query, 'where'], $v);
@@ -385,8 +385,8 @@ class Backend extends BaseController
                     $query->where($v);
                 }
             }
-        };*/
-        return [$where, $sort, $order, $offset, $limit];
+        };
+        return [$where, trim($sort), trim($order), $offset, $limit];
     }
 
     /**
@@ -424,7 +424,7 @@ class Backend extends BaseController
         //搜索关键词,客户端输入以空格分开,这里接收为数组
         $word = (array)$this->request->request("q_word/a");
         //当前页
-        $page = $this->request->request("pageNumber");
+        $page = $this->request->request("pageNumber",1,'int');
         //分页大小
         $pagesize = $this->request->request("pageSize");
         //搜索条件
@@ -489,7 +489,7 @@ class Backend extends BaseController
                 ->order($order)
                 ->page($page, $pagesize)
                 ->field($this->selectpageFields)
-                ->select();
+                ->select()->toArray();
             foreach ($datalist as $index => $item) {
                 unset($item['password'], $item['salt']);
                 $list[] = [
@@ -500,7 +500,7 @@ class Backend extends BaseController
             }
             if ($istree) {
                 $tree = Tree::instance();
-                $tree->init($list->toArray(), 'pid');
+                $tree->init($list, 'pid');
                 $list = $tree->getTreeList($tree->getTreeArray(0), $field);
                 if (!$ishtml) {
                     foreach ($list as &$item) {

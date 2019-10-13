@@ -3,9 +3,9 @@
 namespace app\admin\model;
 
 use think\facade\Cache;
-use think\Model;
+use app\common\model\BaseModel;
 
-class AuthRule extends Model
+class AuthRule extends BaseModel
 {
 
     // 开启自动写入时间戳字段

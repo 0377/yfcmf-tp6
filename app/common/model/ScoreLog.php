@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 会员积分日志模型
  */
-class ScoreLog Extends Model
+class ScoreLog extends BaseModel
 {
 
     // 表名

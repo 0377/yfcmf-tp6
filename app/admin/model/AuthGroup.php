@@ -2,9 +2,9 @@
 
 namespace app\admin\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
-class AuthGroup extends Model
+class AuthGroup extends BaseModel
 {
 
     // 开启自动写入时间戳字段

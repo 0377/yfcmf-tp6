@@ -15,18 +15,29 @@
 use think\facade\Config;
 use think\facade\Event;
 use think\facade\Lang;
+use think\Model;
+
 if (!function_exists('model')) {
     /**
      * 实例化Model
-     * @param string    $name Model名称
-     * @param string    $layer 业务层名称
-     * @param bool      $appendSuffix 是否添加类名后缀
-     * @return \think\Model
+     * @param string $name
+     * @param string $layer
+     * @param bool $appendSuffix
+     * @return Model
+     * @throws \think\Exception
      */
     function model($name = '', $layer = 'model', $appendSuffix = false)
     {
-        $uid = $name . $layer;
-
+        $class=app()->getNamespace()."\\".$layer."\\".$name;
+        if(class_exists($class)){
+            return new $class();
+        }
+        $class="app\\common\\".$layer."\\".$name;
+        if(class_exists($class)){
+            return new $class();
+        }else{
+            throw new \think\Exception('model not found');
+        }
     }
 }
 /**

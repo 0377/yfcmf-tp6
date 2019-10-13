@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 短信验证码
  */
-class Sms Extends Model
+class Sms extends BaseModel
 {
 
     // 开启自动写入时间戳字段

@@ -2,9 +2,9 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
-class Attachment extends Model
+class Attachment extends BaseModel
 {
 
     // 开启自动写入时间戳字段

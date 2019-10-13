@@ -2,9 +2,9 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
-class Version extends Model
+class Version extends BaseModel
 {
 
     // 开启自动写入时间戳字段

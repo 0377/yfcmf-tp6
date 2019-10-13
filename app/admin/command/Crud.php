@@ -27,6 +27,8 @@ use think\facade\Db;
 use think\Exception;
 use think\exception\ErrorException;
 use think\facade\Cache;
+use think\facade\Env;
+use think\facade\Lang;
 use think\Loader;
 
 class Crud extends Command
@@ -308,9 +310,9 @@ class Crud extends Command
 
         $this->reservedField = array_merge($this->reservedField, [$this->createTimeField, $this->updateTimeField, $this->deleteTimeField]);
 
-        $dbconnect = Db::connect($db);
-        $dbname = Config::get($db . '.database');
-        $prefix = Config::get($db . '.prefix');
+        $dbconnect = Db::connect('mysql');
+        $dbname = Env::get($db . '.database');
+        $prefix = Env::get($db . '.prefix');
 
         //模块
         $moduleName = 'admin';
@@ -322,6 +324,7 @@ class Crud extends Command
         $modelTableType = 'table';
         $modelTableTypeName = $modelTableName = $modelName;
         $modelTableInfo = $dbconnect->query("SHOW TABLE STATUS LIKE '{$modelTableName}'", [], true);
+
         if (!$modelTableInfo) {
             $modelTableType = 'name';
             $modelTableName = $prefix . $modelName;
@@ -331,7 +334,6 @@ class Crud extends Command
             }
         }
         $modelTableInfo = $modelTableInfo[0];
-
         $relations = [];
         //检查关联表
         if ($relation) {
@@ -400,7 +402,7 @@ class Crud extends Command
         $baseNameArr = $controllerArr;
         $baseFileName = parseName(array_pop($baseNameArr), 0);
         array_push($baseNameArr, $baseFileName);
-        $controllerBaseName = strtolower(implode(DS, $baseNameArr));
+        $controllerBaseName = strtolower(implode(DIRECTORY_SEPARATOR, $baseNameArr));
         $controllerUrl = strtolower(implode('/', $baseNameArr));
 
         //视图文件
@@ -408,7 +410,7 @@ class Crud extends Command
         $lastValue = array_pop($viewArr);
         $viewArr[] = parseName($lastValue, 0);
         array_unshift($viewArr, 'view');
-        $viewDir = $adminPath . strtolower(implode(DS, $viewArr)) . DIRECTORY_SEPARATOR;
+        $viewDir = $adminPath . strtolower(implode(DIRECTORY_SEPARATOR, $viewArr)) . DIRECTORY_SEPARATOR;
 
         //最终将生成的文件路径
         $javascriptFile = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . $controllerBaseName . '.js';
@@ -416,7 +418,7 @@ class Crud extends Command
         $editFile = $viewDir . 'edit.html';
         $indexFile = $viewDir . 'index.html';
         $recyclebinFile = $viewDir . 'recyclebin.html';
-        $langFile = $adminPath . 'lang' . DIRECTORY_SEPARATOR . Lang::detect() . DIRECTORY_SEPARATOR . $controllerBaseName . '.php';
+        $langFile = $adminPath . 'lang' . DIRECTORY_SEPARATOR . Lang::detect(app()->request) . DIRECTORY_SEPARATOR . $controllerBaseName . '.php';
 
         //是否为删除模式
         $delete = $input->getOption('delete');
@@ -737,9 +739,9 @@ class Crud extends Command
                                 $search = '"##replacetext##"';
                                 $replace = '\'{"custom[type]":"' . $table . '"}\'';
                             } elseif ($selectpageController == 'admin') {
-                                $attrArr['data-source'] = 'auth/admin/selectpage';
+                                $attrArr['data-source'] = 'auth.admin/selectpage';
                             } elseif ($selectpageController == 'user') {
-                                $attrArr['data-source'] = 'user/user/index';
+                                $attrArr['data-source'] = 'user.user/index';
                             }
                             if ($this->isMatchSuffix($field, $this->selectpagesSuffix)) {
                                 $attrArr['data-multiple'] = 'true';
@@ -877,7 +879,7 @@ class Crud extends Command
                 'editList'                => $editList,
                 'javascriptList'          => $javascriptList,
                 'langList'                => $langList,
-                'sofeDeleteClassPath'     => in_array($this->deleteTimeField, $fieldArr) ? "use traits\model\SoftDelete;" : '',
+                'sofeDeleteClassPath'     => in_array($this->deleteTimeField, $fieldArr) ? "use think\model\concern\SoftDelete;" : '',
                 'softDelete'              => in_array($this->deleteTimeField, $fieldArr) ? "use SoftDelete;" : '',
                 'modelAutoWriteTimestamp' => in_array($this->createTimeField, $fieldArr) || in_array($this->updateTimeField, $fieldArr) ? "'int'" : 'false',
                 'createTime'              => in_array($this->createTimeField, $fieldArr) ? "'{$this->createTimeField}'" : 'false',
@@ -1135,10 +1137,10 @@ EOD;
         if (in_array(strtolower($parseName), $this->internalKeywords)) {
             throw new Exception('Unable to use internal variable:' . $parseName);
         }
-        $appNamespace = Config::get('app_namespace');
+        $appNamespace = 'app';//Config::get('app_namespace');
         $parseNamespace = "{$appNamespace}\\{$module}\\{$type}" . ($arr ? "\\" . implode("\\", $arr) : "");
-        $moduleDir = APP_PATH . $module . DIRECTORY_SEPARATOR;
-        $parseFile = $moduleDir . $type . DIRECTORY_SEPARATOR . ($arr ? implode(DS, $arr) . DIRECTORY_SEPARATOR : '') . $parseName . '.php';
+        $moduleDir = app()->getBasePath() . $module . DIRECTORY_SEPARATOR;
+        $parseFile = $moduleDir . $type . DIRECTORY_SEPARATOR . ($arr ? implode(DIRECTORY_SEPARATOR, $arr) . DIRECTORY_SEPARATOR : '') . $parseName . '.php';
         return [$parseNamespace, $parseName, $parseFile, $parseArr];
     }
 

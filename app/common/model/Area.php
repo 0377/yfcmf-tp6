@@ -3,12 +3,12 @@
 namespace app\common\model;
 
 use think\facade\Cache;
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 地区数据模型
  */
-class Area extends Model
+class Area extends BaseModel
 {
 
     /**

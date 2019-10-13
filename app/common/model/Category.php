@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 分类模型
  */
-class Category extends Model
+class Category extends BaseModel
 {
 
     // 开启自动写入时间戳字段

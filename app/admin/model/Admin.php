@@ -2,10 +2,10 @@
 
 namespace app\admin\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 use think\facade\Session;
 
-class Admin extends Model
+class Admin extends BaseModel
 {
 
     // 开启自动写入时间戳字段

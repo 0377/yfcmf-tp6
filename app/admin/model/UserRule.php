@@ -3,9 +3,9 @@
 namespace app\admin\model;
 
 use fast\Tree;
-use think\Model;
+use app\common\model\BaseModel;
 
-class UserRule extends Model
+class UserRule extends BaseModel
 {
 
     // 表名

@@ -2,12 +2,12 @@
 
 namespace app\common\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
 /**
  * 会员模型
  */
-class User extends Model
+class User extends BaseModel
 {
 
     // 开启自动写入时间戳字段

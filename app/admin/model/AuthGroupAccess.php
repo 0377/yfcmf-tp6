@@ -2,9 +2,9 @@
 
 namespace app\admin\model;
 
-use think\Model;
+use app\common\model\BaseModel;
 
-class AuthGroupAccess extends Model
+class AuthGroupAccess extends BaseModel
 {
     //
 }
