@@ -62,11 +62,11 @@ class AddonService
                     $ret = Http::sendRequest($json['data']['url'], [], 'GET', $options);
                     if (!$ret['ret']) {
                         //下载返回错误，抛出异常
-                        throw new Exception($json['msg'], $json['code'], $json['data']);
+                        throw new Exception($json['msg'], $json['code']);
                     }
                 } else {
                     //下载返回错误，抛出异常
-                    throw new Exception($json['msg'], $json['code'], $json['data']);
+                    throw new Exception($json['msg'], $json['code']);
                 }
             }
             if ($write = fopen($tmpFile, 'w')) {
