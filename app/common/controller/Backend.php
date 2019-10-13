@@ -377,15 +377,17 @@ class Backend extends BaseController
                     break;
             }
         }
-        $where = function ($query) use ($where) {
-            foreach ($where as $k => $v) {
-                if (is_array($v)) {
-                    call_user_func_array([$query, 'where'], $v);
-                } else {
-                    $query->where($v);
+        if(!empty($where)) {
+            $where = function ($query) use ($where) {
+                foreach ($where as $k => $v) {
+                    if (is_array($v)) {
+                        call_user_func_array([$query, 'where'], $v);
+                    } else {
+                        $query->where($v);
+                    }
                 }
-            }
-        };
+            };
+        }
         return [$where, trim($sort), trim($order), $offset, $limit];
     }
 
