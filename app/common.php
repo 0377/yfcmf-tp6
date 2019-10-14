@@ -52,7 +52,7 @@ if (!function_exists('model')) {
      */
     function model($name = '', $layer = 'model', $appendSuffix = false)
     {
-        if (strpos($name, app()->getNamespace())) {
+        if (class_exists($name)) {
             return new $name;
         }
         $class = app()->getNamespace() . "\\" . $layer . "\\" . $name;
