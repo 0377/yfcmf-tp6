@@ -249,18 +249,19 @@ trait Backend
     {
         $pk = $this->model->getPk();
         $adminIds = $this->getDataLimitAdminIds();
+        $where=[];
         if (is_array($adminIds)) {
-            $this->model->where($this->dataLimitField, 'in', $adminIds);
+            $where[$this->dataLimitField]=$adminIds;
         }
         if ($ids) {
-            $this->model->where($pk, 'in', $ids);
+            $where[$pk]=explode(',',$ids);
         }
         $count = 0;
         Db::startTrans();
         try {
-            $list = $this->model->onlyTrashed()->select();
+            $list = $this->model->onlyTrashed()->where($where)->select();
             foreach ($list as $k => $v) {
-                $count += $v->delete(true);
+                $count += $v->force()->delete();
             }
             Db::commit();
         } catch (PDOException $e) {
@@ -285,16 +286,17 @@ trait Backend
     {
         $pk = $this->model->getPk();
         $adminIds = $this->getDataLimitAdminIds();
+        $where=[];
         if (is_array($adminIds)) {
-            $this->model->where($this->dataLimitField, 'in', $adminIds);
+            $where[$this->dataLimitField]=$adminIds;
         }
         if ($ids) {
-            $this->model->where($pk, 'in', $ids);
+            $where[$pk]=explode(',',$ids);
         }
         $count = 0;
         Db::startTrans();
         try {
-            $list = $this->model->onlyTrashed()->select();
+            $list = $this->model->onlyTrashed()->where($where)->select();
             foreach ($list as $index => $item) {
                 $count += $item->restore();
             }
