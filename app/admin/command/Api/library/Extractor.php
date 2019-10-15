@@ -11,8 +11,7 @@
  *  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  *  * ============================================================================
  *  * Date: 2019/9/19 下午3:16
- *  * Time: $time
- *
+ *  * Time: $time.
  */
 
 namespace app\admin\command\Api\library;
@@ -20,17 +19,17 @@ namespace app\admin\command\Api\library;
 use Exception;
 
 /**
- * Class imported from https://github.com/eriknyk/Annotations
- * @author  Erik Amaru Ortiz https://github.com/eriknyk‎
+ * Class imported from https://github.com/eriknyk/Annotations.
  *
+ * @author  Erik Amaru Ortiz https://github.com/eriknyk‎
  * @license http://opensource.org/licenses/bsd-license.php The BSD License
  * @author  Calin Rada <rada.calin@gmail.com>
  */
 class Extractor
 {
-
     /**
-     * Static array to store already parsed annotations
+     * Static array to store already parsed annotations.
+     *
      * @var array
      */
     private static $annotationCache;
@@ -40,28 +39,32 @@ class Extractor
     private static $classMethodAnnotationCache;
 
     /**
-     * Indicates that annotations should has strict behavior, 'false' by default
-     * @var boolean
+     * Indicates that annotations should has strict behavior, 'false' by default.
+     *
+     * @var bool
      */
     private $strict = false;
 
     /**
-     * Stores the default namespace for Objects instance, usually used on methods like getMethodAnnotationsObjects()
+     * Stores the default namespace for Objects instance, usually used on methods like getMethodAnnotationsObjects().
+     *
      * @var string
      */
     public $defaultNamespace = '';
 
     /**
-     * Sets strict variable to true/false
+     * Sets strict variable to true/false.
+     *
      * @param bool $value boolean value to indicate that annotations to has strict behavior
      */
     public function setStrict($value)
     {
-        $this->strict = (bool)$value;
+        $this->strict = (bool) $value;
     }
 
     /**
-     * Sets default namespace to use in object instantiation
+     * Sets default namespace to use in object instantiation.
+     *
      * @param string $namespace default namespace
      */
     public function setDefaultNamespace($namespace)
@@ -70,7 +73,8 @@ class Extractor
     }
 
     /**
-     * Gets default namespace used in object instantiation
+     * Gets default namespace used in object instantiation.
+     *
      * @return string $namespace default namespace
      */
     public function getDefaultAnnotationNamespace()
@@ -79,10 +83,11 @@ class Extractor
     }
 
     /**
-     * Gets all anotations with pattern @SomeAnnotation() from a given class
+     * Gets all anotations with pattern @SomeAnnotation() from a given class.
      *
-     * @param  string $className class name to get annotations
-     * @return array  self::$classAnnotationCache all annotated elements
+     * @param string $className class name to get annotations
+     *
+     * @return array self::$classAnnotationCache all annotated elements
      */
     public static function getClassAnnotations($className)
     {
@@ -95,10 +100,13 @@ class Extractor
     }
 
     /**
-     * 获取类所有方法的属性配置
+     * 获取类所有方法的属性配置.
+     *
      * @param $className
-     * @return mixed
+     *
      * @throws \ReflectionException
+     *
+     * @return mixed
      */
     public static function getClassMethodAnnotations($className)
     {
@@ -122,51 +130,53 @@ class Extractor
     }
 
     /**
-     * Gets all anotations with pattern @SomeAnnotation() from a determinated method of a given class
+     * Gets all anotations with pattern @SomeAnnotation() from a determinated method of a given class.
      *
-     * @param  string $className class name
-     * @param  string $methodName method name to get annotations
-     * @return array  self::$annotationCache all annotated elements of a method given
+     * @param string $className  class name
+     * @param string $methodName method name to get annotations
+     *
+     * @return array self::$annotationCache all annotated elements of a method given
      */
     public static function getMethodAnnotations($className, $methodName)
     {
-        if (!isset(self::$annotationCache[$className . '::' . $methodName])) {
+        if (!isset(self::$annotationCache[$className.'::'.$methodName])) {
             try {
                 $method = new \ReflectionMethod($className, $methodName);
                 $class = new \ReflectionClass($className);
                 if (!$method->isPublic() || $method->isConstructor()) {
-                    $annotations = array();
+                    $annotations = [];
                 } else {
                     $annotations = self::consolidateAnnotations($method, $class);
                 }
             } catch (\ReflectionException $e) {
-                $annotations = array();
+                $annotations = [];
             }
 
-            self::$annotationCache[$className . '::' . $methodName] = $annotations;
+            self::$annotationCache[$className.'::'.$methodName] = $annotations;
         }
 
-        return self::$annotationCache[$className . '::' . $methodName];
+        return self::$annotationCache[$className.'::'.$methodName];
     }
 
     /**
      * Gets all anotations with pattern @SomeAnnotation() from a determinated method of a given class
-     * and instance its abcAnnotation class
+     * and instance its abcAnnotation class.
      *
-     * @param  string $className class name
-     * @param  string $methodName method name to get annotations
-     * @return array  self::$annotationCache all annotated objects of a method given
+     * @param string $className  class name
+     * @param string $methodName method name to get annotations
+     *
+     * @return array self::$annotationCache all annotated objects of a method given
      */
     public function getMethodAnnotationsObjects($className, $methodName)
     {
         $annotations = $this->getMethodAnnotations($className, $methodName);
-        $objects = array();
+        $objects = [];
 
         $i = 0;
 
         foreach ($annotations as $annotationClass => $listParams) {
             $annotationClass = ucfirst($annotationClass);
-            $class = $this->defaultNamespace . $annotationClass . 'Annotation';
+            $class = $this->defaultNamespace.$annotationClass.'Annotation';
 
             // verify is the annotation class exists, depending if Annotations::strict is true
             // if not, just skip the annotation instance creation.
@@ -234,9 +244,9 @@ class Extractor
 
                 if ($name === 'ApiRoute') {
                     if (isset($methodAnnotations[$name])) {
-                        $methodAnnotations[$name] = [rtrim($valueClass[0], '/') . $methodAnnotations[$name][0]];
+                        $methodAnnotations[$name] = [rtrim($valueClass[0], '/').$methodAnnotations[$name][0]];
                     } else {
-                        $methodAnnotations[$name] = [rtrim($valueClass[0], '/') . '/' . $method->getName()];
+                        $methodAnnotations[$name] = [rtrim($valueClass[0], '/').'/'.$method->getName()];
                     }
                 }
 
@@ -249,7 +259,7 @@ class Extractor
             $urlArr = [];
             $className = $class->getName();
 
-            list($prefix, $suffix) = explode('\\' . \think\Config::get('url_controller_layer') . '\\', $className);
+            list($prefix, $suffix) = explode('\\'.\think\Config::get('url_controller_layer').'\\', $className);
             $prefixArr = explode('\\', $prefix);
             $suffixArr = explode('\\', $suffix);
             if ($prefixArr[0] == \think\Config::get('app_namespace')) {
@@ -269,55 +279,59 @@ class Extractor
         if (!isset($methodAnnotations['ApiParams'])) {
             $params = self::parseCustomAnnotations($docblockMethod, 'param');
             foreach ($params as $k => $v) {
-                $arr = explode(' ', preg_replace("/[\s]+/", " ", $v));
+                $arr = explode(' ', preg_replace("/[\s]+/", ' ', $v));
                 $methodAnnotations['ApiParams'][] = [
                     'name'        => isset($arr[1]) ? str_replace('$', '', $arr[1]) : '',
                     'nullable'    => false,
                     'type'        => isset($arr[0]) ? $arr[0] : 'string',
-                    'description' => isset($arr[2]) ? $arr[2] : ''
+                    'description' => isset($arr[2]) ? $arr[2] : '',
                 ];
             }
         }
         $methodAnnotations['ApiPermissionLogin'] = [!in_array('*', $noNeedLogin) && !in_array($methodName, $noNeedLogin)];
         $methodAnnotations['ApiPermissionRight'] = [!in_array('*', $noNeedRight) && !in_array($methodName, $noNeedRight)];
+
         return $methodAnnotations;
     }
 
     /**
-     * Parse annotations
+     * Parse annotations.
      *
-     * @param  string $docblock
-     * @param  string $name
-     * @return array  parsed annotations params
+     * @param string $docblock
+     * @param string $name
+     *
+     * @return array parsed annotations params
      */
     private static function parseCustomAnnotations($docblock, $name = 'param')
     {
-        $annotations = array();
+        $annotations = [];
 
         $docblock = substr($docblock, 3, -2);
-        if (preg_match_all('/@' . $name . '(?:\s*(?:\(\s*)?(.*?)(?:\s*\))?)??\s*(?:\n|\*\/)/', $docblock, $matches)) {
+        if (preg_match_all('/@'.$name.'(?:\s*(?:\(\s*)?(.*?)(?:\s*\))?)??\s*(?:\n|\*\/)/', $docblock, $matches)) {
             foreach ($matches[1] as $k => $v) {
                 $annotations[] = $v;
             }
         }
+
         return $annotations;
     }
 
     /**
-     * Parse annotations
+     * Parse annotations.
      *
-     * @param  string $docblock
-     * @return array  parsed annotations params
+     * @param string $docblock
+     *
+     * @return array parsed annotations params
      */
     private static function parseAnnotations($docblock)
     {
-        $annotations = array();
+        $annotations = [];
 
         // Strip away the docblock header and footer to ease parsing of one line annotations
         $docblock = substr($docblock, 3, -2);
         if (preg_match_all('/@(?<name>[A-Za-z_-]+)[\s\t]*\((?<args>(?:(?!\)).)*)\)\r?/s', $docblock, $matches)) {
             $numMatches = count($matches[0]);
-            for ($i = 0; $i < $numMatches; ++$i) {
+            for ($i = 0; $i < $numMatches; $i++) {
                 $name = $matches['name'][$i];
                 $value = '';
                 // annotations has arguments
@@ -350,17 +364,18 @@ class Extractor
     }
 
     /**
-     * Parse individual annotation arguments
+     * Parse individual annotation arguments.
      *
-     * @param  string $content arguments string
-     * @return array  annotated arguments
+     * @param string $content arguments string
+     *
+     * @return array annotated arguments
      */
     private static function parseArgs($content)
     {
         // Replace initial stars
         $content = preg_replace('/^\s*\*/m', '', $content);
 
-        $data = array();
+        $data = [];
         $len = strlen($content);
         $i = 0;
         $var = '';
@@ -374,13 +389,13 @@ class Extractor
         $type = 'plain';
         $delimiter = null;
         $quoted = false;
-        $tokens = array('"', '"', '{', '}', ',', '=');
+        $tokens = ['"', '"', '{', '}', ',', '='];
 
         while ($i <= $len) {
             $prev_c = substr($content, $i - 1, 1);
             $c = substr($content, $i++, 1);
 
-            if ($c === '"' && $prev_c !== "\\") {
+            if ($c === '"' && $prev_c !== '\\') {
                 $delimiter = $c;
                 //open delimiter
                 if (!$composing && empty($prevDelimiter) && empty($nextDelimiter)) {
@@ -392,7 +407,7 @@ class Extractor
                     // close delimiter
                     if ($c !== $nextDelimiter) {
                         throw new Exception(sprintf(
-                            "Parse Error: enclosing error -> expected: [%s], given: [%s]",
+                            'Parse Error: enclosing error -> expected: [%s], given: [%s]',
                             $nextDelimiter,
                             $c
                         ));
@@ -402,7 +417,7 @@ class Extractor
                     if ($i < $len) {
                         if (',' !== substr($content, $i, 1) && '\\' !== $prev_c) {
                             throw new Exception(sprintf(
-                                "Parse Error: missing comma separator near: ...%s<--",
+                                'Parse Error: missing comma separator near: ...%s<--',
                                 substr($content, ($i - 10), $i)
                             ));
                         }
@@ -428,7 +443,7 @@ class Extractor
                         // it means that the string was not enclosed, so it is parsing error.
                         if ($composing === true && !empty($prevDelimiter) && !empty($nextDelimiter)) {
                             throw new Exception(sprintf(
-                                "Parse Error: enclosing error -> expected: [%s], given: [%s]",
+                                'Parse Error: enclosing error -> expected: [%s], given: [%s]',
                                 $nextDelimiter,
                                 $c
                             ));
@@ -445,7 +460,7 @@ class Extractor
 
                             if (isset($delimiter) && $c === $delimiter) {
                                 throw new Exception(sprintf(
-                                    "Parse Error: Composite variable is not enclosed correctly."
+                                    'Parse Error: Composite variable is not enclosed correctly.'
                                 ));
                             }
 
@@ -493,11 +508,12 @@ class Extractor
     }
 
     /**
-     * Try determinate the original type variable of a string
+     * Try determinate the original type variable of a string.
      *
-     * @param  string $val string containing possibles variables that can be cast to bool or int
-     * @param  boolean $trim indicate if the value passed should be trimmed after to try cast
-     * @return mixed   returns the value converted to original type if was possible
+     * @param string $val  string containing possibles variables that can be cast to bool or int
+     * @param bool   $trim indicate if the value passed should be trimmed after to try cast
+     *
+     * @return mixed returns the value converted to original type if was possible
      */
     private static function castValue($val, $trim = false)
     {

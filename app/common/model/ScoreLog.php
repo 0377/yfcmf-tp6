@@ -2,14 +2,11 @@
 
 namespace app\common\model;
 
-use app\common\model\BaseModel;
-
 /**
- * 会员积分日志模型
+ * 会员积分日志模型.
  */
 class ScoreLog extends BaseModel
 {
-
     // 表名
     protected $name = 'user_score_log';
     // 开启自动写入时间戳字段

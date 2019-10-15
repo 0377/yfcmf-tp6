@@ -7,7 +7,6 @@ use app\common\model\BaseModel;
 
 class AdminLog extends BaseModel
 {
-
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
     // 定义时间戳字段名
@@ -58,7 +57,7 @@ class AdminLog extends BaseModel
             'admin_id'  => $admin_id,
             'username'  => $username,
             'useragent' => substr(request()->server('HTTP_USER_AGENT'), 0, 255),
-            'ip'        => request()->ip()
+            'ip'        => request()->ip(),
         ]);
     }
 

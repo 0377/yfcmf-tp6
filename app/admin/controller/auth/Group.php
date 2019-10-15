@@ -9,14 +9,13 @@ use app\common\controller\Backend;
 use fast\Tree;
 
 /**
- * 角色组
+ * 角色组.
  *
  * @icon fa fa-group
  * @remark 角色组可以有多个,角色有上下级层级关系,如果子角色有角色组和管理员的权限则可以派生属于自己组别下级的角色组或管理员
  */
 class Group extends Backend
 {
-
     /**
      * @var \app\admin\model\AuthGroup
      */
@@ -54,13 +53,13 @@ class Group extends Backend
         }
 
         $this->groupdata = $groupName;
-        $this->assignconfig("admin", ['id' => $this->auth->id, 'group_ids' => $this->auth->getGroupIds()]);
+        $this->assignconfig('admin', ['id' => $this->auth->id, 'group_ids' => $this->auth->getGroupIds()]);
 
         $this->view->assign('groupdata', $this->groupdata);
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -79,20 +78,21 @@ class Group extends Backend
                 }
             }
             $total = count($list);
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 添加
+     * 添加.
      */
     public function add()
     {
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = $this->request->post('row/a', [], 'strip_tags');
             $params['rules'] = explode(',', $params['rules']);
             if (!in_array($params['pid'], $this->childrenGroupIds)) {
                 $this->error(__('The parent group can not be its own child'));
@@ -117,11 +117,12 @@ class Group extends Backend
             }
             $this->error();
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 编辑
+     * 编辑.
      */
     public function edit($ids = null)
     {
@@ -130,7 +131,7 @@ class Group extends Backend
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = $this->request->post('row/a', [], 'strip_tags');
             // 父节点不能是它自身的子节点
             if (!in_array($params['pid'], $this->childrenGroupIds)) {
                 $this->error(__('The parent group can not be its own child'));
@@ -156,16 +157,18 @@ class Group extends Backend
                 $this->success();
             }
             $this->error();
+
             return;
         }
-        $this->view->assign("row", $row);
+        $this->view->assign('row', $row);
+
         return $this->view->fetch();
     }
 
     /**
-     * 删除
+     * 删除.
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             $ids = explode(',', $ids);
@@ -205,17 +208,18 @@ class Group extends Backend
     }
 
     /**
-     * 批量更新
+     * 批量更新.
+     *
      * @internal
      */
-    public function multi($ids = "")
+    public function multi($ids = '')
     {
         // 组别禁止批量操作
         $this->error();
     }
 
     /**
-     * 读取角色权限树
+     * 读取角色权限树.
      *
      * @internal
      */
@@ -223,9 +227,9 @@ class Group extends Backend
     {
         $this->loadlang('auth/group');
 
-        $model = new AuthGroup;
-        $id = $this->request->post("id");
-        $pid = $this->request->post("pid");
+        $model = new AuthGroup();
+        $id = $this->request->post('id');
+        $pid = $this->request->post('pid');
         $parentGroupModel = $model->find($pid);
         $currentGroupModel = null;
         if ($id) {
@@ -282,16 +286,16 @@ class Group extends Backend
                     if ($v['pid'] && !in_array($v['pid'], $parentRuleIds)) {
                         continue;
                     }
-                    $state = array(
-                        'selected' => in_array($v['id'], $currentRuleIds) && !in_array($v['id'], $hasChildrens)
-                    );
-                    $nodeList[] = array(
+                    $state = [
+                        'selected' => in_array($v['id'], $currentRuleIds) && !in_array($v['id'], $hasChildrens),
+                    ];
+                    $nodeList[] = [
                         'id'     => $v['id'],
                         'parent' => $v['pid'] ? $v['pid'] : '#',
                         'text'   => __($v['title']),
                         'type'   => 'menu',
-                        'state'  => $state
-                    );
+                        'state'  => $state,
+                    ];
                 }
                 $this->success('', null, $nodeList);
             } else {

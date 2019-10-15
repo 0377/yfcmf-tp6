@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\command\Api\library;
@@ -17,26 +16,25 @@ use think\facade\Config;
 
 /**
  * @website https://github.com/calinrada/php-apidoc
+ *
  * @author  Calin Rada <rada.calin@gmail.com>
  * @author  Karson <karsonzhang@163.com>
  */
 class Builder
 {
-
     /**
-     *
      * @var \think\View
      */
     public $view = null;
 
     /**
-     * parse classes
+     * parse classes.
+     *
      * @var array
      */
     protected $classes = [];
 
     /**
-     *
      * @param array $classes
      */
     public function __construct($classes = [])
@@ -76,15 +74,15 @@ class Builder
             return [];
         }
 
-        $headerslist = array();
+        $headerslist = [];
         foreach ($docs['ApiHeaders'] as $params) {
-            $tr = array(
+            $tr = [
                 'name'        => $params['name'],
                 'type'        => $params['type'],
                 'sample'      => isset($params['sample']) ? $params['sample'] : '',
                 'required'    => isset($params['required']) ? $params['required'] : false,
                 'description' => isset($params['description']) ? $params['description'] : '',
-            );
+            ];
             $headerslist[] = $tr;
         }
 
@@ -97,15 +95,15 @@ class Builder
             return [];
         }
 
-        $paramslist = array();
+        $paramslist = [];
         foreach ($docs['ApiParams'] as $params) {
-            $tr = array(
+            $tr = [
                 'name'        => $params['name'],
                 'type'        => isset($params['type']) ? $params['type'] : 'string',
                 'sample'      => isset($params['sample']) ? $params['sample'] : '',
                 'required'    => isset($params['required']) ? $params['required'] : true,
                 'description' => isset($params['description']) ? $params['description'] : '',
-            );
+            ];
             $paramslist[] = $tr;
         }
 
@@ -118,15 +116,15 @@ class Builder
             return [];
         }
 
-        $headerslist = array();
+        $headerslist = [];
         foreach ($docs['ApiReturnHeaders'] as $params) {
-            $tr = array(
+            $tr = [
                 'name'        => $params['name'],
                 'type'        => 'string',
                 'sample'      => isset($params['sample']) ? $params['sample'] : '',
                 'required'    => isset($params['required']) && $params['required'] ? 'Yes' : 'No',
                 'description' => isset($params['description']) ? $params['description'] : '',
-            );
+            ];
             $headerslist[] = $tr;
         }
 
@@ -139,14 +137,14 @@ class Builder
             return [];
         }
 
-        $paramslist = array();
+        $paramslist = [];
         foreach ($st_params['ApiReturnParams'] as $params) {
-            $tr = array(
+            $tr = [
                 'name'        => $params['name'],
                 'type'        => isset($params['type']) ? $params['type'] : 'string',
                 'sample'      => isset($params['sample']) ? $params['sample'] : '',
                 'description' => isset($params['description']) ? $params['description'] : '',
-            );
+            ];
             $paramslist[] = $tr;
         }
 
@@ -156,14 +154,14 @@ class Builder
     protected function generateBadgeForMethod($data)
     {
         $method = strtoupper(is_array($data['ApiMethod'][0]) ? $data['ApiMethod'][0]['data'] : $data['ApiMethod'][0]);
-        $labes = array(
+        $labes = [
             'POST'    => 'label-primary',
             'GET'     => 'label-success',
             'PUT'     => 'label-warning',
             'DELETE'  => 'label-danger',
             'PATCH'   => 'label-default',
-            'OPTIONS' => 'label-info'
-        );
+            'OPTIONS' => 'label-info',
+        ];
 
         return isset($labes[$method]) ? $labes[$method] : $labes['GET'];
     }
@@ -178,7 +176,7 @@ class Builder
             $sectorArr[$sector] = isset($allClassAnnotation['ApiWeigh']) ? $allClassAnnotation['ApiWeigh'][0] : 0;
         }
         arsort($sectorArr);
-        $routes = include_once CONF_PATH . 'route.php';
+        $routes = include_once CONF_PATH.'route.php';
         $subdomain = false;
         if (config('url_domain_deploy') && isset($routes['__domain__']) && isset($routes['__domain__']['api']) && $routes['__domain__']['api']) {
             $subdomain = true;
@@ -241,9 +239,11 @@ class Builder
     }
 
     /**
-     * 渲染
+     * 渲染.
+     *
      * @param string $template
-     * @param array $vars
+     * @param array  $vars
+     *
      * @return string
      */
     public function render($template, $vars = [])

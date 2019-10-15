@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\controller;
@@ -20,12 +19,12 @@ use think\facade\Event;
 use think\Validate;
 
 /**
- * 后台首页
+ * 后台首页.
+ *
  * @internal
  */
 class Index extends Backend
 {
-
     protected $noNeedLogin = ['login'];
     protected $noNeedRight = ['index', 'logout'];
     protected $layout = '';
@@ -36,7 +35,7 @@ class Index extends Backend
     }
 
     /**
-     * 后台首页
+     * 后台首页.
      */
     public function index()
     {
@@ -58,11 +57,12 @@ class Index extends Backend
         $this->view->assign('fixedmenu', $fixedmenu);
         $this->view->assign('referermenu', $referermenu);
         $this->view->assign('title', __('Home'));
+
         return $this->view->fetch();
     }
 
     /**
-     * 管理员登录
+     * 管理员登录.
      */
     public function login()
     {
@@ -99,7 +99,7 @@ class Index extends Backend
             AdminLog::setTitle(__('Login'));
             $result = $this->auth->login($username, $password, $keeplogin ? 86400 : 0);
             if ($result === true) {
-                Event::trigger("admin_login_after", $this->request);
+                Event::trigger('admin_login_after', $this->request);
                 $this->success(__('Login successful'), $url,
                     ['url' => $url, 'id' => $this->auth->id, 'username' => $username, 'avatar' => $this->auth->avatar]);
             } else {
@@ -114,21 +114,21 @@ class Index extends Backend
             $this->redirect($url);
         }
         $background = Config::get('fastadmin.login_background');
-        $background = stripos($background, 'http') === 0 ? $background : config('site.cdnurl') . $background;
+        $background = stripos($background, 'http') === 0 ? $background : config('site.cdnurl').$background;
         $this->view->assign('background', $background);
         $this->view->assign('title', __('Login'));
-        Event::trigger("admin_login_init", $this->request);
+        Event::trigger('admin_login_init', $this->request);
+
         return $this->view->fetch();
     }
 
     /**
-     * 注销登录
+     * 注销登录.
      */
     public function logout()
     {
         $this->auth->logout();
-        Event::trigger("admin_logout_after", $this->request);
+        Event::trigger('admin_logout_after', $this->request);
         $this->success(__('Logout successful'), 'index/login');
     }
-
 }

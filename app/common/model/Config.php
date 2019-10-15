@@ -2,14 +2,11 @@
 
 namespace app\common\model;
 
-use app\common\model\BaseModel;
-
 /**
- * 配置模型
+ * 配置模型.
  */
 class Config extends BaseModel
 {
-
     // 表名,不含前缀
     protected $name = 'config';
     // 自动写入时间戳字段
@@ -22,7 +19,8 @@ class Config extends BaseModel
     ];
 
     /**
-     * 读取配置类型
+     * 读取配置类型.
+     *
      * @return array
      */
     public static function getTypeList()
@@ -47,6 +45,7 @@ class Config extends BaseModel
             'array'    => __('Array'),
             'custom'   => __('Custom'),
         ];
+
         return $typeList;
     }
 
@@ -67,13 +66,15 @@ class Config extends BaseModel
             'zipcode'  => '邮编',
             'chinese'  => '中文',
             'username' => '用户名',
-            'password' => '密码'
+            'password' => '密码',
         ];
+
         return $regexList;
     }
 
     /**
-     * 读取分类分组列表
+     * 读取分类分组列表.
+     *
      * @return array
      */
     public static function getGroupList()
@@ -82,6 +83,7 @@ class Config extends BaseModel
         foreach ($groupList as $k => &$v) {
             $v = __($v);
         }
+
         return $groupList;
     }
 
@@ -104,12 +106,15 @@ class Config extends BaseModel
                 $valuearr[] = $value[$m];
             }
         }
+
         return $fieldarr ? array_combine($fieldarr, $valuearr) : [];
     }
 
     /**
-     * 将字符串解析成键值数组
+     * 将字符串解析成键值数组.
+     *
      * @param string $text
+     *
      * @return array
      */
     public static function decode($text, $split = "\r\n")
@@ -117,17 +122,20 @@ class Config extends BaseModel
         $content = explode($split, $text);
         $arr = [];
         foreach ($content as $k => $v) {
-            if (stripos($v, "|") !== false) {
+            if (stripos($v, '|') !== false) {
                 $item = explode('|', $v);
                 $arr[$item[0]] = $item[1];
             }
         }
+
         return $arr;
     }
 
     /**
-     * 将键值数组转换为字符串
+     * 将键值数组转换为字符串.
+     *
      * @param array $array
+     *
      * @return string
      */
     public static function encode($array, $split = "\r\n")
@@ -140,11 +148,13 @@ class Config extends BaseModel
             }
             $content = implode($split, $arr);
         }
+
         return $content;
     }
 
     /**
-     * 本地上传配置信息
+     * 本地上传配置信息.
+     *
      * @return array
      */
     public static function upload()
@@ -160,7 +170,7 @@ class Config extends BaseModel
             'multipart' => [],
             'multiple'  => $uploadcfg['multiple'],
         ];
+
         return $upload;
     }
-
 }

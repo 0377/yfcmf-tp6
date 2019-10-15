@@ -7,19 +7,18 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\command;
 
 use app\admin\command\Api\library\Builder;
-use think\facade\Config;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Option;
 use think\console\Output;
 use think\Exception;
+use think\facade\Config;
 
 class Api extends Command
 {
@@ -42,26 +41,26 @@ class Api extends Command
 
     protected function execute(Input $input, Output $output)
     {
-        $apiDir = __DIR__ . DIRECTORY_SEPARATOR . 'Api' . DIRECTORY_SEPARATOR;
+        $apiDir = __DIR__.DIRECTORY_SEPARATOR.'Api'.DIRECTORY_SEPARATOR;
 
         $force = $input->getOption('force');
         $url = $input->getOption('url');
         $language = $input->getOption('language');
         $language = $language ? $language : 'zh-cn';
-        $langFile = $apiDir . 'lang' . DIRECTORY_SEPARATOR . $language . '.php';
+        $langFile = $apiDir.'lang'.DIRECTORY_SEPARATOR.$language.'.php';
         if (!is_file($langFile)) {
             throw new Exception('language file not found');
         }
         $lang = include_once $langFile;
         // 目标目录
-        $output_dir = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR;
-        $output_file = $output_dir . $input->getOption('output');
+        $output_dir = app()->getRootPath().'public'.DIRECTORY_SEPARATOR;
+        $output_file = $output_dir.$input->getOption('output');
         if (is_file($output_file) && !$force) {
             throw new Exception("api index file already exists!\nIf you need to rebuild again, use the parameter --force=true ");
         }
         // 模板文件
-        $template_dir = $apiDir . 'template' . DIRECTORY_SEPARATOR;
-        $template_file = $template_dir . $input->getOption('template');
+        $template_dir = $apiDir.'template'.DIRECTORY_SEPARATOR;
+        $template_file = $template_dir.$input->getOption('template');
         if (!is_file($template_file)) {
             throw new Exception('template file not found');
         }
@@ -74,7 +73,7 @@ class Api extends Command
         // 模块
         $module = $input->getOption('module');
 
-        $moduleDir = APP_PATH . $module . DIRECTORY_SEPARATOR;
+        $moduleDir = APP_PATH.$module.DIRECTORY_SEPARATOR;
         if (!is_dir($moduleDir)) {
             throw new Exception('module not found');
         }
@@ -88,11 +87,11 @@ class Api extends Command
                     throw new Exception("Please make sure {$configName} is turned on, Get help:https://forum.fastadmin.net/d/1321");
                 }
             } else {
-                throw new Exception("Please make sure opcache already enabled, Get help:https://forum.fastadmin.net/d/1321");
+                throw new Exception('Please make sure opcache already enabled, Get help:https://forum.fastadmin.net/d/1321');
             }
         }
 
-        $controllerDir = $moduleDir . Config::get('url_controller_layer') . DIRECTORY_SEPARATOR;
+        $controllerDir = $moduleDir.Config::get('url_controller_layer').DIRECTORY_SEPARATOR;
         $files = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($controllerDir),
             \RecursiveIteratorIterator::LEAVES_ONLY
@@ -117,16 +116,18 @@ class Api extends Command
         $content = $builder->render($template_file, ['config' => $config, 'lang' => $lang]);
 
         if (!file_put_contents($output_file, $content)) {
-            throw new Exception('Cannot save the content to ' . $output_file);
+            throw new Exception('Cannot save the content to '.$output_file);
         }
-        $output->info("Build Successed!");
+        $output->info('Build Successed!');
     }
 
     /**
-     * get full qualified class name
+     * get full qualified class name.
      *
      * @param string $path_to_file
+     *
      * @author JBYRNE http://jarretbyrne.com/2015/06/197/
+     *
      * @return string
      */
     protected function get_class_from_file($path_to_file)
@@ -135,7 +136,7 @@ class Api extends Command
         $contents = file_get_contents($path_to_file);
 
         //Start with a blank namespace and class
-        $namespace = $class = "";
+        $namespace = $class = '';
 
         //Set helper values to know that we have found the namespace/class token and need to collect the string values after them
         $getting_namespace = $getting_class = false;
@@ -184,6 +185,6 @@ class Api extends Command
         }
 
         //Build the fully-qualified class name and return it
-        return $namespace ? $namespace . '\\' . $class : $class;
+        return $namespace ? $namespace.'\\'.$class : $class;
     }
 }

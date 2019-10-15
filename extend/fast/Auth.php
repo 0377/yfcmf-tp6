@@ -14,10 +14,10 @@
 
 namespace fast;
 
-use think\facade\Db;
 use think\facade\Config;
-use think\facade\Session;
+use think\facade\Db;
 use think\facade\Request;
+use think\facade\Session;
 
 /**
  * 权限认证类
@@ -34,7 +34,6 @@ use think\facade\Request;
  */
 class Auth
 {
-
     /**
      * @var object 对象实例
      */
@@ -42,7 +41,8 @@ class Auth
     protected $rules = [];
 
     /**
-     * 当前请求实例
+     * 当前请求实例.
+     *
      * @var Request
      */
     protected $request;
@@ -66,9 +66,10 @@ class Auth
     }
 
     /**
-     * 初始化
-     * @access public
+     * 初始化.
+     *
      * @param array $options 参数
+     *
      * @return Auth
      */
     public static function instance($options = [])
@@ -81,11 +82,13 @@ class Auth
     }
 
     /**
-     * 检查权限
-     * @param string|array $name 需要验证的规则列表,支持逗号分隔的权限规则或索引数组
-     * @param int $uid 认证用户的id
-     * @param string $relation 如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
-     * @param string $mode 执行验证的模式,可分为url,normal
+     * 检查权限.
+     *
+     * @param string|array $name     需要验证的规则列表,支持逗号分隔的权限规则或索引数组
+     * @param int          $uid      认证用户的id
+     * @param string       $relation 如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
+     * @param string       $mode     执行验证的模式,可分为url,normal
+     *
      * @return bool 通过验证返回true;失败返回false
      */
     public function check($name, $uid, $relation = 'or', $mode = 'url')
@@ -139,11 +142,13 @@ class Auth
     }
 
     /**
-     * 根据用户id获取用户组,返回值为数组
+     * 根据用户id获取用户组,返回值为数组.
+     *
      * @param int $uid 用户id
-     * @return array       用户所属的用户组 array(
-     *                  array('uid'=>'用户id','group_id'=>'用户组id','name'=>'用户组名称','rules'=>'用户组拥有的规则id,多个,号隔开'),
-     *                  ...)
+     *
+     * @return array 用户所属的用户组 array(
+     *               array('uid'=>'用户id','group_id'=>'用户组id','name'=>'用户组名称','rules'=>'用户组拥有的规则id,多个,号隔开'),
+     *               ...)
      */
     public function getGroups($uid)
     {
@@ -155,17 +160,20 @@ class Auth
         // 执行查询
         $user_groups = Db::name($this->config['auth_group_access'])
             ->alias('aga')
-            ->join($this->config['auth_group'] . ' ag', 'aga.group_id = ag.id', 'LEFT')
+            ->join($this->config['auth_group'].' ag', 'aga.group_id = ag.id', 'LEFT')
             ->field('aga.uid,aga.group_id,ag.id,ag.pid,ag.name,ag.rules')
             ->where("aga.uid='{$uid}' and ag.status='normal'")
             ->select()->toArray();
         $groups[$uid] = $user_groups ?: [];
+
         return $groups[$uid];
     }
 
     /**
-     * 获得权限规则列表
+     * 获得权限规则列表.
+     *
      * @param int $uid 用户id
+     *
      * @return array
      */
     public function getRuleList($uid)
@@ -174,20 +182,21 @@ class Auth
         if (isset($_rulelist[$uid])) {
             return $_rulelist[$uid];
         }
-        if (2 == $this->config['auth_type'] && Session::has('_rule_list_' . $uid)) {
-            return Session::get('_rule_list_' . $uid);
+        if (2 == $this->config['auth_type'] && Session::has('_rule_list_'.$uid)) {
+            return Session::get('_rule_list_'.$uid);
         }
 
         // 读取用户规则节点
         $ids = $this->getRuleIds($uid);
         if (empty($ids)) {
             $_rulelist[$uid] = [];
+
             return [];
         }
 
         // 筛选条件
         $where = [
-            'status' => 'normal'
+            'status' => 'normal',
         ];
         if (!in_array('*', $ids)) {
             $where['id'] = ['in', $ids];
@@ -198,7 +207,7 @@ class Auth
         //循环规则，判断结果。
         $rulelist = []; //
         if (in_array('*', $ids)) {
-            $rulelist[] = "*";
+            $rulelist[] = '*';
         }
         foreach ($this->rules as $rule) {
             //超级管理员无需验证condition
@@ -206,7 +215,7 @@ class Auth
                 //根据condition进行验证
                 $user = $this->getUserInfo($uid); //获取用户信息,一维数组
                 $command = preg_replace('/\{(\w*?)\}/', '$user[\'\\1\']', $rule['condition']);
-                @(eval('$condition=(' . $command . ');'));
+                @(eval('$condition=('.$command.');'));
                 if ($condition) {
                     $rulelist[$rule['id']] = strtolower($rule['name']);
                 }
@@ -219,8 +228,9 @@ class Auth
         //登录验证则需要保存规则列表
         if (2 == $this->config['auth_type']) {
             //规则列表结果保存到session
-            Session::set('_rule_list_' . $uid, $rulelist);
+            Session::set('_rule_list_'.$uid, $rulelist);
         }
+
         return array_unique($rulelist);
     }
 
@@ -233,12 +243,15 @@ class Auth
             $ids = array_merge($ids, explode(',', trim($g['rules'], ',')));
         }
         $ids = array_unique($ids);
+
         return $ids;
     }
 
     /**
-     * 获得用户资料
+     * 获得用户资料.
+     *
      * @param int $uid 用户id
+     *
      * @return mixed
      */
     protected function getUserInfo($uid)

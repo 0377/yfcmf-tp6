@@ -6,7 +6,7 @@ use app\common\controller\Api;
 use app\common\model\User;
 
 /**
- * 验证接口
+ * 验证接口.
  */
 class Validate extends Api
 {
@@ -20,7 +20,7 @@ class Validate extends Api
     }
 
     /**
-     * 检测邮箱
+     * 检测邮箱.
      *
      * @param string $email 邮箱
      * @param string $id    排除会员ID
@@ -28,7 +28,7 @@ class Validate extends Api
     public function check_email_available()
     {
         $email = $this->request->request('email');
-        $id = (int)$this->request->request('id');
+        $id = (int) $this->request->request('id');
         $count = User::where('email', '=', $email)->where('id', '<>', $id)->count();
         if ($count > 0) {
             $this->error(__('邮箱已经被占用'));
@@ -37,7 +37,7 @@ class Validate extends Api
     }
 
     /**
-     * 检测用户名
+     * 检测用户名.
      *
      * @param string $username 用户名
      * @param string $id       排除会员ID
@@ -45,7 +45,7 @@ class Validate extends Api
     public function check_username_available()
     {
         $email = $this->request->request('username');
-        $id = (int)$this->request->request('id');
+        $id = (int) $this->request->request('id');
         $count = User::where('username', '=', $email)->where('id', '<>', $id)->count();
         if ($count > 0) {
             $this->error(__('用户名已经被占用'));
@@ -54,7 +54,7 @@ class Validate extends Api
     }
 
     /**
-     * 检测手机
+     * 检测手机.
      *
      * @param string $mobile 手机号
      * @param string $id     排除会员ID
@@ -62,7 +62,7 @@ class Validate extends Api
     public function check_mobile_available()
     {
         $mobile = $this->request->request('mobile');
-        $id = (int)$this->request->request('id');
+        $id = (int) $this->request->request('id');
         $count = User::where('mobile', '=', $mobile)->where('id', '<>', $id)->count();
         if ($count > 0) {
             $this->error(__('该手机号已经占用'));
@@ -71,7 +71,7 @@ class Validate extends Api
     }
 
     /**
-     * 检测手机
+     * 检测手机.
      *
      * @param string $mobile 手机号
      */
@@ -86,7 +86,7 @@ class Validate extends Api
     }
 
     /**
-     * 检测邮箱
+     * 检测邮箱.
      *
      * @param string $mobile 邮箱
      */

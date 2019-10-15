@@ -5,13 +5,12 @@ namespace app\admin\controller\user;
 use app\common\controller\Backend;
 
 /**
- * 会员组管理
+ * 会员组管理.
  *
  * @icon fa fa-users
  */
 class Group extends Backend
 {
-
     /**
      * @var \app\admin\model\UserGroup
      */
@@ -20,14 +19,15 @@ class Group extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\UserGroup;
-        $this->view->assign("statusList", $this->model->getStatusList());
+        $this->model = new \app\admin\model\UserGroup();
+        $this->view->assign('statusList', $this->model->getStatusList());
     }
 
     public function add()
     {
         $nodeList = \app\admin\model\UserRule::getTreeList();
-        $this->assign("nodeList", $nodeList);
+        $this->assign('nodeList', $nodeList);
+
         return parent::add();
     }
 
@@ -39,8 +39,8 @@ class Group extends Backend
         }
         $rules = explode(',', $row['rules']);
         $nodeList = \app\admin\model\UserRule::getTreeList($rules);
-        $this->assign("nodeList", $nodeList);
+        $this->assign('nodeList', $nodeList);
+
         return parent::edit($ids);
     }
-
 }

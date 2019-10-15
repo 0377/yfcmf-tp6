@@ -6,11 +6,10 @@ use Exception;
 use think\exception\Handle;
 
 /**
- * 自定义API模块的错误显示
+ * 自定义API模块的错误显示.
  */
 class ExceptionHandle extends Handle
 {
-
     public function render(Exception $e)
     {
         // 在生产环境下返回code信息
@@ -27,11 +26,11 @@ class ExceptionHandle extends Handle
             if ($e instanceof \think\exception\HttpException) {
                 $statuscode = $code = $e->getStatusCode();
             }
+
             return json(['code' => $code, 'msg' => $msg, 'time' => time(), 'data' => null], $statuscode);
         }
 
         //其它此交由系统处理
         return parent::render($e);
     }
-
 }

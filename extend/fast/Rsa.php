@@ -3,7 +3,7 @@
 namespace fast;
 
 /**
- * RSA签名类
+ * RSA签名类.
  */
 class Rsa
 {
@@ -12,21 +12,22 @@ class Rsa
     private $_privKey;
 
     /**
-     * * private key
+     * * private key.
      */
     private $_pubKey;
 
     /**
-     * * public key
+     * * public key.
      */
     private $_keyPath;
 
     /**
-     * * the keys saving path
+     * * the keys saving path.
      */
 
     /**
-     * * the construtor,the param $path is the keys saving path
+     * * the construtor,the param $path is the keys saving path.
+     *
      * @param string $publicKey  公钥
      * @param string $privateKey 私钥
      */
@@ -36,7 +37,8 @@ class Rsa
     }
 
     /**
-     * 设置公钥和私钥
+     * 设置公钥和私钥.
+     *
      * @param string $publicKey  公钥
      * @param string $privateKey 私钥
      */
@@ -51,7 +53,7 @@ class Rsa
     }
 
     /**
-     * * setup the private key
+     * * setup the private key.
      */
     private function setupPrivKey()
     {
@@ -59,13 +61,14 @@ class Rsa
             return true;
         }
         $pem = chunk_split($this->privateKey, 64, "\n");
-        $pem = "-----BEGIN PRIVATE KEY-----\n" . $pem . "-----END PRIVATE KEY-----\n";
+        $pem = "-----BEGIN PRIVATE KEY-----\n".$pem."-----END PRIVATE KEY-----\n";
         $this->_privKey = openssl_pkey_get_private($pem);
+
         return true;
     }
 
     /**
-     * * setup the public key
+     * * setup the public key.
      */
     private function setupPubKey()
     {
@@ -73,34 +76,34 @@ class Rsa
             return true;
         }
         $pem = chunk_split($this->publicKey, 64, "\n");
-        $pem = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
+        $pem = "-----BEGIN PUBLIC KEY-----\n".$pem."-----END PUBLIC KEY-----\n";
         $this->_pubKey = openssl_pkey_get_public($pem);
+
         return true;
     }
 
     /**
-     * * encrypt with the private key
+     * * encrypt with the private key.
      */
     public function privEncrypt($data)
     {
         if (!is_string($data)) {
-            return null;
+            return;
         }
         $this->setupPrivKey();
         $r = openssl_private_encrypt($data, $encrypted, $this->_privKey);
         if ($r) {
             return base64_encode($encrypted);
         }
-        return null;
     }
 
     /**
-     * * decrypt with the private key
+     * * decrypt with the private key.
      */
     public function privDecrypt($encrypted)
     {
         if (!is_string($encrypted)) {
-            return null;
+            return;
         }
         $this->setupPrivKey();
         $encrypted = base64_decode($encrypted);
@@ -108,32 +111,30 @@ class Rsa
         if ($r) {
             return $decrypted;
         }
-        return null;
     }
 
     /**
-     * * encrypt with public key
+     * * encrypt with public key.
      */
     public function pubEncrypt($data)
     {
         if (!is_string($data)) {
-            return null;
+            return;
         }
         $this->setupPubKey();
         $r = openssl_public_encrypt($data, $encrypted, $this->_pubKey);
         if ($r) {
             return base64_encode($encrypted);
         }
-        return null;
     }
 
     /**
-     * * decrypt with the public key
+     * * decrypt with the public key.
      */
     public function pubDecrypt($crypted)
     {
         if (!is_string($crypted)) {
-            return null;
+            return;
         }
         $this->setupPubKey();
         $crypted = base64_decode($crypted);
@@ -141,12 +142,13 @@ class Rsa
         if ($r) {
             return $decrypted;
         }
-        return null;
     }
 
     /**
-     * 构造签名
+     * 构造签名.
+     *
      * @param string $dataString 被签名数据
+     *
      * @return string
      */
     public function sign($dataString)
@@ -154,13 +156,16 @@ class Rsa
         $this->setupPrivKey();
         $signature = false;
         openssl_sign($dataString, $signature, $this->_privKey);
+
         return base64_encode($signature);
     }
 
     /**
-     * 验证签名
+     * 验证签名.
+     *
      * @param string $dataString 被签名数据
      * @param string $signString 已经签名的字符串
+     *
      * @return number 1签名正确 0签名错误
      */
     public function verify($dataString, $signString)
@@ -168,6 +173,7 @@ class Rsa
         $this->setupPubKey();
         $signature = base64_decode($signString);
         $flg = openssl_verify($dataString, $signature, $this->_pubKey);
+
         return $flg;
     }
 

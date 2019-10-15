@@ -9,7 +9,7 @@ use fast\Random;
 use think\Validate;
 
 /**
- * 会员接口
+ * 会员接口.
  */
 class User extends Api
 {
@@ -22,7 +22,7 @@ class User extends Api
     }
 
     /**
-     * 会员中心
+     * 会员中心.
      */
     public function index()
     {
@@ -30,7 +30,7 @@ class User extends Api
     }
 
     /**
-     * 会员登录
+     * 会员登录.
      *
      * @param string $account  账号
      * @param string $password 密码
@@ -52,7 +52,7 @@ class User extends Api
     }
 
     /**
-     * 手机验证码登录
+     * 手机验证码登录.
      *
      * @param string $mobile  手机号
      * @param string $captcha 验证码
@@ -90,7 +90,7 @@ class User extends Api
     }
 
     /**
-     * 注册会员
+     * 注册会员.
      *
      * @param string $username 用户名
      * @param string $password 密码
@@ -106,7 +106,7 @@ class User extends Api
         if (!$username || !$password) {
             $this->error(__('Invalid parameters'));
         }
-        if ($email && !Validate::is($email, "email")) {
+        if ($email && !Validate::is($email, 'email')) {
             $this->error(__('Email is incorrect'));
         }
         if ($mobile && !Validate::regex($mobile, "^1\d{10}$")) {
@@ -122,7 +122,7 @@ class User extends Api
     }
 
     /**
-     * 注销登录
+     * 注销登录.
      */
     public function logout()
     {
@@ -131,7 +131,7 @@ class User extends Api
     }
 
     /**
-     * 修改会员个人信息
+     * 修改会员个人信息.
      *
      * @param string $avatar   头像地址
      * @param string $username 用户名
@@ -160,7 +160,7 @@ class User extends Api
     }
 
     /**
-     * 修改邮箱
+     * 修改邮箱.
      *
      * @param string $email   邮箱
      * @param string $captcha 验证码
@@ -173,7 +173,7 @@ class User extends Api
         if (!$email || !$captcha) {
             $this->error(__('Invalid parameters'));
         }
-        if (!Validate::is($email, "email")) {
+        if (!Validate::is($email, 'email')) {
             $this->error(__('Email is incorrect'));
         }
         if (\app\common\model\User::where('email', $email)->where('id', '<>', $user->id)->find()) {
@@ -194,7 +194,7 @@ class User extends Api
     }
 
     /**
-     * 修改手机号
+     * 修改手机号.
      *
      * @param string $email   手机号
      * @param string $captcha 验证码
@@ -228,7 +228,7 @@ class User extends Api
     }
 
     /**
-     * 第三方登录
+     * 第三方登录.
      *
      * @param string $platform 平台名称
      * @param string $code     Code码
@@ -236,8 +236,8 @@ class User extends Api
     public function third()
     {
         $url = url('user/index');
-        $platform = $this->request->request("platform");
-        $code = $this->request->request("code");
+        $platform = $this->request->request('platform');
+        $code = $this->request->request('code');
         $config = get_addon_config('third');
         if (!$config || !isset($config[$platform])) {
             $this->error(__('Invalid parameters'));
@@ -250,7 +250,7 @@ class User extends Api
             if ($loginret) {
                 $data = [
                     'userinfo'  => $this->auth->getUserinfo(),
-                    'thirdinfo' => $result
+                    'thirdinfo' => $result,
                 ];
                 $this->success(__('Logged in successful'), $data);
             }
@@ -267,11 +267,11 @@ class User extends Api
      */
     public function resetpwd()
     {
-        $type = $this->request->request("type");
-        $mobile = $this->request->request("mobile");
-        $email = $this->request->request("email");
-        $newpassword = $this->request->request("newpassword");
-        $captcha = $this->request->request("captcha");
+        $type = $this->request->request('type');
+        $mobile = $this->request->request('mobile');
+        $email = $this->request->request('email');
+        $newpassword = $this->request->request('newpassword');
+        $captcha = $this->request->request('captcha');
         if (!$newpassword || !$captcha) {
             $this->error(__('Invalid parameters'));
         }
@@ -289,7 +289,7 @@ class User extends Api
             }
             Sms::flush($mobile, 'resetpwd');
         } else {
-            if (!Validate::is($email, "email")) {
+            if (!Validate::is($email, 'email')) {
                 $this->error(__('Email is incorrect'));
             }
             $user = \app\common\model\User::getByEmail($email);

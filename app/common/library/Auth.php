@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\common\library;
@@ -16,9 +15,9 @@ namespace app\common\library;
 use app\common\model\User;
 use app\common\model\UserRule;
 use fast\Random;
+use think\Exception;
 use think\facade\Config;
 use think\facade\Db;
-use think\Exception;
 use think\facade\Event;
 use think\facade\Request;
 use think\facade\Validate;
@@ -48,8 +47,8 @@ class Auth
     }
 
     /**
-     *
      * @param array $options 参数
+     *
      * @return Auth
      */
     public static function instance($options = [])
@@ -62,7 +61,8 @@ class Auth
     }
 
     /**
-     * 获取User模型
+     * 获取User模型.
+     *
      * @return User
      */
     public function getUser()
@@ -71,9 +71,10 @@ class Auth
     }
 
     /**
-     * 兼容调用user模型的属性
+     * 兼容调用user模型的属性.
      *
      * @param string $name
+     *
      * @return mixed
      */
     public function __get($name)
@@ -82,10 +83,11 @@ class Auth
     }
 
     /**
-     * 根据Token初始化
+     * 根据Token初始化.
      *
      * @param string $token Token
-     * @return boolean
+     *
+     * @return bool
      */
     public function init($token)
     {
@@ -104,10 +106,12 @@ class Auth
             $user = User::find($user_id);
             if (!$user) {
                 $this->setError('Account not exist');
+
                 return false;
             }
             if ($user['status'] != 'normal') {
                 $this->setError('Account is locked');
+
                 return false;
             }
             $this->_user = $user;
@@ -115,38 +119,43 @@ class Auth
             $this->_token = $token;
 
             //初始化成功的事件
-            Event::trigger("user_init_successed", $this->_user);
+            Event::trigger('user_init_successed', $this->_user);
 
             return true;
         } else {
             $this->setError('You are not logged in');
+
             return false;
         }
     }
 
     /**
-     * 注册用户
+     * 注册用户.
      *
      * @param string $username 用户名
      * @param string $password 密码
-     * @param string $email 邮箱
-     * @param string $mobile 手机号
-     * @param array $extend 扩展参数
-     * @return boolean
+     * @param string $email    邮箱
+     * @param string $mobile   手机号
+     * @param array  $extend   扩展参数
+     *
+     * @return bool
      */
     public function register($username, $password, $email = '', $mobile = '', $extend = [])
     {
         // 检测用户名或邮箱、手机号是否存在
         if (User::getByUsername($username)) {
             $this->setError('Username already exist');
+
             return false;
         }
         if ($email && User::getByEmail($email)) {
             $this->setError('Email already exist');
+
             return false;
         }
         if ($mobile && User::getByMobile($mobile)) {
             $this->setError('Mobile already exist');
+
             return false;
         }
 
@@ -170,13 +179,14 @@ class Auth
             'logintime' => $time,
             'loginip'   => $ip,
             'prevtime'  => $time,
-            'status'    => 'normal'
+            'status'    => 'normal',
         ]);
         $params['password'] = $this->getEncryptPassword($password, $params['salt']);
         $params = array_merge($params, $extend);
 
         //账号注册时需要开启事务,避免出现垃圾数据
         Db::startTrans();
+
         try {
             $user = User::create($params, true);
 
@@ -187,22 +197,25 @@ class Auth
             Token::set($this->_token, $user->id, $this->keeptime);
 
             //注册成功的事件
-            Event::trigger("user_register_successed", $this->_user, $data);
+            Event::trigger('user_register_successed', $this->_user, $data);
             Db::commit();
         } catch (Exception $e) {
             $this->setError($e->getMessage());
             Db::rollback();
+
             return false;
         }
+
         return true;
     }
 
     /**
-     * 用户登录
+     * 用户登录.
      *
-     * @param string $account 账号,用户名、邮箱、手机号
+     * @param string $account  账号,用户名、邮箱、手机号
      * @param string $password 密码
-     * @return boolean
+     *
+     * @return bool
      */
     public function login($account, $password)
     {
@@ -211,15 +224,18 @@ class Auth
         $user = User::find([$field => $account]);
         if (!$user) {
             $this->setError('Account is incorrect');
+
             return false;
         }
 
         if ($user->status != 'normal') {
             $this->setError('Account is locked');
+
             return false;
         }
         if ($user->password != $this->getEncryptPassword($password, $user->salt)) {
             $this->setError('Password is incorrect');
+
             return false;
         }
 
@@ -232,12 +248,13 @@ class Auth
     /**
      * 注销
      *
-     * @return boolean
+     * @return bool
      */
     public function logout()
     {
         if (!$this->_logined) {
             $this->setError('You are not logged in');
+
             return false;
         }
         //设置登录标识
@@ -245,27 +262,32 @@ class Auth
         //删除Token
         Token::delete($this->_token);
         //注销成功的事件
-        Event::trigger("user_logout_successed", $this->_user);
+        Event::trigger('user_logout_successed', $this->_user);
+
         return true;
     }
 
     /**
      * 修改密码
-     * @param string $newpassword 新密码
-     * @param string $oldpassword 旧密码
-     * @param bool $ignoreoldpassword 忽略旧密码
-     * @return boolean
+     *
+     * @param string $newpassword       新密码
+     * @param string $oldpassword       旧密码
+     * @param bool   $ignoreoldpassword 忽略旧密码
+     *
+     * @return bool
      */
     public function changepwd($newpassword, $oldpassword = '', $ignoreoldpassword = false)
     {
         if (!$this->_logined) {
             $this->setError('You are not logged in');
+
             return false;
         }
         //判断旧密码是否正确
         if ($this->_user->password == $this->getEncryptPassword($oldpassword,
                 $this->_user->salt) || $ignoreoldpassword) {
             Db::startTrans();
+
             try {
                 $salt = Random::alnum();
                 $newpassword = $this->getEncryptPassword($newpassword, $salt);
@@ -273,30 +295,36 @@ class Auth
 
                 Token::delete($this->_token);
                 //修改密码成功的事件
-                Event::trigger("user_changepwd_successed", $this->_user);
+                Event::trigger('user_changepwd_successed', $this->_user);
                 Db::commit();
             } catch (Exception $e) {
                 Db::rollback();
                 $this->setError($e->getMessage());
+
                 return false;
             }
+
             return true;
         } else {
             $this->setError('Password is incorrect');
+
             return false;
         }
     }
 
     /**
-     * 直接登录账号
+     * 直接登录账号.
+     *
      * @param int $user_id
-     * @return boolean
+     *
+     * @return bool
      */
     public function direct($user_id)
     {
         $user = User::find($user_id);
         if ($user) {
             Db::startTrans();
+
             try {
                 $ip = request()->ip();
                 $time = time();
@@ -323,13 +351,15 @@ class Auth
                 $this->_logined = true;
 
                 //登录成功的事件
-                Event::trigger("user_login_successed", $this->_user);
+                Event::trigger('user_login_successed', $this->_user);
                 Db::commit();
             } catch (Exception $e) {
                 Db::rollback();
                 $this->setError($e->getMessage());
+
                 return false;
             }
+
             return true;
         } else {
             return false;
@@ -337,10 +367,12 @@ class Auth
     }
 
     /**
-     * 检测是否是否有对应权限
-     * @param string $path 控制器/方法
+     * 检测是否是否有对应权限.
+     *
+     * @param string $path   控制器/方法
      * @param string $module 模块 默认为当前模块
-     * @return boolean
+     *
+     * @return bool
      */
     public function check($path = null, $module = null)
     {
@@ -353,25 +385,29 @@ class Auth
         foreach ($ruleList as $k => $v) {
             $rules[] = $v['name'];
         }
-        $url = ($module ? $module : app()->http->getName()) . '/' . (is_null($path) ? $this->getRequestUri() : $path);
+        $url = ($module ? $module : app()->http->getName()).'/'.(is_null($path) ? $this->getRequestUri() : $path);
         $url = strtolower(str_replace('.', '/', $url));
+
         return in_array($url, $rules) ? true : false;
     }
 
     /**
-     * 判断是否登录
-     * @return boolean
+     * 判断是否登录.
+     *
+     * @return bool
      */
     public function isLogin()
     {
         if ($this->_logined) {
             return true;
         }
+
         return false;
     }
 
     /**
-     * 获取当前Token
+     * 获取当前Token.
+     *
      * @return string
      */
     public function getToken()
@@ -380,7 +416,7 @@ class Auth
     }
 
     /**
-     * 获取会员基本信息
+     * 获取会员基本信息.
      */
     public function getUserinfo()
     {
@@ -388,11 +424,13 @@ class Auth
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));
         $userinfo = array_merge($userinfo, Token::get($this->_token));
+
         return $userinfo;
     }
 
     /**
-     * 获取会员组别规则列表
+     * 获取会员组别规则列表.
+     *
      * @return array
      */
     public function getRuleList()
@@ -407,11 +445,13 @@ class Auth
         $rules = explode(',', $group->rules);
         $this->rules = UserRule::where('status', 'normal')->where('id', 'in',
             $rules)->field('id,pid,name,title,ismenu')->select();
+
         return $this->rules;
     }
 
     /**
-     * 获取当前请求的URI
+     * 获取当前请求的URI.
+     *
      * @return string
      */
     public function getRequestUri()
@@ -420,7 +460,8 @@ class Auth
     }
 
     /**
-     * 设置当前请求的URI
+     * 设置当前请求的URI.
+     *
      * @param string $uri
      */
     public function setRequestUri($uri)
@@ -429,7 +470,8 @@ class Auth
     }
 
     /**
-     * 获取允许输出的字段
+     * 获取允许输出的字段.
+     *
      * @return array
      */
     public function getAllowFields()
@@ -438,7 +480,8 @@ class Auth
     }
 
     /**
-     * 设置允许输出的字段
+     * 设置允许输出的字段.
+     *
      * @param array $fields
      */
     public function setAllowFields($fields)
@@ -447,9 +490,11 @@ class Auth
     }
 
     /**
-     * 删除一个指定会员
+     * 删除一个指定会员.
+     *
      * @param int $user_id 会员ID
-     * @return boolean
+     *
+     * @return bool
      */
     public function delete($user_id)
     {
@@ -458,38 +503,44 @@ class Auth
             return false;
         }
         Db::startTrans();
+
         try {
             // 删除会员
             User::destroy($user_id);
             // 删除会员指定的所有Token
             Token::clear($user_id);
 
-            Event::trigger("user_delete_successed", $user);
+            Event::trigger('user_delete_successed', $user);
             Db::commit();
         } catch (Exception $e) {
             Db::rollback();
             $this->setError($e->getMessage());
+
             return false;
         }
+
         return true;
     }
 
     /**
-     * 获取密码加密后的字符串
+     * 获取密码加密后的字符串.
+     *
      * @param string $password 密码
-     * @param string $salt 密码盐
+     * @param string $salt     密码盐
+     *
      * @return string
      */
     public function getEncryptPassword($password, $salt = '')
     {
-        return md5(md5($password) . $salt);
+        return md5(md5($password).$salt);
     }
 
     /**
-     * 检测当前控制器和方法是否匹配传递的数组
+     * 检测当前控制器和方法是否匹配传递的数组.
      *
      * @param array $arr 需要验证权限的数组
-     * @return boolean
+     *
+     * @return bool
      */
     public function match($arr = [])
     {
@@ -509,7 +560,8 @@ class Auth
     }
 
     /**
-     * 设置会话有效时间
+     * 设置会话有效时间.
+     *
      * @param int $keeptime 默认为永久
      */
     public function keeptime($keeptime = 0)
@@ -518,11 +570,13 @@ class Auth
     }
 
     /**
-     * 渲染用户数据
-     * @param array $datalist 二维数组
-     * @param mixed $fields 加载的字段列表
-     * @param string $fieldkey 渲染的字段
+     * 渲染用户数据.
+     *
+     * @param array  $datalist  二维数组
+     * @param mixed  $fields    加载的字段列表
+     * @param string $fieldkey  渲染的字段
      * @param string $renderkey 结果字段
+     *
      * @return array
      */
     public function render(&$datalist, $fields = [], $fieldkey = 'user_id', $renderkey = 'userinfo')
@@ -551,23 +605,27 @@ class Auth
             $v[$renderkey] = isset($list[$v[$fieldkey]]) ? $list[$v[$fieldkey]] : null;
         }
         unset($v);
+
         return $datalist;
     }
 
     /**
-     * 设置错误信息
+     * 设置错误信息.
      *
      * @param $error 错误信息
+     *
      * @return Auth
      */
     public function setError($error)
     {
         $this->_error = $error;
+
         return $this;
     }
 
     /**
-     * 获取错误信息
+     * 获取错误信息.
+     *
      * @return string
      */
     public function getError()

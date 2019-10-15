@@ -7,26 +7,23 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\command;
 
-
 use think\AddonService;
-use think\facade\Config;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Option;
 use think\console\Output;
-use think\facade\Db;
 use think\Exception;
 use think\exception\PDOException;
+use think\facade\Config;
+use think\facade\Db;
 
 class Addon extends Command
 {
-
     protected function configure()
     {
         $this
@@ -57,7 +54,7 @@ class Addon extends Command
         //token
         $token = $input->getOption('token') ?: '';
 
-        include dirname(__DIR__) . DIRECTORY_SEPARATOR . 'common.php';
+        include dirname(__DIR__).DIRECTORY_SEPARATOR.'common.php';
 
         if (!$name) {
             throw new Exception('Addon name could not be empty');
@@ -67,9 +64,9 @@ class Addon extends Command
         }
 
         // 查询一次SQL,判断连接是否正常
-        Db::execute("SELECT 1");
+        Db::execute('SELECT 1');
 
-        $addonDir = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
+        $addonDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
         switch ($action) {
             case 'create':
                 //非覆盖模式时如果存在则报错
@@ -81,39 +78,39 @@ class Addon extends Command
                     rmdirs($addonDir);
                 }
                 mkdir($addonDir, 0755, true);
-                mkdir($addonDir . DIRECTORY_SEPARATOR . 'controller', 0755, true);
+                mkdir($addonDir.DIRECTORY_SEPARATOR.'controller', 0755, true);
                 $menuList = \app\common\library\Menu::export($name);
                 $createMenu = $this->getCreateMenu($menuList);
                 $prefix = Config::get('database.prefix');
                 $createTableSql = '';
+
                 try {
-                    $result = Db::query("SHOW CREATE TABLE `" . $prefix . $name . "`;");
+                    $result = Db::query('SHOW CREATE TABLE `'.$prefix.$name.'`;');
                     if (isset($result[0]) && isset($result[0]['Create Table'])) {
                         $createTableSql = $result[0]['Create Table'];
                     }
                 } catch (PDOException $e) {
-
                 }
 
                 $data = [
                     'name'               => $name,
                     'addon'              => $name,
                     'addonClassName'     => ucfirst($name),
-                    'addonInstallMenu'   => $createMenu ? "\$menu = " . var_export_short($createMenu, "\t") . ";\n\tMenu::create(\$menu);" : '',
-                    'addonUninstallMenu' => $menuList ? 'Menu::delete("' . $name . '");' : '',
-                    'addonEnableMenu'    => $menuList ? 'Menu::enable("' . $name . '");' : '',
-                    'addonDisableMenu'   => $menuList ? 'Menu::disable("' . $name . '");' : '',
+                    'addonInstallMenu'   => $createMenu ? '$menu = '.var_export_short($createMenu, "\t").";\n\tMenu::create(\$menu);" : '',
+                    'addonUninstallMenu' => $menuList ? 'Menu::delete("'.$name.'");' : '',
+                    'addonEnableMenu'    => $menuList ? 'Menu::enable("'.$name.'");' : '',
+                    'addonDisableMenu'   => $menuList ? 'Menu::disable("'.$name.'");' : '',
                 ];
-                $this->writeToFile("addon", $data, $addonDir . ucfirst($name) . '.php');
-                $this->writeToFile("config", $data, $addonDir . 'config.php');
-                $this->writeToFile("info", $data, $addonDir . 'info.ini');
-                $this->writeToFile("controller", $data, $addonDir . 'controller' . DIRECTORY_SEPARATOR . 'Index.php');
+                $this->writeToFile('addon', $data, $addonDir.ucfirst($name).'.php');
+                $this->writeToFile('config', $data, $addonDir.'config.php');
+                $this->writeToFile('info', $data, $addonDir.'info.ini');
+                $this->writeToFile('controller', $data, $addonDir.'controller'.DIRECTORY_SEPARATOR.'Index.php');
                 if ($createTableSql) {
-                    $createTableSql = str_replace("`" . $prefix, '`__PREFIX__', $createTableSql);
-                    file_put_contents($addonDir . 'install.sql', $createTableSql);
+                    $createTableSql = str_replace('`'.$prefix, '`__PREFIX__', $createTableSql);
+                    file_put_contents($addonDir.'install.sql', $createTableSql);
                 }
 
-                $output->info("Create Successed!");
+                $output->info('Create Successed!');
                 break;
             case 'disable':
             case 'enable':
@@ -130,16 +127,16 @@ class Addon extends Command
                         foreach ($data['conflictlist'] as $k => $v) {
                             $output->warning($v);
                         }
-                        $output->info("Are you sure you want to " . ($action == 'enable' ? 'override' : 'delete') . " all those files?  Type 'yes' to continue: ");
+                        $output->info('Are you sure you want to '.($action == 'enable' ? 'override' : 'delete')." all those files?  Type 'yes' to continue: ");
                         $line = fgets(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'));
                         if (trim($line) != 'yes') {
-                            throw new Exception("Operation is aborted!");
+                            throw new Exception('Operation is aborted!');
                         }
                     }
                     //调用启用、禁用的方法
                     AddonService::$action($name, 1);
                 }
-                $output->info(ucfirst($action) . " Successed!");
+                $output->info(ucfirst($action).' Successed!');
                 break;
             case 'install':
                 //非覆盖模式时如果存在则报错
@@ -152,6 +149,7 @@ class Addon extends Command
                 }
                 // 获取本地路径
                 $local = $input->getOption('local');
+
                 try {
                     AddonService::install($name, 0, ['version' => $release], $local);
                 } catch (Exception $e) {
@@ -167,19 +165,20 @@ class Addon extends Command
                         $output->info("Are you sure you want to override all those files?  Type 'yes' to continue: ");
                         $line = fgets(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'));
                         if (trim($line) != 'yes') {
-                            throw new Exception("Operation is aborted!");
+                            throw new Exception('Operation is aborted!');
                         }
                     }
                     AddonService::install($name, 1, ['version' => $release, 'uid' => $uid, 'token' => $token], $local);
                 }
 
-                $output->info("Install Successed!");
+                $output->info('Install Successed!');
                 break;
             case 'uninstall':
                 //非覆盖模式时如果存在则报错
                 if (!$force) {
-                    throw new Exception("If you need to uninstall addon, use the parameter --force=true ");
+                    throw new Exception('If you need to uninstall addon, use the parameter --force=true ');
                 }
+
                 try {
                     AddonService::uninstall($name, 0);
                 } catch (Exception $e) {
@@ -195,24 +194,24 @@ class Addon extends Command
                         $output->info("Are you sure you want to delete all those files?  Type 'yes' to continue: ");
                         $line = fgets(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'));
                         if (trim($line) != 'yes') {
-                            throw new Exception("Operation is aborted!");
+                            throw new Exception('Operation is aborted!');
                         }
                     }
                     AddonService::uninstall($name, 1);
                 }
 
-                $output->info("Uninstall Successed!");
+                $output->info('Uninstall Successed!');
                 break;
             case 'refresh':
                 AddonService::refresh();
-                $output->info("Refresh Successed!");
+                $output->info('Refresh Successed!');
                 break;
             case 'upgrade':
                 AddonService::upgrade($name, ['version' => $release, 'uid' => $uid, 'token' => $token]);
-                $output->info("Upgrade Successed!");
+                $output->info('Upgrade Successed!');
                 break;
             case 'package':
-                $infoFile = $addonDir . 'info.ini';
+                $infoFile = $addonDir.'info.ini';
                 if (!is_file($infoFile)) {
                     throw new Exception(__('Addon info file was not found'));
                 }
@@ -222,7 +221,7 @@ class Addon extends Command
                     throw new Exception(__('Addon info file data incorrect'));
                 }
                 $infoname = isset($info['name']) ? $info['name'] : '';
-                if (!$infoname || !preg_match("/^[a-z]+$/i", $infoname) || $infoname != $name) {
+                if (!$infoname || !preg_match('/^[a-z]+$/i', $infoname) || $infoname != $name) {
                     throw new Exception(__('Addon info name incorrect'));
                 }
 
@@ -231,15 +230,15 @@ class Addon extends Command
                     throw new Exception(__('Addon info version incorrect'));
                 }
 
-                $addonTmpDir = app()->getRootPath() . 'runtime' .DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
+                $addonTmpDir = app()->getRootPath().'runtime'.DIRECTORY_SEPARATOR.'addons'.DIRECTORY_SEPARATOR;
                 if (!is_dir($addonTmpDir)) {
                     @mkdir($addonTmpDir, 0755, true);
                 }
-                $addonFile = $addonTmpDir . $infoname . '-' . $infoversion . '.zip';
+                $addonFile = $addonTmpDir.$infoname.'-'.$infoversion.'.zip';
                 if (!class_exists('ZipArchive')) {
                     throw new Exception(__('ZinArchive not install'));
                 }
-                $zip = new \ZipArchive;
+                $zip = new \ZipArchive();
                 $zip->open($addonFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
                 $files = new \RecursiveIteratorIterator(
@@ -256,23 +255,25 @@ class Addon extends Command
                     }
                 }
                 $zip->close();
-                $output->info("Package Successed!");
+                $output->info('Package Successed!');
                 break;
 
-            default :
+            default:
                 break;
         }
     }
 
     /**
-     * 获取创建菜单的数组
+     * 获取创建菜单的数组.
+     *
      * @param array $menu
+     *
      * @return array
      */
     protected function getCreateMenu($menu)
     {
         $result = [];
-        foreach ($menu as $k => & $v) {
+        foreach ($menu as $k => &$v) {
             $arr = [
                 'name'  => $v['name'],
                 'title' => $v['title'],
@@ -288,14 +289,17 @@ class Addon extends Command
             }
             $result[] = $arr;
         }
+
         return $result;
     }
 
     /**
-     * 写入到文件
+     * 写入到文件.
+     *
      * @param string $name
-     * @param array $data
+     * @param array  $data
      * @param string $pathname
+     *
      * @return mixed
      */
     protected function writeToFile($name, $data, $pathname)
@@ -311,17 +315,19 @@ class Addon extends Command
         if (!is_dir(dirname($pathname))) {
             mkdir(strtolower(dirname($pathname)), 0755, true);
         }
+
         return file_put_contents($pathname, $content);
     }
 
     /**
      * 获取基础模板
+     *
      * @param string $name
+     *
      * @return string
      */
     protected function getStub($name)
     {
-        return __DIR__ . '/Addon/stubs/' . $name . '.stub';
+        return __DIR__.'/Addon/stubs/'.$name.'.stub';
     }
-
 }

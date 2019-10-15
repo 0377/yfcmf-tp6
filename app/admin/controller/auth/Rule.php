@@ -8,14 +8,13 @@ use fast\Tree;
 use think\facade\Cache;
 
 /**
- * 规则管理
+ * 规则管理.
  *
  * @icon fa fa-list
  * @remark 规则通常对应一个控制器的方法,同时左侧的菜单栏数据也从规则中体现,通常建议通过控制台进行生成规则节点
  */
 class Rule extends Backend
 {
-
     /**
      * @var \app\admin\model\AuthRule
      */
@@ -26,7 +25,7 @@ class Rule extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\AuthRule;
+        $this->model = new \app\admin\model\AuthRule();
         // 必须将结果集转换为数组
         $ruleList = $this->model->order('weigh', 'desc')->order('id', 'asc')->select()->toArray();
         foreach ($ruleList as $k => &$v) {
@@ -48,7 +47,7 @@ class Rule extends Backend
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -56,20 +55,21 @@ class Rule extends Backend
             $list = $this->rulelist;
             $total = count($this->rulelist);
 
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 添加
+     * 添加.
      */
     public function add()
     {
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = $this->request->post('row/a', [], 'strip_tags');
             if ($params) {
                 if (!$params['ismenu'] && !$params['pid']) {
                     $this->error(__('The non-menu rule must have parent'));
@@ -83,11 +83,12 @@ class Rule extends Backend
             }
             $this->error();
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 编辑
+     * 编辑.
      */
     public function edit($ids = null)
     {
@@ -96,7 +97,7 @@ class Rule extends Backend
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = $this->request->post('row/a', [], 'strip_tags');
             if ($params) {
                 if (!$params['ismenu'] && !$params['pid']) {
                     $this->error(__('The non-menu rule must have parent'));
@@ -108,12 +109,12 @@ class Rule extends Backend
                     }
                 }
                 //这里需要针对name做唯一验证
-                $ruleValidate = validate('AuthRule',[],false,false);
+                $ruleValidate = validate('AuthRule', [], false, false);
                 $ruleValidate->rule([
-                    'name' => 'require|format|unique:AuthRule,name,' . $row->id,
+                    'name' => 'require|format|unique:AuthRule,name,'.$row->id,
                 ]);
-                $rs=$ruleValidate->check($params);
-                if (!$rs){
+                $rs = $ruleValidate->check($params);
+                if (!$rs) {
                     $this->error($ruleValidate->getError());
                 }
                 $result = $row->save($params);
@@ -125,14 +126,15 @@ class Rule extends Backend
             }
             $this->error();
         }
-        $this->view->assign("row", $row);
+        $this->view->assign('row', $row);
+
         return $this->view->fetch();
     }
 
     /**
-     * 删除
+     * 删除.
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             $delIds = [];

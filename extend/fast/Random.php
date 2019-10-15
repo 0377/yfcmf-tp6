@@ -3,15 +3,15 @@
 namespace fast;
 
 /**
- * 随机生成类
+ * 随机生成类.
  */
 class Random
 {
-
     /**
-     * 生成数字和字母
+     * 生成数字和字母.
      *
      * @param int $len 长度
+     *
      * @return string
      */
     public static function alnum($len = 6)
@@ -20,9 +20,10 @@ class Random
     }
 
     /**
-     * 仅生成字符
+     * 仅生成字符.
      *
      * @param int $len 长度
+     *
      * @return string
      */
     public static function alpha($len = 6)
@@ -31,9 +32,10 @@ class Random
     }
 
     /**
-     * 生成指定长度的随机数字
+     * 生成指定长度的随机数字.
      *
      * @param int $len 长度
+     *
      * @return string
      */
     public static function numeric($len = 4)
@@ -42,9 +44,10 @@ class Random
     }
 
     /**
-     * 数字和字母组合的随机字符串
+     * 数字和字母组合的随机字符串.
      *
      * @param int $len 长度
+     *
      * @return string
      */
     public static function nozero($len = 4)
@@ -53,9 +56,11 @@ class Random
     }
 
     /**
-     * 能用的随机数生成
+     * 能用的随机数生成.
+     *
      * @param string $type 类型 alpha/alnum/numeric/nozero/unique/md5/encrypt/sha1
      * @param int    $len  长度
+     *
      * @return string
      */
     public static function build($type = 'alnum', $len = 8)
@@ -79,6 +84,7 @@ class Random
                         $pool = '123456789';
                         break;
                 }
+
                 return substr(str_shuffle(str_repeat($pool, ceil($len / strlen($pool)))), 0, $len);
             case 'unique':
             case 'md5':
@@ -90,11 +96,12 @@ class Random
     }
 
     /**
-     * 根据数组元素的概率获得键名
+     * 根据数组元素的概率获得键名.
      *
      * @param array $ps     array('p1'=>20, 'p2'=>30, 'p3'=>50);
      * @param int   $num    默认为1,即随机出来的数量
      * @param bool  $unique 默认为true,即当num>1时,随机出的数量是否唯一
+     *
      * @return mixed 当num为1时返回键名,反之返回一维数组
      */
     public static function lottery($ps, $num = 1, $unique = true)
@@ -104,13 +111,14 @@ class Random
         }
         if ($num >= count($ps) && $unique) {
             $res = array_keys($ps);
+
             return $num == 1 ? $res[0] : $res;
         }
         $max_exp = 0;
         $res = [];
         foreach ($ps as $key => $value) {
-            $value = substr($value, 0, stripos($value, ".") + 6);
-            $exp = strlen(strchr($value, '.')) - 1;
+            $value = substr($value, 0, stripos($value, '.') + 6);
+            $exp = strlen(strstr($value, '.')) - 1;
             if ($exp > $max_exp) {
                 $max_exp = $exp;
             }
@@ -147,11 +155,13 @@ class Random
                 unset($ps[$key]);
             }
         }
+
         return $res;
     }
 
     /**
-     * 获取全球唯一标识
+     * 获取全球唯一标识.
+     *
      * @return string
      */
     public static function uuid()

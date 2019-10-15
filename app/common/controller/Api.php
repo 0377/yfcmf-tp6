@@ -7,29 +7,26 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:21
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\common\controller;
 
 use app\common\library\Auth;
-use think\facade\Config;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
+use think\facade\Config;
 use think\facade\Event;
-use think\facade\Cache;
 use think\Loader;
 use think\Request;
 use think\Response;
 use think\Route;
 
 /**
- * API控制器基类
+ * API控制器基类.
  */
 class Api
 {
-
     /**
      * @var Request Request 实例
      */
@@ -51,32 +48,36 @@ class Api
     protected $beforeActionList = [];
 
     /**
-     * 无需登录的方法,同时也就不需要鉴权了
+     * 无需登录的方法,同时也就不需要鉴权了.
+     *
      * @var array
      */
     protected $noNeedLogin = [];
 
     /**
-     * 无需鉴权的方法,但需要登录
+     * 无需鉴权的方法,但需要登录.
+     *
      * @var array
      */
     protected $noNeedRight = [];
 
     /**
-     * 权限Auth
+     * 权限Auth.
+     *
      * @var Auth
      */
     protected $auth = null;
 
     /**
-     * 默认响应输出类型,支持json/xml
+     * 默认响应输出类型,支持json/xml.
+     *
      * @var string
      */
     protected $responseType = 'json';
 
     /**
-     * 构造方法
-     * @access public
+     * 构造方法.
+     *
      * @param Request $request Request 对象
      */
     public function __construct(Request $request = null)
@@ -97,8 +98,7 @@ class Api
     }
 
     /**
-     * 初始化操作
-     * @access protected
+     * 初始化操作.
      */
     protected function _initialize()
     {
@@ -106,13 +106,13 @@ class Api
             $domain = Route::rules('domain');
             if (isset($domain['api'])) {
                 if (isset($_SERVER['HTTP_ORIGIN'])) {
-                    header("Access-Control-Allow-Origin: " . $this->request->server('HTTP_ORIGIN'));
+                    header('Access-Control-Allow-Origin: '.$this->request->server('HTTP_ORIGIN'));
                     header('Access-Control-Allow-Credentials: true');
                     header('Access-Control-Max-Age: 86400');
                 }
                 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
                     if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
-                        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+                        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
                     }
                     if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
                         header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
@@ -133,7 +133,7 @@ class Api
         // token
         $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
 
-        $path = str_replace('.', '/', $controllername) . '/' . $actionname;
+        $path = str_replace('.', '/', $controllername).'/'.$actionname;
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
@@ -161,7 +161,7 @@ class Api
         $upload = \app\common\model\Config::upload();
 
         // 上传信息配置后
-        Event::trigger("upload_config_init", $upload);
+        Event::trigger('upload_config_init', $upload);
 
         Config::set('upload', array_merge(Config::get('upload'), $upload));
 
@@ -170,22 +170,24 @@ class Api
     }
 
     /**
-     * 加载语言文件
+     * 加载语言文件.
+     *
      * @param string $name
      */
     protected function loadlang($name)
     {
-        Lang::load(APP_PATH . app()->http->getName() . '/lang/' . $this->request->langset() . '/' . str_replace('.',
-                '/', $name) . '.php');
+        Lang::load(APP_PATH.app()->http->getName().'/lang/'.$this->request->langset().'/'.str_replace('.',
+                '/', $name).'.php');
     }
 
     /**
-     * 操作成功返回的数据
-     * @param string $msg 提示信息
-     * @param mixed $data 要返回的数据
-     * @param int $code 错误码，默认为1
-     * @param string $type 输出类型
-     * @param array $header 发送的 Header 信息
+     * 操作成功返回的数据.
+     *
+     * @param string $msg    提示信息
+     * @param mixed  $data   要返回的数据
+     * @param int    $code   错误码，默认为1
+     * @param string $type   输出类型
+     * @param array  $header 发送的 Header 信息
      */
     protected function success($msg = '', $data = null, $code = 1, $type = null, array $header = [])
     {
@@ -193,12 +195,13 @@ class Api
     }
 
     /**
-     * 操作失败返回的数据
-     * @param string $msg 提示信息
-     * @param mixed $data 要返回的数据
-     * @param int $code 错误码，默认为0
-     * @param string $type 输出类型
-     * @param array $header 发送的 Header 信息
+     * 操作失败返回的数据.
+     *
+     * @param string $msg    提示信息
+     * @param mixed  $data   要返回的数据
+     * @param int    $code   错误码，默认为0
+     * @param string $type   输出类型
+     * @param array  $header 发送的 Header 信息
      */
     protected function error($msg = '', $data = null, $code = 0, $type = null, array $header = [])
     {
@@ -206,15 +209,17 @@ class Api
     }
 
     /**
-     * 返回封装后的 API 数据到客户端
-     * @access protected
-     * @param mixed $msg 提示信息
-     * @param mixed $data 要返回的数据
-     * @param int $code 错误码，默认为0
-     * @param string $type 输出类型，支持json/xml/jsonp
-     * @param array $header 发送的 Header 信息
-     * @return void
+     * 返回封装后的 API 数据到客户端.
+     *
+     * @param mixed  $msg    提示信息
+     * @param mixed  $data   要返回的数据
+     * @param int    $code   错误码，默认为0
+     * @param string $type   输出类型，支持json/xml/jsonp
+     * @param array  $header 发送的 Header 信息
+     *
      * @throws HttpResponseException
+     *
+     * @return void
      */
     protected function result($msg, $data = null, $code = 0, $type = null, array $header = [])
     {
@@ -235,14 +240,16 @@ class Api
             $code = $code >= 1000 || $code < 200 ? 200 : $code;
         }
         $response = Response::create($result, $type, $code)->header($header);
+
         throw new HttpResponseException($response);
     }
 
     /**
-     * 前置操作
-     * @access protected
-     * @param string $method 前置操作方法名
-     * @param array $options 调用参数 ['only'=>[...]] 或者 ['except'=>[...]]
+     * 前置操作.
+     *
+     * @param string $method  前置操作方法名
+     * @param array  $options 调用参数 ['only'=>[...]] 或者 ['except'=>[...]]
+     *
      * @return void
      */
     protected function beforeAction($method, $options = [])
@@ -269,9 +276,10 @@ class Api
     }
 
     /**
-     * 设置验证失败后是否抛出异常
-     * @access protected
+     * 设置验证失败后是否抛出异常.
+     *
      * @param bool $fail 是否抛出异常
+     *
      * @return $this
      */
     protected function validateFailException($fail = true)
@@ -282,15 +290,17 @@ class Api
     }
 
     /**
-     * 验证数据
-     * @access protected
-     * @param array $data 数据
+     * 验证数据.
+     *
+     * @param array        $data     数据
      * @param string|array $validate 验证器名或者验证规则数组
-     * @param array $message 提示信息
-     * @param bool $batch 是否批量验证
-     * @param mixed $callback 回调方法（闭包）
-     * @return array|string|true
+     * @param array        $message  提示信息
+     * @param bool         $batch    是否批量验证
+     * @param mixed        $callback 回调方法（闭包）
+     *
      * @throws ValidateException
+     *
+     * @return array|string|true
      */
     protected function validate($data, $validate, $message = [], $batch = false, $callback = null)
     {

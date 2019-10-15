@@ -2,14 +2,11 @@
 
 namespace app\common\model;
 
-use app\common\model\BaseModel;
-
 /**
- * 分类模型
+ * 分类模型.
  */
 class Category extends BaseModel
 {
-
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
     // 定义时间戳字段名
@@ -32,7 +29,8 @@ class Category extends BaseModel
     }
 
     /**
-     * 读取分类类型
+     * 读取分类类型.
+     *
      * @return array
      */
     public static function getTypeList()
@@ -41,6 +39,7 @@ class Category extends BaseModel
         foreach ($typeList as $k => &$v) {
             $v = __($v);
         }
+
         return $typeList;
     }
 
@@ -48,6 +47,7 @@ class Category extends BaseModel
     {
         $value = $value ? $value : $data['type'];
         $list = $this->getTypeList();
+
         return isset($list[$value]) ? $list[$value] : '';
     }
 
@@ -61,13 +61,16 @@ class Category extends BaseModel
         $value = $value ? $value : $data['flag'];
         $valueArr = explode(',', $value);
         $list = $this->getFlagList();
+
         return implode(',', array_intersect_key($list, array_flip($valueArr)));
     }
 
     /**
-     * 读取分类列表
-     * @param string $type 指定类型
+     * 读取分类列表.
+     *
+     * @param string $type   指定类型
      * @param string $status 指定状态
+     *
      * @return array
      */
     public static function getCategoryArray($type = null, $status = null)
@@ -80,6 +83,7 @@ class Category extends BaseModel
                 $query->where('status', '=', $status);
             }
         })->order('weigh', 'desc')->select()->toArray();
+
         return $list;
     }
 }

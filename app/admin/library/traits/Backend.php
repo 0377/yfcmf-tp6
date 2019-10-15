@@ -7,49 +7,49 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午5:05
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\library\traits;
 
 use app\admin\library\Auth;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
-use think\facade\Db;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use think\Exception;
 use think\exception\PDOException;
 use think\exception\ValidateException;
+use think\facade\Db;
 
 trait Backend
 {
-
     /**
-     * 排除前台提交过来的字段
+     * 排除前台提交过来的字段.
+     *
      * @param $params
+     *
      * @return array
      */
     protected function preExcludeFields($params)
     {
         if (is_array($this->excludeFields)) {
             foreach ($this->excludeFields as $field) {
-                if (key_exists($field, $params)) {
+                if (array_key_exists($field, $params)) {
                     unset($params[$field]);
                 }
             }
         } else {
-            if (key_exists($this->excludeFields, $params)) {
+            if (array_key_exists($this->excludeFields, $params)) {
                 unset($params[$this->excludeFields]);
             }
         }
+
         return $params;
     }
 
-
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -73,15 +73,16 @@ trait Backend
                 ->select();
 
             $list = $list->toArray();
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 回收站
+     * 回收站.
      */
     public function recyclebin()
     {
@@ -102,20 +103,21 @@ trait Backend
                 ->limit($offset, $limit)
                 ->select();
 
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 添加
+     * 添加.
      */
     public function add()
     {
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+            $params = $this->request->post('row/a');
             if ($params) {
                 $params = $this->preExcludeFields($params);
 
@@ -124,11 +126,12 @@ trait Backend
                 }
                 $result = false;
                 Db::startTrans();
+
                 try {
                     //是否采用模型验证
                     if ($this->modelValidate) {
-                        $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
+                        $name = str_replace('\\model\\', '\\validate\\', get_class($this->model));
+                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
                     }
                     $result = $this->model->save($params);
@@ -151,11 +154,12 @@ trait Backend
             }
             $this->error(__('Parameter %s can not be empty', ''));
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 编辑
+     * 编辑.
      */
     public function edit($ids = null)
     {
@@ -170,16 +174,17 @@ trait Backend
             }
         }
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+            $params = $this->request->post('row/a');
             if ($params) {
                 $params = $this->preExcludeFields($params);
                 $result = false;
                 Db::startTrans();
+
                 try {
                     //是否采用模型验证
                     if ($this->modelValidate) {
-                        $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
+                        $name = str_replace('\\model\\', '\\validate\\', get_class($this->model));
+                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
                     $result = $row->save($params);
@@ -202,14 +207,15 @@ trait Backend
             }
             $this->error(__('Parameter %s can not be empty', ''));
         }
-        $this->view->assign("row", $row);
+        $this->view->assign('row', $row);
+
         return $this->view->fetch();
     }
 
     /**
-     * 删除
+     * 删除.
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             $pk = $this->model->getPk();
@@ -221,6 +227,7 @@ trait Backend
 
             $count = 0;
             Db::startTrans();
+
             try {
                 foreach ($list as $k => $v) {
                     $count += $v->delete();
@@ -243,21 +250,22 @@ trait Backend
     }
 
     /**
-     * 真实删除
+     * 真实删除.
      */
-    public function destroy($ids = "")
+    public function destroy($ids = '')
     {
         $pk = $this->model->getPk();
         $adminIds = $this->getDataLimitAdminIds();
-        $where=[];
+        $where = [];
         if (is_array($adminIds)) {
-            $where[$this->dataLimitField]=$adminIds;
+            $where[$this->dataLimitField] = $adminIds;
         }
         if ($ids) {
-            $where[$pk]=explode(',',$ids);
+            $where[$pk] = explode(',', $ids);
         }
         $count = 0;
         Db::startTrans();
+
         try {
             $list = $this->model->onlyTrashed()->where($where)->select();
             foreach ($list as $k => $v) {
@@ -282,19 +290,20 @@ trait Backend
     /**
      * 还原
      */
-    public function restore($ids = "")
+    public function restore($ids = '')
     {
         $pk = $this->model->getPk();
         $adminIds = $this->getDataLimitAdminIds();
-        $where=[];
+        $where = [];
         if (is_array($adminIds)) {
-            $where[$this->dataLimitField]=$adminIds;
+            $where[$this->dataLimitField] = $adminIds;
         }
         if ($ids) {
-            $where[$pk]=explode(',',$ids);
+            $where[$pk] = explode(',', $ids);
         }
         $count = 0;
         Db::startTrans();
+
         try {
             $list = $this->model->onlyTrashed()->where($where)->select();
             foreach ($list as $index => $item) {
@@ -315,14 +324,14 @@ trait Backend
     }
 
     /**
-     * 批量更新
+     * 批量更新.
      */
-    public function multi($ids = "")
+    public function multi($ids = '')
     {
-        $ids = $ids ? $ids : $this->request->param("ids");
+        $ids = $ids ? $ids : $this->request->param('ids');
         if ($ids) {
             if ($this->request->has('params')) {
-                parse_str($this->request->post("params"), $values);
+                parse_str($this->request->post('params'), $values);
                 $values = array_intersect_key($values,
                     array_flip(is_array($this->multiFields) ? $this->multiFields : explode(',', $this->multiFields)));
                 if ($values || $this->auth->isSuperAdmin()) {
@@ -332,6 +341,7 @@ trait Backend
                     }
                     $count = 0;
                     Db::startTrans();
+
                     try {
                         $list = $this->model->where($this->model->getPk(), 'in', $ids)->select();
                         foreach ($list as $index => $item) {
@@ -359,7 +369,7 @@ trait Backend
     }
 
     /**
-     * 导入
+     * 导入.
      */
     protected function import()
     {
@@ -367,7 +377,7 @@ trait Backend
         if (!$file) {
             $this->error(__('Parameter %s can not be empty', 'file'));
         }
-        $filePath = app()->getRootPath() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . $file;
+        $filePath = app()->getRootPath().DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.$file;
         if (!is_file($filePath)) {
             $this->error(__('No results were found'));
         }
@@ -379,7 +389,7 @@ trait Backend
         if ($ext === 'csv') {
             $file = fopen($filePath, 'r');
             $filePath = tempnam(sys_get_temp_dir(), 'import_csv');
-            $fp = fopen($filePath, "w");
+            $fp = fopen($filePath, 'w');
             $n = 0;
             while ($line = fgets($file)) {
                 $line = rtrim($line, "\n\r\0");
@@ -388,9 +398,9 @@ trait Backend
                     $line = mb_convert_encoding($line, 'utf-8', $encoding);
                 }
                 if ($n == 0 || preg_match('/^".*"$/', $line)) {
-                    fwrite($fp, $line . "\n");
+                    fwrite($fp, $line."\n");
                 } else {
-                    fwrite($fp, '"' . str_replace(['"', ','], ['""', '","'], $line) . "\"\n");
+                    fwrite($fp, '"'.str_replace(['"', ','], ['""', '","'], $line)."\"\n");
                 }
                 $n++;
             }
@@ -409,7 +419,7 @@ trait Backend
         $table = $this->model->getQuery()->getTable();
         $database = \think\Config::get('database.database');
         $fieldArr = [];
-        $list = db()->query("SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?",
+        $list = db()->query('SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
             [$table, $database]);
         foreach ($list as $k => $v) {
             if ($importHeadType == 'comment') {
@@ -421,6 +431,7 @@ trait Backend
 
         //加载文件
         $insert = [];
+
         try {
             if (!$PHPExcel = $reader->load($filePath)) {
                 $this->error(__('Unknown data format'));
@@ -484,7 +495,7 @@ trait Backend
             if (preg_match("/.+Integrity constraint violation: 1062 Duplicate entry '(.+)' for key '(.+)'/is", $msg,
                 $matches)) {
                 $msg = "导入失败，包含【{$matches[1]}】的记录已存在";
-            };
+            }
             $this->error($msg);
         } catch (\Exception $e) {
             $this->error($e->getMessage());

@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/20 下午5:29
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace think;
@@ -18,13 +17,12 @@ use think\facade\View;
 
 /**
  * 插件基类
- * Class Addons
+ * Class Addons.
+ *
  * @author Byron Sampson <xiaobo.sun@qq.com>
- * @package think\addons
  */
 abstract class Addons
 {
-
     // 视图实例对象
     protected $view = null;
     // 当前错误信息
@@ -37,14 +35,13 @@ abstract class Addons
     protected $infoRange = 'addoninfo';
 
     /**
-     * 架构函数
-     * @access public
+     * 架构函数.
      */
     public function __construct()
     {
         $name = $this->getName();
         // 获取当前插件目录
-        $this->addons_path = ADDON_PATH . $name . DIRECTORY_SEPARATOR;
+        $this->addons_path = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
 
         // 初始化视图模型
         $config = ['view_path' => $this->addons_path];
@@ -58,8 +55,10 @@ abstract class Addons
     }
 
     /**
-     * 读取基础配置信息
+     * 读取基础配置信息.
+     *
      * @param string $name
+     *
      * @return array
      */
     final public function getInfo($name = '')
@@ -71,7 +70,7 @@ abstract class Addons
         if ($info) {
             return $info;
         }
-        $info_file = $this->addons_path . 'info.ini';
+        $info_file = $this->addons_path.'info.ini';
         if (is_file($info_file)) {
             $info = parse_ini_file($info_file, true, INI_SCANNER_TYPED) ?: [];
             $info['url'] = addon_url($name);
@@ -82,8 +81,10 @@ abstract class Addons
     }
 
     /**
-     * 获取插件的配置数组
+     * 获取插件的配置数组.
+     *
      * @param string $name 可选模块名
+     *
      * @return array
      */
     final public function getConfig($name = '')
@@ -95,7 +96,7 @@ abstract class Addons
         if ($config) {
             return $config;
         }
-        $config_file = $this->addons_path . 'config.php';
+        $config_file = $this->addons_path.'config.php';
         if (is_file($config_file)) {
             $temp_arr = include $config_file;
             foreach ($temp_arr as $key => $value) {
@@ -109,9 +110,11 @@ abstract class Addons
     }
 
     /**
-     * 设置配置数据
+     * 设置配置数据.
+     *
      * @param $name
      * @param array $value
+     *
      * @return array
      */
     final public function setConfig($name = '', $value = [])
@@ -122,13 +125,16 @@ abstract class Addons
         $config = $this->getConfig($name);
         $config = array_merge($config, $value);
         Config::set([$name => $config], $this->configRange);
+
         return $config;
     }
 
     /**
-     * 设置插件信息数据
+     * 设置插件信息数据.
+     *
      * @param $name
      * @param array $value
+     *
      * @return array
      */
     final public function setInfo($name = '', $value = [])
@@ -139,12 +145,15 @@ abstract class Addons
         $info = $this->getInfo($name);
         $info = array_merge($info, $value);
         Config::set([$name => $info], $this->infoRange);
+
         return $info;
     }
 
     /**
-     * 获取完整配置列表
+     * 获取完整配置列表.
+     *
      * @param string $name
+     *
      * @return array
      */
     final public function getFullConfig($name = '')
@@ -153,25 +162,29 @@ abstract class Addons
         if (empty($name)) {
             $name = $this->getName();
         }
-        $config_file = $this->addons_path . 'config.php';
+        $config_file = $this->addons_path.'config.php';
         if (is_file($config_file)) {
             $fullConfigArr = include $config_file;
         }
+
         return $fullConfigArr;
     }
 
     /**
-     * 获取当前模块名
+     * 获取当前模块名.
+     *
      * @return string
      */
     final public function getName()
     {
         $data = explode('\\', get_class($this));
+
         return strtolower(array_pop($data));
     }
 
     /**
-     * 检查基础配置信息是否完整
+     * 检查基础配置信息是否完整.
+     *
      * @return bool
      */
     final public function checkInfo()
@@ -183,23 +196,26 @@ abstract class Addons
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * 加载模板和页面输出 可以返回输出内容
-     * @access public
+     * 加载模板和页面输出 可以返回输出内容.
+     *
      * @param string $template 模板文件名或者内容
-     * @param array $vars 模板输出变量
-     * @param array $replace 替换内容
-     * @param array $config 模板参数
-     * @return mixed
+     * @param array  $vars     模板输出变量
+     * @param array  $replace  替换内容
+     * @param array  $config   模板参数
+     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     public function fetch($template = '', $vars = [], $replace = [], $config = [])
     {
         if (!is_file($template)) {
-            $template = '/' . $template;
+            $template = '/'.$template;
         }
         // 关闭模板布局
         $this->view->engine->layout(false);
@@ -208,12 +224,13 @@ abstract class Addons
     }
 
     /**
-     * 渲染内容输出
-     * @access public
+     * 渲染内容输出.
+     *
      * @param string $content 内容
-     * @param array $vars 模板输出变量
-     * @param array $replace 替换内容
-     * @param array $config 模板参数
+     * @param array  $vars    模板输出变量
+     * @param array  $replace 替换内容
+     * @param array  $config  模板参数
+     *
      * @return mixed
      */
     public function display($content, $vars = [], $replace = [], $config = [])
@@ -225,10 +242,11 @@ abstract class Addons
     }
 
     /**
-     * 渲染内容输出
-     * @access public
+     * 渲染内容输出.
+     *
      * @param string $content 内容
-     * @param array $vars 模板输出变量
+     * @param array  $vars    模板输出变量
+     *
      * @return mixed
      */
     public function show($content, $vars = [])
@@ -241,9 +259,10 @@ abstract class Addons
 
     /**
      * 模板变量赋值
-     * @access protected
-     * @param mixed $name 要显示的模板变量
+     *
+     * @param mixed $name  要显示的模板变量
      * @param mixed $value 变量的值
+     *
      * @return void
      */
     public function assign($name, $value = '')
@@ -252,7 +271,8 @@ abstract class Addons
     }
 
     /**
-     * 获取当前错误信息
+     * 获取当前错误信息.
+     *
      * @return mixed
      */
     public function getError()

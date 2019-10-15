@@ -9,9 +9,9 @@ use think\exception\PDOException;
 
 class Menu
 {
-
     /**
-     * 创建菜单
+     * 创建菜单.
+     *
      * @param array $menu
      * @param mixed $parent 父类的name或pid
      */
@@ -36,10 +36,10 @@ class Menu
                             $route .= $_v;
                             ($_k == 0) ? $route .= '.' : $route .= '/';
                         }
-                        $route = rtrim($route, "/");
+                        $route = rtrim($route, '/');
                         $data['route'] = $route;
-                    }elseif (count($_arr) ==2){
-                        $data['route'] = implode('.',$_arr).'/index';
+                    } elseif (count($_arr) == 2) {
+                        $data['route'] = implode('.', $_arr).'/index';
                     }
                 }
             }
@@ -47,6 +47,7 @@ class Menu
             $data['icon'] = isset($data['icon']) ? $data['icon'] : ($hasChild ? 'fa fa-list' : 'fa fa-circle-o');
             $data['pid'] = $pid;
             $data['status'] = 'normal';
+
             try {
                 $menu = AuthRule::create($data, [], true);
                 if ($hasChild) {
@@ -59,9 +60,11 @@ class Menu
     }
 
     /**
-     * 删除菜单
+     * 删除菜单.
+     *
      * @param string $name 规则name
-     * @return boolean
+     *
+     * @return bool
      */
     public static function delete($name)
     {
@@ -70,13 +73,16 @@ class Menu
             return false;
         }
         AuthRule::destroy($ids);
+
         return true;
     }
 
     /**
-     * 启用菜单
+     * 启用菜单.
+     *
      * @param string $name
-     * @return boolean
+     *
+     * @return bool
      */
     public static function enable($name)
     {
@@ -85,13 +91,16 @@ class Menu
             return false;
         }
         AuthRule::where('id', 'in', $ids)->update(['status' => 'normal']);
+
         return true;
     }
 
     /**
-     * 禁用菜单
+     * 禁用菜单.
+     *
      * @param string $name
-     * @return boolean
+     *
+     * @return bool
      */
     public static function disable($name)
     {
@@ -100,12 +109,15 @@ class Menu
             return false;
         }
         AuthRule::where('id', 'in', $ids)->update(['status' => 'hidden']);
+
         return true;
     }
 
     /**
-     * 导出指定名称的菜单规则
+     * 导出指定名称的菜单规则.
+     *
      * @param string $name
+     *
      * @return array
      */
     public static function export($name)
@@ -120,12 +132,15 @@ class Menu
             $ruleList = AuthRule::where('id', 'in', $ids)->select()->toArray();
             $menuList = Tree::instance()->init($ruleList)->getTreeArray($menu['id']);
         }
+
         return $menuList;
     }
 
     /**
-     * 根据名称获取规则IDS
+     * 根据名称获取规则IDS.
+     *
      * @param string $name
+     *
      * @return array
      */
     public static function getAuthRuleIdsByName($name)
@@ -138,7 +153,7 @@ class Menu
             // 构造菜单数据
             $ids = Tree::instance()->init($ruleList)->getChildrenIds($menu['id'], true);
         }
+
         return $ids;
     }
-
 }

@@ -7,50 +7,53 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:20
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\common\controller;
 
 use app\common\library\Auth;
 use think\facade\Config;
-use think\facade\View;
-use think\facade\Lang;
 use think\facade\Event;
+use think\facade\Lang;
+use think\facade\View;
 
 /**
- * 前台控制器基类
+ * 前台控制器基类.
  */
 class Frontend extends BaseController
 {
-
     /**
      * 布局模板
+     *
      * @var string
      */
     protected $layout = '';
 
     /**
-     * 无需登录的方法,同时也就不需要鉴权了
+     * 无需登录的方法,同时也就不需要鉴权了.
+     *
      * @var array
      */
     protected $noNeedLogin = [];
 
     /**
-     * 无需鉴权的方法,但需要登录
+     * 无需鉴权的方法,但需要登录.
+     *
      * @var array
      */
     protected $noNeedRight = [];
 
     /**
-     * 权限Auth
+     * 权限Auth.
+     *
      * @var Auth
      */
     protected $auth = null;
 
     public function _initialize()
-    {url();
+    {
+        url();
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
         $modulename = app()->http->getName();
@@ -59,15 +62,15 @@ class Frontend extends BaseController
 
         // 如果有使用模板布局
         if ($this->layout) {
-            View::engine()->layout('layout/' . $this->layout);
+            View::engine()->layout('layout/'.$this->layout);
         }
         $this->auth = Auth::instance();
 
         // token
         $token = $this->request->server('HTTP_TOKEN',
-            $this->request->request('token', \think\facade\Cookie::get('token'))?:'');
+            $this->request->request('token', \think\facade\Cookie::get('token')) ?: '');
 
-        $path = str_replace('.', '/', $controllername) . '/' . $actionname;
+        $path = str_replace('.', '/', $controllername).'/'.$actionname;
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
@@ -97,12 +100,12 @@ class Frontend extends BaseController
         // 语言检测
         $lang = strip_tags(Lang::getLangSet());
 
-        $site = Config::get("site");
+        $site = Config::get('site');
 
         $upload = \app\common\model\Config::upload();
 
         // 上传信息配置后
-        Event::trigger("upload_config_init", $upload);
+        Event::trigger('upload_config_init', $upload);
 
         // 配置信息
         $config = [
@@ -112,15 +115,15 @@ class Frontend extends BaseController
             'modulename'     => $modulename,
             'controllername' => $controllername,
             'actionname'     => $actionname,
-            'jsname'         => 'frontend/' . str_replace('.', '/', $controllername),
+            'jsname'         => 'frontend/'.str_replace('.', '/', $controllername),
             'moduleurl'      => rtrim(url("/{$modulename}", [], false), '/'),
-            'language'       => $lang
+            'language'       => $lang,
         ];
 
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
 
         // 配置信息后
-        Event::trigger("config_init", $config);
+        Event::trigger('config_init', $config);
         // 加载当前控制器语言包
         $this->loadlang($this->request->controller());
         $this->assign('site', $site);
@@ -128,18 +131,20 @@ class Frontend extends BaseController
     }
 
     /**
-     * 加载语言文件
+     * 加载语言文件.
+     *
      * @param string $name
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . str_replace('.', '/',
-                strtolower($name)) . '.php');
+        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.str_replace('.', '/',
+                strtolower($name)).'.php');
     }
 
     /**
-     * 渲染配置信息
-     * @param mixed $name 键名或数组
+     * 渲染配置信息.
+     *
+     * @param mixed $name  键名或数组
      * @param mixed $value 值
      */
     protected function assignconfig($name, $value = '')

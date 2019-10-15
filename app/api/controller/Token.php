@@ -6,7 +6,7 @@ use app\common\controller\Api;
 use fast\Random;
 
 /**
- * Token接口
+ * Token接口.
  */
 class Token extends Api
 {
@@ -15,7 +15,6 @@ class Token extends Api
 
     /**
      * 检测Token是否过期
-     *
      */
     public function check()
     {
@@ -25,8 +24,7 @@ class Token extends Api
     }
 
     /**
-     * 刷新Token
-     *
+     * 刷新Token.
      */
     public function refresh()
     {

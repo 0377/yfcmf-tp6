@@ -6,11 +6,10 @@ use app\common\controller\Frontend;
 use think\facade\Config;
 use think\facade\Cookie;
 use think\facade\Event;
-use think\facade\Session;
 use think\facade\Validate;
 
 /**
- * 会员中心
+ * 会员中心.
  */
 class User extends Frontend
 {
@@ -49,29 +48,33 @@ class User extends Frontend
 
     /**
      * 空的请求
+     *
      * @param $name
+     *
      * @return mixed
      */
     public function _empty($name)
     {
-        $data = Event::trigger("user_request_empty", $name);
+        $data = Event::trigger('user_request_empty', $name);
         foreach ($data as $index => $datum) {
             $this->view->assign($datum);
         }
-        return $this->view->fetch('user/' . $name);
+
+        return $this->view->fetch('user/'.$name);
     }
 
     /**
-     * 会员中心
+     * 会员中心.
      */
     public function index()
     {
         $this->view->assign('title', __('User center'));
+
         return $this->view->fetch();
     }
 
     /**
-     * 注册会员
+     * 注册会员.
      */
     public function register()
     {
@@ -132,11 +135,12 @@ class User extends Frontend
         }
         $this->view->assign('url', $url);
         $this->view->assign('title', __('Register'));
+
         return $this->view->fetch();
     }
 
     /**
-     * 会员登录
+     * 会员登录.
      */
     public function login()
     {
@@ -147,7 +151,7 @@ class User extends Frontend
         if ($this->request->isPost()) {
             $account = $this->request->post('account');
             $password = $this->request->post('password');
-            $keeplogin = (int)$this->request->post('keeplogin');
+            $keeplogin = (int) $this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
                 'account'   => 'require|length:3,50',
@@ -170,6 +174,7 @@ class User extends Frontend
             $result = $validate->check($data);
             if (!$result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+
                 return false;
             }
             if ($this->auth->login($account, $password)) {
@@ -186,11 +191,12 @@ class User extends Frontend
         }
         $this->view->assign('url', $url);
         $this->view->assign('title', __('Login'));
+
         return $this->view->fetch();
     }
 
     /**
-     * 注销登录
+     * 注销登录.
      */
     public function logout()
     {
@@ -200,11 +206,12 @@ class User extends Frontend
     }
 
     /**
-     * 个人信息
+     * 个人信息.
      */
     public function profile()
     {
         $this->view->assign('title', __('Profile'));
+
         return $this->view->fetch();
     }
 
@@ -214,9 +221,9 @@ class User extends Frontend
     public function changepwd()
     {
         if ($this->request->isPost()) {
-            $oldpassword = $this->request->post("oldpassword");
-            $newpassword = $this->request->post("newpassword");
-            $renewpassword = $this->request->post("renewpassword");
+            $oldpassword = $this->request->post('oldpassword');
+            $newpassword = $this->request->post('newpassword');
+            $renewpassword = $this->request->post('renewpassword');
             $token = $this->request->post('__token__');
             $rule = [
                 'oldpassword'   => 'require|length:6,30',
@@ -236,12 +243,13 @@ class User extends Frontend
             $field = [
                 'oldpassword'   => __('Old password'),
                 'newpassword'   => __('New password'),
-                'renewpassword' => __('Renew password')
+                'renewpassword' => __('Renew password'),
             ];
             $validate = new Validate($rule, $msg, $field);
             $result = $validate->check($data);
             if (!$result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+
                 return false;
             }
 
@@ -253,6 +261,7 @@ class User extends Frontend
             }
         }
         $this->view->assign('title', __('Change password'));
+
         return $this->view->fetch();
     }
 }

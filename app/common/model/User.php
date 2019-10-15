@@ -2,14 +2,11 @@
 
 namespace app\common\model;
 
-use app\common\model\BaseModel;
-
 /**
- * 会员模型
+ * 会员模型.
  */
 class User extends BaseModel
 {
-
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
     // 定义时间戳字段名
@@ -21,20 +18,24 @@ class User extends BaseModel
     ];
 
     /**
-     * 获取个人URL
+     * 获取个人URL.
+     *
      * @param string $value
-     * @param array $data
+     * @param array  $data
+     *
      * @return string
      */
     public function getUrlAttr($value, $data)
     {
-        return "/u/" . $data['id'];
+        return '/u/'.$data['id'];
     }
 
     /**
-     * 获取头像
+     * 获取头像.
+     *
      * @param string $value
-     * @param array $data
+     * @param array  $data
+     *
      * @return string
      */
     public function getAvatarAttr($value, $data)
@@ -44,11 +45,12 @@ class User extends BaseModel
             //$value = '/assets/img/avatar.png';
             $value = letter_avatar($data['nickname']);
         }
+
         return $value;
     }
 
     /**
-     * 获取会员的组别
+     * 获取会员的组别.
      */
     public function getGroupAttr($value, $data)
     {
@@ -57,33 +59,40 @@ class User extends BaseModel
 
     /**
      * 获取验证字段数组值
+     *
      * @param string $value
-     * @param array $data
-     * @return  object
+     * @param array  $data
+     *
+     * @return object
      */
     public function getVerificationAttr($value, $data)
     {
-        $value = array_filter((array)json_decode($value, true));
+        $value = array_filter((array) json_decode($value, true));
         $value = array_merge(['email' => 0, 'mobile' => 0], $value);
-        return (object)$value;
+
+        return (object) $value;
     }
 
     /**
-     * 设置验证字段
+     * 设置验证字段.
+     *
      * @param mixed $value
+     *
      * @return string
      */
     public function setVerificationAttr($value)
     {
         $value = is_object($value) || is_array($value) ? json_encode($value) : $value;
+
         return $value;
     }
 
     /**
-     * 变更会员余额
-     * @param int $money 余额
-     * @param int $user_id 会员ID
-     * @param string $memo 备注
+     * 变更会员余额.
+     *
+     * @param int    $money   余额
+     * @param int    $user_id 会员ID
+     * @param string $memo    备注
      */
     public static function money($money, $user_id, $memo)
     {
@@ -99,16 +108,17 @@ class User extends BaseModel
                 'money'   => $money,
                 'before'  => $before,
                 'after'   => $after,
-                'memo'    => $memo
+                'memo'    => $memo,
             ]);
         }
     }
 
     /**
-     * 变更会员积分
-     * @param int $score 积分
-     * @param int $user_id 会员ID
-     * @param string $memo 备注
+     * 变更会员积分.
+     *
+     * @param int    $score   积分
+     * @param int    $user_id 会员ID
+     * @param string $memo    备注
      */
     public static function score($score, $user_id, $memo)
     {
@@ -125,19 +135,21 @@ class User extends BaseModel
                 'score'   => $score,
                 'before'  => $before,
                 'after'   => $after,
-                'memo'    => $memo
+                'memo'    => $memo,
             ]);
         }
     }
 
     /**
-     * 根据积分获取等级
+     * 根据积分获取等级.
+     *
      * @param int $score 积分
+     *
      * @return int
      */
     public static function nextlevel($score = 0)
     {
-        $lv = array(
+        $lv = [
             1  => 0,
             2  => 30,
             3  => 100,
@@ -147,14 +159,15 @@ class User extends BaseModel
             7  => 3000,
             8  => 5000,
             9  => 8000,
-            10 => 10000
-        );
+            10 => 10000,
+        ];
         $level = 1;
         foreach ($lv as $key => $value) {
             if ($score >= $value) {
                 $level = $key;
             }
         }
+
         return $level;
     }
 }

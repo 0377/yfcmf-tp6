@@ -2,11 +2,8 @@
 
 namespace app\common\model;
 
-use app\common\model\BaseModel;
-
 class UserGroup extends BaseModel
 {
-
     // 表名
     protected $name = 'user_group';
     // 自动写入时间戳字段
@@ -17,5 +14,4 @@ class UserGroup extends BaseModel
     // 追加属性
     protected $append = [
     ];
-
 }

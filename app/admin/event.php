@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午5:45
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 // 事件定义文件
@@ -19,7 +18,7 @@ return [
     'listen' => [
         'AppInit'  => [],
         'HttpRun'  => [],
-        'HttpEnd'  => [app\admin\event\AdminLog::class,],
+        'HttpEnd'  => [app\admin\event\AdminLog::class],
         'LogLevel' => [],
         'LogWrite' => [],
     ],

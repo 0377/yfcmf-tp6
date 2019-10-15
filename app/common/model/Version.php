@@ -2,11 +2,8 @@
 
 namespace app\common\model;
 
-use app\common\model\BaseModel;
-
 class Version extends BaseModel
 {
-
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
     // 定义时间戳字段名
@@ -17,9 +14,10 @@ class Version extends BaseModel
     ];
 
     /**
-     * 检测版本号
+     * 检测版本号.
      *
      * @param string $version 客户端版本号
+     *
      * @return array
      */
     public static function check($version)
@@ -36,15 +34,15 @@ class Version extends BaseModel
             $search = ['{version}', '{newversion}', '{downloadurl}', '{url}', '{packagesize}'];
             $replace = [$version, $updateversion['newversion'], $updateversion['downloadurl'], $updateversion['downloadurl'], $updateversion['packagesize']];
             $upgradetext = str_replace($search, $replace, $updateversion['content']);
+
             return [
-                "enforce"     => $updateversion['enforce'],
-                "version"     => $version,
-                "newversion"  => $updateversion['newversion'],
-                "downloadurl" => $updateversion['downloadurl'],
-                "packagesize" => $updateversion['packagesize'],
-                "upgradetext" => $upgradetext
+                'enforce'     => $updateversion['enforce'],
+                'version'     => $version,
+                'newversion'  => $updateversion['newversion'],
+                'downloadurl' => $updateversion['downloadurl'],
+                'packagesize' => $updateversion['packagesize'],
+                'upgradetext' => $upgradetext,
             ];
         }
-        return null;
     }
 }

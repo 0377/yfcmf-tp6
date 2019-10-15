@@ -6,14 +6,12 @@ use app\common\controller\Backend;
 use fast\Tree;
 
 /**
- * 会员规则管理
+ * 会员规则管理.
  *
  * @icon fa fa-circle-o
  */
 class Rule extends Backend
 {
-
-
     /**
      * @var \app\admin\model\UserRule
      */
@@ -24,8 +22,8 @@ class Rule extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\UserRule;
-        $this->view->assign("statusList", $this->model->getStatusList());
+        $this->model = new \app\admin\model\UserRule();
+        $this->view->assign('statusList', $this->model->getStatusList());
         // 必须将结果集转换为数组
         $ruleList = $this->model->order('weigh', 'desc')->select()->toArray();
         foreach ($ruleList as $k => &$v) {
@@ -46,7 +44,7 @@ class Rule extends Backend
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -54,17 +52,18 @@ class Rule extends Backend
             $list = $this->rulelist;
             $total = count($this->rulelist);
 
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 删除
+     * 删除.
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             $delIds = [];
@@ -79,5 +78,4 @@ class Rule extends Backend
         }
         $this->error();
     }
-
 }

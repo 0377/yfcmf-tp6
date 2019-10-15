@@ -2,12 +2,11 @@
 
 namespace app\admin\model;
 
-use app\common\model\MoneyLog;
 use app\common\model\BaseModel;
+use app\common\model\MoneyLog;
 
 class User extends BaseModel
 {
-
     // 表名
     protected $name = 'user';
     // 自动写入时间戳字段
@@ -19,7 +18,7 @@ class User extends BaseModel
     protected $append = [
         'prevtime_text',
         'logintime_text',
-        'jointime_text'
+        'jointime_text',
     ];
 
     public function getOriginData()
@@ -87,19 +86,22 @@ class User extends BaseModel
     public function getPrevtimeTextAttr($value, $data)
     {
         $value = $value ? $value : $data['prevtime'];
-        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+
+        return is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value;
     }
 
     public function getLogintimeTextAttr($value, $data)
     {
         $value = $value ? $value : $data['logintime'];
-        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+
+        return is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value;
     }
 
     public function getJointimeTextAttr($value, $data)
     {
         $value = $value ? $value : $data['jointime'];
-        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+
+        return is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value;
     }
 
     protected function setPrevtimeAttr($value)
@@ -121,5 +123,4 @@ class User extends BaseModel
     {
         return $this->belongsTo('UserGroup', 'group_id', 'id', [], 'LEFT');
     }
-
 }

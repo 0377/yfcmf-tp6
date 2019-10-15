@@ -6,7 +6,7 @@ use DateTime;
 use DateTimeZone;
 
 /**
- * 日期时间处理类
+ * 日期时间处理类.
  */
 class Date
 {
@@ -18,17 +18,18 @@ class Date
     const MINUTE = 60;
 
     /**
-     * 计算两个时区间相差的时长,单位为秒
+     * 计算两个时区间相差的时长,单位为秒.
      *
      * $seconds = self::offset('America/Chicago', 'GMT');
      *
      * [!!] A list of time zones that PHP supports can be found at
      * <http://php.net/timezones>.
      *
-     * @param   string $remote timezone that to find the offset of
-     * @param   string $local  timezone used as the baseline
-     * @param   mixed  $now    UNIX timestamp or date string
-     * @return  integer
+     * @param string $remote timezone that to find the offset of
+     * @param string $local  timezone used as the baseline
+     * @param mixed  $now    UNIX timestamp or date string
+     *
+     * @return int
      */
     public static function offset($remote, $local = null, $now = null)
     {
@@ -48,26 +49,28 @@ class Date
         $time_local = new DateTime($now, $zone_local);
         // Find the offset
         $offset = $zone_remote->getOffset($time_remote) - $zone_local->getOffset($time_local);
+
         return $offset;
     }
 
     /**
-     * 计算两个时间戳之间相差的时间
+     * 计算两个时间戳之间相差的时间.
      *
      * $span = self::span(60, 182, 'minutes,seconds'); // array('minutes' => 2, 'seconds' => 2)
      * $span = self::span(60, 182, 'minutes'); // 2
      *
-     * @param   int    $remote timestamp to find the span of
-     * @param   int    $local  timestamp to use as the baseline
-     * @param   string $output formatting string
-     * @return  string   when only a single output is requested
-     * @return  array    associative list of all outputs requested
+     * @param int    $remote timestamp to find the span of
+     * @param int    $local  timestamp to use as the baseline
+     * @param string $output formatting string
+     *
+     * @return string when only a single output is requested
+     * @return array  associative list of all outputs requested
      * @from https://github.com/kohana/ohanzee-helpers/blob/master/src/Date.php
      */
     public static function span($remote, $local = null, $output = 'years,months,weeks,days,hours,minutes,seconds')
     {
         // Normalize output
-        $output = trim(strtolower((string)$output));
+        $output = trim(strtolower((string) $output));
         if (!$output) {
             // Invalid output
             return false;
@@ -85,22 +88,22 @@ class Date
         // Calculate timespan (seconds)
         $timespan = abs($remote - $local);
         if (isset($output['years'])) {
-            $timespan -= self::YEAR * ($output['years'] = (int)floor($timespan / self::YEAR));
+            $timespan -= self::YEAR * ($output['years'] = (int) floor($timespan / self::YEAR));
         }
         if (isset($output['months'])) {
-            $timespan -= self::MONTH * ($output['months'] = (int)floor($timespan / self::MONTH));
+            $timespan -= self::MONTH * ($output['months'] = (int) floor($timespan / self::MONTH));
         }
         if (isset($output['weeks'])) {
-            $timespan -= self::WEEK * ($output['weeks'] = (int)floor($timespan / self::WEEK));
+            $timespan -= self::WEEK * ($output['weeks'] = (int) floor($timespan / self::WEEK));
         }
         if (isset($output['days'])) {
-            $timespan -= self::DAY * ($output['days'] = (int)floor($timespan / self::DAY));
+            $timespan -= self::DAY * ($output['days'] = (int) floor($timespan / self::DAY));
         }
         if (isset($output['hours'])) {
-            $timespan -= self::HOUR * ($output['hours'] = (int)floor($timespan / self::HOUR));
+            $timespan -= self::HOUR * ($output['hours'] = (int) floor($timespan / self::HOUR));
         }
         if (isset($output['minutes'])) {
-            $timespan -= self::MINUTE * ($output['minutes'] = (int)floor($timespan / self::MINUTE));
+            $timespan -= self::MINUTE * ($output['minutes'] = (int) floor($timespan / self::MINUTE));
         }
         // Seconds ago, 1
         if (isset($output['seconds'])) {
@@ -115,25 +118,25 @@ class Date
     }
 
     /**
-     * 格式化 UNIX 时间戳为人易读的字符串
+     * 格式化 UNIX 时间戳为人易读的字符串.
      *
      * @param    int    Unix 时间戳
-     * @param    mixed $local 本地时间
+     * @param mixed $local 本地时间
      *
-     * @return    string    格式化的日期字符串
+     * @return string 格式化的日期字符串
      */
     public static function human($remote, $local = null)
     {
         $timediff = (is_null($local) || $local ? time() : $local) - $remote;
-        $chunks = array(
-            array(60 * 60 * 24 * 365, 'year'),
-            array(60 * 60 * 24 * 30, 'month'),
-            array(60 * 60 * 24 * 7, 'week'),
-            array(60 * 60 * 24, 'day'),
-            array(60 * 60, 'hour'),
-            array(60, 'minute'),
-            array(1, 'second')
-        );
+        $chunks = [
+            [60 * 60 * 24 * 365, 'year'],
+            [60 * 60 * 24 * 30, 'month'],
+            [60 * 60 * 24 * 7, 'week'],
+            [60 * 60 * 24, 'day'],
+            [60 * 60, 'hour'],
+            [60, 'minute'],
+            [1, 'second'],
+        ];
 
         for ($i = 0, $j = count($chunks); $i < $j; $i++) {
             $seconds = $chunks[$i][0];
@@ -142,11 +145,12 @@ class Date
                 break;
             }
         }
+
         return __("%d {$name}%s ago", $count, ($count > 1 ? 's' : ''));
     }
 
     /**
-     * 获取一个基于时间偏移的Unix时间戳
+     * 获取一个基于时间偏移的Unix时间戳.
      *
      * @param string $type     时间类型，默认为day，可选minute,hour,day,week,month,quarter,year
      * @param int    $offset   时间偏移量 默认为0，正数表示当前type之后，负数表示当前type之前
@@ -156,6 +160,7 @@ class Date
      * @param int    $day      基准天，默认为null，即以当前天为基准
      * @param int    $hour     基准小时，默认为null，即以当前年小时基准
      * @param int    $minute   基准分钟，默认为null，即以当前分钟为基准
+     *
      * @return int 处理后的Unix时间戳
      */
     public static function unixtime($type = 'day', $offset = 0, $position = 'begin', $year = null, $month = null, $day = null, $hour = null, $minute = null)
@@ -165,7 +170,7 @@ class Date
         $day = is_null($day) ? date('d') : $day;
         $hour = is_null($hour) ? date('H') : $hour;
         $minute = is_null($minute) ? date('i') : $minute;
-        $position = in_array($position, array('begin', 'start', 'first', 'front'));
+        $position = in_array($position, ['begin', 'start', 'first', 'front']);
 
         switch ($type) {
             case 'minute':
@@ -179,8 +184,8 @@ class Date
                 break;
             case 'week':
                 $time = $position ?
-                    mktime(0, 0, 0, $month, $day - date("w", mktime(0, 0, 0, $month, $day, $year)) + 1 - 7 * (-$offset), $year) :
-                    mktime(23, 59, 59, $month, $day - date("w", mktime(0, 0, 0, $month, $day, $year)) + 7 - 7 * (-$offset), $year);
+                    mktime(0, 0, 0, $month, $day - date('w', mktime(0, 0, 0, $month, $day, $year)) + 1 - 7 * (-$offset), $year) :
+                    mktime(23, 59, 59, $month, $day - date('w', mktime(0, 0, 0, $month, $day, $year)) + 7 - 7 * (-$offset), $year);
                 break;
             case 'month':
                 $time = $position ? mktime(0, 0, 0, $month + $offset, 1, $year) : mktime(23, 59, 59, $month + $offset, cal_days_in_month(CAL_GREGORIAN, $month + $offset, $year), $year);
@@ -197,6 +202,7 @@ class Date
                 $time = mktime($hour, $minute, 0, $month, $day, $year);
                 break;
         }
+
         return $time;
     }
 }

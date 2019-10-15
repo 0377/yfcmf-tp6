@@ -6,7 +6,6 @@ use app\common\model\BaseModel;
 
 class AuthGroup extends BaseModel
 {
-
     // 开启自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
     // 定义时间戳字段名
@@ -17,5 +16,4 @@ class AuthGroup extends BaseModel
     {
         return __($value);
     }
-
 }
