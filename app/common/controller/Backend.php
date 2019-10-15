@@ -125,7 +125,7 @@ class Backend extends BaseController
 
     public function _initialize()
     {
-        $modulename = $this->request->app();
+        $modulename = app()->http->getName();
         $controllername = strtolower($this->request->controller());
         $actionname = strtolower($this->request->action());
 

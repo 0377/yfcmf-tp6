@@ -129,12 +129,9 @@ trait Jump
     {
         if (is_integer($params)) {
             $code = $params;
-            $params = [];
         }
-
         $response = \redirect($url);
-        $response->code($code)->params($params)->with($with);
-
+        $response->code($code)->with($with);
         throw new HttpResponseException($response);
     }
 

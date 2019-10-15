@@ -126,7 +126,7 @@ class Api
 
         $this->auth = Auth::instance();
 
-        $modulename = $this->request->app();
+        $modulename = app()->http->getName();
         $controllername = strtolower($this->request->controller());
         $actionname = strtolower($this->request->action());
 
@@ -175,7 +175,7 @@ class Api
      */
     protected function loadlang($name)
     {
-        Lang::load(APP_PATH . $this->request->app() . '/lang/' . $this->request->langset() . '/' . str_replace('.',
+        Lang::load(APP_PATH . app()->http->getName() . '/lang/' . $this->request->langset() . '/' . str_replace('.',
                 '/', $name) . '.php');
     }
 

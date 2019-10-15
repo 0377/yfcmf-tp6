@@ -50,10 +50,10 @@ class Frontend extends BaseController
     protected $auth = null;
 
     public function _initialize()
-    {
+    {url();
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
-        $modulename = $this->request->app();
+        $modulename = app()->http->getName();
         $controllername = strtolower($this->request->controller());
         $actionname = strtolower($this->request->action());
 

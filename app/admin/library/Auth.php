@@ -360,7 +360,7 @@ class Auth extends \fast\Auth
         $colorArr = ['red', 'green', 'yellow', 'blue', 'teal', 'orange', 'purple'];
         $colorNums = count($colorArr);
         $badgeList = [];
-        $module = request()->app();
+        $module = app()->http->getName();
         // 生成菜单的badge
         foreach ($params as $k => $v) {
             $url = $k;

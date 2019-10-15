@@ -22,7 +22,9 @@
         "topthink/think-view": "^1.0",
         "topthink/think-captcha": "3.0.x-dev",
         "overtrue/pinyin": "^4.0",
-        "mtdowling/cron-expression": "^1.2"
+        "mtdowling/cron-expression": "^1.2",
+        "topthink/think-multi-app": "^1.0",
+        "topthink/think-trace": "^1.1"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2"
