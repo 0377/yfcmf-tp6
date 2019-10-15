@@ -11,11 +11,10 @@
  *  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  *  * ============================================================================
  *  * Date: 2019/9/19 下午3:12
- *  * Time: $time
- *
+ *  * Time: $time.
  */
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace app\common\controller;
 
@@ -26,30 +25,34 @@ use think\facade\View;
 use think\Validate;
 
 /**
- * 控制器基础类
+ * 控制器基础类.
  */
 abstract class BaseController
 {
     /**
-     * Request实例
+     * Request实例.
+     *
      * @var \think\Request
      */
     protected $request;
 
     /**
-     * 应用实例
+     * 应用实例.
+     *
      * @var \think\App
      */
     protected $app;
 
     /**
      * 是否批量验证
+     *
      * @var bool
      */
     protected $batchValidate = false;
 
     /**
-     * 控制器中间件
+     * 控制器中间件.
+     *
      * @var array
      */
     protected $middleware = [];
@@ -59,8 +62,8 @@ abstract class BaseController
     use Jump;
 
     /**
-     * 构造方法
-     * @access public
+     * 构造方法.
+     *
      * @param App $app 应用对象
      */
     public function __construct(App $app)
@@ -83,14 +86,16 @@ abstract class BaseController
     }
 
     /**
-     * 验证数据
-     * @access protected
-     * @param array $data 数据
+     * 验证数据.
+     *
+     * @param array        $data     数据
      * @param string|array $validate 验证器名或者验证规则数组
-     * @param array $message 提示信息
-     * @param bool $batch 是否批量验证
-     * @return array|string|true
+     * @param array        $message  提示信息
+     * @param bool         $batch    是否批量验证
+     *
      * @throws ValidateException
+     *
+     * @return array|string|true
      */
     protected function validate(array $data, $validate, array $message = [], bool $batch = false)
     {
@@ -118,5 +123,4 @@ abstract class BaseController
 
         return $v->failException(true)->check($data);
     }
-
 }

@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午4:25
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\controller\general;
@@ -16,14 +15,13 @@ namespace app\admin\controller\general;
 use app\common\controller\Backend;
 
 /**
- * 附件管理
+ * 附件管理.
  *
  * @icon fa fa-circle-o
  * @remark 主要用于管理上传到又拍云的数据或上传至本服务的上传数据
  */
 class Attachment extends Backend
 {
-
     /**
      * @var \app\common\model\Attachment
      */
@@ -32,11 +30,11 @@ class Attachment extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\common\model\Attachment;
+        $this->model = new \app\common\model\Attachment();
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -45,13 +43,13 @@ class Attachment extends Backend
         if ($this->request->isAjax()) {
             $mimetypeQuery = [];
             $filter = $this->request->request('filter');
-            $filterArr = (array)json_decode($filter, true);
+            $filterArr = (array) json_decode($filter, true);
             if (isset($filterArr['mimetype']) && stripos($filterArr['mimetype'], ',') !== false) {
                 $this->request->get(['filter' => json_encode(array_merge($filterArr, ['mimetype' => '']))]);
                 $mimetypeQuery = function ($query) use ($filterArr) {
                     $mimetypeArr = explode(',', $filterArr['mimetype']);
                     foreach ($mimetypeArr as $index => $item) {
-                        $query->whereOr('mimetype', 'like', '%' . $item . '%');
+                        $query->whereOr('mimetype', 'like', '%'.$item.'%');
                     }
                 };
             }
@@ -71,59 +69,62 @@ class Attachment extends Backend
                 ->select();
             $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', $this->request->root());
             foreach ($list as $k => &$v) {
-                $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']) . $v['url'];
+                $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']).$v['url'];
             }
             unset($v);
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 选择附件
+     * 选择附件.
      */
     public function select()
     {
         if ($this->request->isAjax()) {
             return $this->index();
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 添加
+     * 添加.
      */
     public function add()
     {
         if ($this->request->isAjax()) {
             $this->error();
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 删除附件
+     * 删除附件.
+     *
      * @param array $ids
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             \think\facade\Event::listen('upload_delete', function ($params) {
-                $attachmentFile = app()->getRootPath() . '/public' . $params['url'];
+                $attachmentFile = app()->getRootPath().'/public'.$params['url'];
                 if (is_file($attachmentFile)) {
                     @unlink($attachmentFile);
                 }
             });
             $attachmentlist = $this->model->where('id', 'in', $ids)->select();
             foreach ($attachmentlist as $attachment) {
-                \think\facade\Event::trigger("upload_delete", $attachment);
+                \think\facade\Event::trigger('upload_delete', $attachment);
                 $attachment->delete();
             }
             $this->success();
         }
         $this->error(__('Parameter %s can not be empty', 'ids'));
     }
-
 }

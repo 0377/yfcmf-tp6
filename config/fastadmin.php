@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:37
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 return [
@@ -21,7 +20,7 @@ return [
     //是否同一账号同一时间只能在一个地方登录
     'login_unique'        => false,
     //登录页默认背景图
-    'login_background'    => "/assets/img/loginbg.jpg",
+    'login_background'    => '/assets/img/loginbg.jpg',
     //是否启用多级菜单导航
     'multiplenav'         => false,
     //自动检测更新

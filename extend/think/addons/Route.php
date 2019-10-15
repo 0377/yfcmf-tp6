@@ -7,22 +7,16 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/20 下午6:00
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace think\addons;
 
-use app\common\controller\BaseController;
-use app\common\library\Auth;
 use think\App;
 use think\exception\HttpException;
-use think\facade\Config;
 use think\facade\Event;
 use think\facade\Lang;
 use think\facade\Request;
-use think\facade\View;
-
 
 class Route
 {
@@ -65,9 +59,10 @@ class Route
             } else {
                 // 操作不存在
                 throw new HttpException(404,
-                    __('addon action %s not found', get_class($instance) . '->' . $action . '()'));
+                    __('addon action %s not found', get_class($instance).'->'.$action.'()'));
             }
             Event::trigger('addon_action_begin', $call);
+
             return call_user_func_array($call, $vars);
         } else {
             abort(500, lang('addon can not be empty'));

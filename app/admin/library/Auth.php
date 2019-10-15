@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\library;
@@ -35,49 +34,55 @@ class Auth extends \fast\Auth
 
     public function __get($name)
     {
-        return Session::get('admin.' . $name);
+        return Session::get('admin.'.$name);
     }
 
     /**
-     * 管理员登录
+     * 管理员登录.
      *
      * @param string $username 用户名
      * @param string $password 密码
-     * @param int $keeptime 有效时长
-     * @return  boolean
+     * @param int    $keeptime 有效时长
+     *
+     * @return bool
      */
     public function login($username, $password, $keeptime = 0)
     {
         $admin = Admin::where(['username' => $username])->find();
         if (!$admin) {
             $this->setError('Username is incorrect');
+
             return false;
         }
         if ($admin['status'] == 'hidden') {
             $this->setError('Admin is forbidden');
+
             return false;
         }
         if (Config::get('fastadmin.login_failure_retry') && $admin->loginfailure >= 10 && time() - $admin->updatetime < 86400) {
             $this->setError('Please try again after 1 day');
+
             return false;
         }
-        if ($admin->password != md5(md5($password) . $admin->salt)) {
+        if ($admin->password != md5(md5($password).$admin->salt)) {
             $admin->loginfailure++;
             $admin->save();
             $this->setError('Password is incorrect');
+
             return false;
         }
         $admin->loginfailure = 0;
         $admin->logintime = time();
         $admin->token = Random::uuid();
         $admin->save();
-        Session::set("admin", $admin->toArray());
+        Session::set('admin', $admin->toArray());
         $this->keeplogin($keeptime);
+
         return true;
     }
 
     /**
-     * 注销登录
+     * 注销登录.
      */
     public function logout()
     {
@@ -87,14 +92,16 @@ class Auth extends \fast\Auth
             $admin->save();
         }
         $this->logined = false; //重置登录状态
-        Session::delete("admin");
-        Cookie::delete("keeplogin");
+        Session::delete('admin');
+        Cookie::delete('keeplogin');
+
         return true;
     }
 
     /**
-     * 自动登录
-     * @return boolean
+     * 自动登录.
+     *
+     * @return bool
      */
     public function autologin()
     {
@@ -109,12 +116,13 @@ class Auth extends \fast\Auth
                 return false;
             }
             //token有变更
-            if ($key != md5(md5($id) . md5($keeptime) . md5($expiretime) . $admin->token)) {
+            if ($key != md5(md5($id).md5($keeptime).md5($expiretime).$admin->token)) {
                 return false;
             }
-            Session::set("admin", $admin->toArray());
+            Session::set('admin', $admin->toArray());
             //刷新自动登录的时效
             $this->keeplogin($keeptime);
+
             return true;
         } else {
             return false;
@@ -122,20 +130,23 @@ class Auth extends \fast\Auth
     }
 
     /**
-     * 刷新保持登录的Cookie
+     * 刷新保持登录的Cookie.
      *
      * @param int $keeptime
-     * @return  boolean
+     *
+     * @return bool
      */
     protected function keeplogin($keeptime = 0)
     {
         if ($keeptime) {
             $expiretime = time() + $keeptime;
-            $key = md5(md5($this->id) . md5($keeptime) . md5($expiretime) . $this->token);
+            $key = md5(md5($this->id).md5($keeptime).md5($expiretime).$this->token);
             $data = [$this->id, $keeptime, $expiretime, $key];
             Cookie::set('keeplogin', implode('|', $data), 86400 * 30);
+
             return true;
         }
+
         return false;
     }
 
@@ -145,9 +156,10 @@ class Auth extends \fast\Auth
     }
 
     /**
-     * 检测当前控制器和方法是否匹配传递的数组
+     * 检测当前控制器和方法是否匹配传递的数组.
      *
      * @param array $arr 需要验证权限的数组
+     *
      * @return bool
      */
     public function match($arr = [])
@@ -169,9 +181,9 @@ class Auth extends \fast\Auth
     }
 
     /**
-     * 检测是否登录
+     * 检测是否登录.
      *
-     * @return boolean
+     * @return bool
      */
     public function isLogin()
     {
@@ -190,11 +202,13 @@ class Auth extends \fast\Auth
             }
         }
         $this->logined = true;
+
         return true;
     }
 
     /**
-     * 获取当前请求的URI
+     * 获取当前请求的URI.
+     *
      * @return string
      */
     public function getRequestUri()
@@ -203,7 +217,8 @@ class Auth extends \fast\Auth
     }
 
     /**
-     * 设置当前请求的URI
+     * 设置当前请求的URI.
+     *
      * @param string $uri
      */
     public function setRequestUri($uri)
@@ -214,12 +229,14 @@ class Auth extends \fast\Auth
     public function getGroups($uid = null)
     {
         $uid = is_null($uid) ? $this->id : $uid;
+
         return parent::getGroups($uid);
     }
 
     public function getRuleList($uid = null)
     {
         $uid = is_null($uid) ? $this->id : $uid;
+
         return parent::getRuleList($uid);
     }
 
@@ -233,6 +250,7 @@ class Auth extends \fast\Auth
     public function getRuleIds($uid = null)
     {
         $uid = is_null($uid) ? $this->id : $uid;
+
         return parent::getRuleIds($uid);
     }
 
@@ -242,8 +260,10 @@ class Auth extends \fast\Auth
     }
 
     /**
-     * 获取管理员所属于的分组ID
+     * 获取管理员所属于的分组ID.
+     *
      * @param int $uid
+     *
      * @return array
      */
     public function getGroupIds($uid = null)
@@ -251,14 +271,17 @@ class Auth extends \fast\Auth
         $groups = $this->getGroups($uid);
         $groupIds = [];
         foreach ($groups as $K => $v) {
-            $groupIds[] = (int)$v['group_id'];
+            $groupIds[] = (int) $v['group_id'];
         }
+
         return $groupIds;
     }
 
     /**
-     * 取出当前管理员所拥有权限的分组
-     * @param boolean $withself 是否包含当前所在的分组
+     * 取出当前管理员所拥有权限的分组.
+     *
+     * @param bool $withself 是否包含当前所在的分组
+     *
      * @return array
      */
     public function getChildrenGroupIds($withself = false)
@@ -289,12 +312,15 @@ class Auth extends \fast\Auth
         if (!$withself) {
             $childrenGroupIds = array_diff($childrenGroupIds, $groupIds);
         }
+
         return $childrenGroupIds;
     }
 
     /**
-     * 取出当前管理员所拥有权限的管理员
-     * @param boolean $withself 是否包含自身
+     * 取出当前管理员所拥有权限的管理员.
+     *
+     * @param bool $withself 是否包含自身
+     *
      * @return array
      */
     public function getChildrenAdminIds($withself = false)
@@ -321,12 +347,15 @@ class Auth extends \fast\Auth
         } else {
             $childrenAdminIds = array_diff($childrenAdminIds, [$this->id]);
         }
+
         return $childrenAdminIds;
     }
 
     /**
-     * 获得面包屑导航
+     * 获得面包屑导航.
+     *
      * @param string $path
+     *
      * @return array
      */
     public function getBreadCrumb($path = '')
@@ -345,14 +374,16 @@ class Auth extends \fast\Auth
                 $v['title'] = __($v['title']);
             }
         }
+
         return $this->breadcrumb;
     }
 
     /**
-     * 获取左侧和顶部菜单栏
+     * 获取左侧和顶部菜单栏.
      *
-     * @param array $params URL对应的badge数据
+     * @param array  $params    URL对应的badge数据
      * @param string $fixedPage 默认页
+     *
      * @return array
      */
     public function getSidebar($params = [], $fixedPage = 'dashboard')
@@ -375,7 +406,7 @@ class Auth extends \fast\Auth
             }
             //必须nums大于0才显示
             if ($nums) {
-                $badgeList[$url] = '<small class="' . $class . ' pull-right bg-' . $color . '">' . $nums . '</small>';
+                $badgeList[$url] = '<small class="'.$class.' pull-right bg-'.$color.'">'.$nums.'</small>';
             }
         }
 
@@ -388,7 +419,7 @@ class Auth extends \fast\Auth
         $ruleList = \app\admin\model\AuthRule::where('status', 'normal')
             ->where('ismenu', 1)
             ->order('weigh', 'desc')
-            ->cache("__menu__")
+            ->cache('__menu__')
             ->select()->toArray();
         $indexRuleList = \app\admin\model\AuthRule::where('status', 'normal')
             ->where('ismenu', 0)
@@ -402,17 +433,17 @@ class Auth extends \fast\Auth
                 unset($ruleList[$k]);
                 continue;
             }
-            $indexRuleName = $v['name'] . '/index';
+            $indexRuleName = $v['name'].'/index';
             if (isset($indexRuleList[$indexRuleName]) && !in_array($indexRuleName, $userRule)) {
                 unset($ruleList[$k]);
                 continue;
             }
-            $v['icon'] = $v['icon'] . ' fa-fw';
+            $v['icon'] = $v['icon'].' fa-fw';
             //$v['url'] = '/' . $module . '/' . $v['name'];
             if (!empty($v['route'])) {
-                $v['url'] = \request()->rootUrl() . '/' . $v['route'];
+                $v['url'] = \request()->rootUrl().'/'.$v['route'];
             } else {
-                $v['url'] = \request()->rootUrl() . '/' . $v['name'];
+                $v['url'] = \request()->rootUrl().'/'.$v['name'];
             }
             $v['badge'] = isset($badgeList[$v['name']]) ? $badgeList[$v['name']] : '';
             $v['py'] = $pinyin->abbr($v['title'], '');
@@ -456,10 +487,10 @@ class Auth extends \fast\Auth
                     $select_id, '', 'ul', 'class="treeview-menu"');
                 $current = in_array($item['id'], $selectParentIds);
                 $url = $childList ? 'javascript:;' : url($item['url']);
-                $addtabs = $childList || !$url ? "" : (stripos($url, "?") !== false ? "&" : "?") . "ref=addtabs";
-                $childList = str_replace('" pid="' . $item['id'] . '"',
-                    ' treeview ' . ($current ? '' : 'hidden') . '" pid="' . $item['id'] . '"', $childList);
-                $nav .= '<li class="' . ($current ? 'active' : '') . '"><a href="' . $url . $addtabs . '" addtabs="' . $item['id'] . '" url="' . $url . '"><i class="' . $item['icon'] . '"></i> <span>' . $item['title'] . '</span> <span class="pull-right-container"> </span></a> </li>';
+                $addtabs = $childList || !$url ? '' : (stripos($url, '?') !== false ? '&' : '?').'ref=addtabs';
+                $childList = str_replace('" pid="'.$item['id'].'"',
+                    ' treeview '.($current ? '' : 'hidden').'" pid="'.$item['id'].'"', $childList);
+                $nav .= '<li class="'.($current ? 'active' : '').'"><a href="'.$url.$addtabs.'" addtabs="'.$item['id'].'" url="'.$url.'"><i class="'.$item['icon'].'"></i> <span>'.$item['title'].'</span> <span class="pull-right-container"> </span></a> </li>';
                 $menu .= $childList;
             }
         } else {
@@ -469,10 +500,10 @@ class Auth extends \fast\Auth
                 '<li class="@class"><a href="@url@addtabs" addtabs="@id" url="@url" py="@py" pinyin="@pinyin"><i class="@icon"></i> <span>@title</span> <span class="pull-right-container">@caret @badge</span></a> @childlist</li>',
                 $select_id, '', 'ul', 'class="treeview-menu"');
             if ($selected) {
-                $nav .= '<li role="presentation" id="tab_' . $selected['id'] . '" class="' . ($referer ? '' : 'active') . '"><a href="#con_' . $selected['id'] . '" node-id="' . $selected['id'] . '" aria-controls="' . $selected['id'] . '" role="tab" data-toggle="tab"><i class="' . $selected['icon'] . ' fa-fw"></i> <span>' . $selected['title'] . '</span> </a></li>';
+                $nav .= '<li role="presentation" id="tab_'.$selected['id'].'" class="'.($referer ? '' : 'active').'"><a href="#con_'.$selected['id'].'" node-id="'.$selected['id'].'" aria-controls="'.$selected['id'].'" role="tab" data-toggle="tab"><i class="'.$selected['icon'].' fa-fw"></i> <span>'.$selected['title'].'</span> </a></li>';
             }
             if ($referer) {
-                $nav .= '<li role="presentation" id="tab_' . $referer['id'] . '" class="active"><a href="#con_' . $referer['id'] . '" node-id="' . $referer['id'] . '" aria-controls="' . $referer['id'] . '" role="tab" data-toggle="tab"><i class="' . $referer['icon'] . ' fa-fw"></i> <span>' . $referer['title'] . '</span> </a> <i class="close-tab fa fa-remove"></i></li>';
+                $nav .= '<li role="presentation" id="tab_'.$referer['id'].'" class="active"><a href="#con_'.$referer['id'].'" node-id="'.$referer['id'].'" aria-controls="'.$referer['id'].'" role="tab" data-toggle="tab"><i class="'.$referer['icon'].' fa-fw"></i> <span>'.$referer['title'].'</span> </a> <i class="close-tab fa fa-remove"></i></li>';
             }
         }
 
@@ -480,19 +511,22 @@ class Auth extends \fast\Auth
     }
 
     /**
-     * 设置错误信息
+     * 设置错误信息.
      *
      * @param string $error 错误信息
+     *
      * @return Auth
      */
     public function setError($error)
     {
         $this->_error = $error;
+
         return $this;
     }
 
     /**
-     * 获取错误信息
+     * 获取错误信息.
+     *
      * @return string
      */
     public function getError()

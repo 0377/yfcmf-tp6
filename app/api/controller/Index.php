@@ -5,7 +5,7 @@ namespace app\api\controller;
 use app\common\controller\Api;
 
 /**
- * 首页接口
+ * 首页接口.
  */
 class Index extends Api
 {
@@ -13,8 +13,7 @@ class Index extends Api
     protected $noNeedRight = ['*'];
 
     /**
-     * 首页
-     *
+     * 首页.
      */
     public function index()
     {

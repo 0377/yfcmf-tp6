@@ -11,8 +11,7 @@
  *  * 使用；不允许对程序代码以任何形式任何目的的再发布。
  *  * ============================================================================
  *  * Date: 2019/9/19 下午3:16
- *  * Time: $time
- *
+ *  * Time: $time.
  */
 
 namespace app\admin\command;
@@ -20,14 +19,13 @@ namespace app\admin\command;
 use app\admin\model\AuthRule;
 use ReflectionClass;
 use ReflectionMethod;
-use think\facade\Cache;
-use think\facade\Config;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Option;
 use think\console\Output;
 use think\Exception;
-use think\Loader;
+use think\facade\Cache;
+use think\facade\Config;
 use think\Model;
 
 class Menu extends Command
@@ -51,11 +49,11 @@ class Menu extends Command
     protected function execute(Input $input, Output $output)
     {
         $this->model = new AuthRule();
-        $adminPath = dirname(__DIR__) . DIRECTORY_SEPARATOR;
+        $adminPath = dirname(__DIR__).DIRECTORY_SEPARATOR;
         //控制器名
         $controller = $input->getOption('controller') ?: '';
         if (!$controller) {
-            throw new Exception("please input controller name");
+            throw new Exception('please input controller name');
         }
         $force = $input->getOption('force');
         //是否为删除模式
@@ -63,10 +61,9 @@ class Menu extends Command
         //是否控制器完全匹配
         $equal = $input->getOption('equal');
 
-
         if ($delete) {
             if (in_array('all-controller', $controller)) {
-                throw new Exception("could not delete all menu");
+                throw new Exception('could not delete all menu');
             }
             $ids = [];
             $list = $this->model->where(function ($query) use ($controller, $equal) {
@@ -86,7 +83,7 @@ class Menu extends Command
                     if ($equal) {
                         $query->whereOr('name', 'eq', $item);
                     } else {
-                        $query->whereOr('name', 'like', strtolower($item) . "%");
+                        $query->whereOr('name', 'like', strtolower($item).'%');
                     }
                 }
             })->select();
@@ -95,19 +92,20 @@ class Menu extends Command
                 $ids[] = $v->id;
             }
             if (!$ids) {
-                throw new Exception("There is no menu to delete");
+                throw new Exception('There is no menu to delete');
             }
             if (!$force) {
                 $output->info("Are you sure you want to delete all those menu?  Type 'yes' to continue: ");
                 $line = fgets(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'));
                 if (trim($line) != 'yes') {
-                    throw new Exception("Operation is aborted!");
+                    throw new Exception('Operation is aborted!');
                 }
             }
             AuthRule::destroy($ids);
 
-            Cache::delete("__menu__");
-            $output->info("Delete Successed");
+            Cache::delete('__menu__');
+            $output->info('Delete Successed');
+
             return;
         }
 
@@ -124,10 +122,11 @@ class Menu extends Command
                 } else {
                     $controllerArr = [ucfirst($item)];
                 }
-                $adminPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR,
-                        $controllerArr) . '.php';
+                $adminPath = dirname(__DIR__).DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR,
+                        $controllerArr).'.php';
                 if (!is_file($adminPath)) {
-                    $output->error("controller not found");
+                    $output->error('controller not found');
+
                     return;
                 }
                 $this->importRule($item);
@@ -135,20 +134,22 @@ class Menu extends Command
         } else {
             $authRuleList = AuthRule::select();
             //生成权限规则备份文件
-            file_put_contents(app()->getRuntimePath() . 'authrule.json', json_encode($authRuleList->toArray()));
+            file_put_contents(app()->getRuntimePath().'authrule.json', json_encode($authRuleList->toArray()));
 
             $this->model->where('id', '>', 0)->delete();
-            $controllerDir = $adminPath . 'controller' . DIRECTORY_SEPARATOR;
+            $controllerDir = $adminPath.'controller'.DIRECTORY_SEPARATOR;
             // 扫描新的节点信息并导入
             $treelist = $this->import($this->scandir($controllerDir));
         }
-        Cache::delete("__menu__");
-        $output->info("Build Successed!");
+        Cache::delete('__menu__');
+        $output->info('Build Successed!');
     }
 
     /**
-     * 递归扫描文件夹
+     * 递归扫描文件夹.
+     *
      * @param string $dir
+     *
      * @return array
      */
     public function scandir($dir)
@@ -156,21 +157,24 @@ class Menu extends Command
         $result = [];
         $cdir = scandir($dir);
         foreach ($cdir as $value) {
-            if (!in_array($value, array(".", ".."))) {
-                if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                    $result[$value] = $this->scandir($dir . DIRECTORY_SEPARATOR . $value);
+            if (!in_array($value, ['.', '..'])) {
+                if (is_dir($dir.DIRECTORY_SEPARATOR.$value)) {
+                    $result[$value] = $this->scandir($dir.DIRECTORY_SEPARATOR.$value);
                 } else {
                     $result[] = $value;
                 }
             }
         }
+
         return $result;
     }
 
     /**
-     * 导入规则节点
+     * 导入规则节点.
+     *
      * @param array $dirarr
      * @param array $parentdir
+     *
      * @return array
      */
     public function import($dirarr, $parentdir = [])
@@ -187,7 +191,7 @@ class Menu extends Command
                     continue;
                 }
                 //导入文件
-                $controller = ($parentdir ? implode('/', $parentdir) . '/' : '') . $matchone[1];
+                $controller = ($parentdir ? implode('/', $parentdir).'/' : '').$matchone[1];
                 $this->importRule($controller);
             }
         }
@@ -208,21 +212,21 @@ class Menu extends Command
             $controllerArr = [ucfirst($controller)];
         }
         $classSuffix = Config::get('controller_suffix') ? ucfirst(Config::get('url_controller_layer')) : '';
-        $className = "\\app\\admin\\controller\\" . implode("\\", $controllerArr) . $classSuffix;
+        $className = '\\app\\admin\\controller\\'.implode('\\', $controllerArr).$classSuffix;
 
         $pathArr = $controllerArr;
         array_unshift($pathArr, '', 'app', 'admin', 'controller');
-        $classFile = app()->getRootPath() . implode(DIRECTORY_SEPARATOR, $pathArr) . $classSuffix . ".php";
+        $classFile = app()->getRootPath().implode(DIRECTORY_SEPARATOR, $pathArr).$classSuffix.'.php';
         $classContent = file_get_contents($classFile);
-        $uniqueName = uniqid("FastAdmin") . $classSuffix;
-        $classContent = str_replace("class " . $controllerArr[$key] . $classSuffix . " ", 'class ' . $uniqueName . ' ',
+        $uniqueName = uniqid('FastAdmin').$classSuffix;
+        $classContent = str_replace('class '.$controllerArr[$key].$classSuffix.' ', 'class '.$uniqueName.' ',
             $classContent);
-        $classContent = preg_replace("/namespace\s(.*);/", 'namespace ' . __NAMESPACE__ . ";", $classContent);
+        $classContent = preg_replace("/namespace\s(.*);/", 'namespace '.__NAMESPACE__.';', $classContent);
 
         //临时的类文件
-        $tempClassFile = __DIR__ . DIRECTORY_SEPARATOR . $uniqueName . ".php";
+        $tempClassFile = __DIR__.DIRECTORY_SEPARATOR.$uniqueName.'.php';
         file_put_contents($tempClassFile, $classContent);
-        $className = "\\app\\admin\\command\\" . $uniqueName;
+        $className = '\\app\\admin\\command\\'.$uniqueName;
         //反射机制调用类的注释和方法名
         $reflector = new ReflectionClass($className);
 
@@ -239,7 +243,7 @@ class Menu extends Command
         $withSofeDelete = false;
         $modelRegexArr = [
             "/\\\$this\->model\s*=\s*model\(['|\"](\w+)['|\"]\);/",
-            "/\\\$this\->model\s*=\s*new\s+([a-zA-Z\\\]+);/"
+            "/\\\$this\->model\s*=\s*new\s+([a-zA-Z\\\]+);/",
         ];
         $modelRegex = preg_match($modelRegexArr[0], $classContent) ? $modelRegexArr[0] : $modelRegexArr[1];
         preg_match_all($modelRegex, $classContent, $matches);
@@ -250,7 +254,7 @@ class Menu extends Command
             }
         }
         //忽略的类
-        if (stripos($classComment, "@internal") !== false) {
+        if (stripos($classComment, '@internal') !== false) {
             return;
         }
         preg_match_all('#(@.*?)\n#s', $classComment, $annotations);
@@ -268,15 +272,15 @@ class Menu extends Command
             }
         }
         //过滤掉其它字符
-        $controllerTitle = trim(preg_replace(array(
+        $controllerTitle = trim(preg_replace([
             '/^\/\*\*(.*)[\n\r\t]/u',
             '/[\s]+\*\//u',
             '/\*\s@(.*)/u',
-            '/[\s|\*]+/u'
-        ), '', $classComment));
+            '/[\s|\*]+/u',
+        ], '', $classComment));
 
         //导入中文语言包
-        \think\facade\Lang::load(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lang/zh-cn.php');
+        \think\facade\Lang::load(dirname(__DIR__).DIRECTORY_SEPARATOR.'lang/zh-cn.php');
 
         //先导入菜单的数据
         $pid = 0;
@@ -285,7 +289,7 @@ class Menu extends Command
             //驼峰转下划线
             $controllerNameArr = array_slice($controllerArr, 0, $key);
             foreach ($controllerNameArr as &$val) {
-                $val = strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $val), "_"));
+                $val = strtolower(trim(preg_replace('/[A-Z]/', '_\\0', $val), '_'));
             }
             unset($val);
             $name = implode('/', $controllerNameArr);
@@ -304,7 +308,7 @@ class Menu extends Command
                         'icon'   => $icon,
                         'remark' => $remark,
                         'ismenu' => 1,
-                        'status' => 'normal'
+                        'status' => 'normal',
                     ]);
                 $pid = $this->model->getLastInsID();
             } else {
@@ -322,34 +326,34 @@ class Menu extends Command
                 continue;
             }
             //只匹配符合的方法
-            if (!preg_match('/^(\w+)' . Config::get('route.action_suffix') . '/', $n->name, $matchtwo)) {
+            if (!preg_match('/^(\w+)'.Config::get('route.action_suffix').'/', $n->name, $matchtwo)) {
                 unset($methods[$m]);
                 continue;
             }
             $comment = $reflector->getMethod($n->name)->getDocComment();
             //忽略的方法
-            if (stripos($comment, "@internal") !== false) {
+            if (stripos($comment, '@internal') !== false) {
                 continue;
             }
             //过滤掉其它字符
-            $comment = preg_replace(array('/^\/\*\*(.*)[\n\r\t]/u', '/[\s]+\*\//u', '/\*\s@(.*)/u', '/[\s|\*]+/u'), '',
+            $comment = preg_replace(['/^\/\*\*(.*)[\n\r\t]/u', '/[\s]+\*\//u', '/\*\s@(.*)/u', '/[\s|\*]+/u'], '',
                 $comment);
 
             $title = $comment ? $comment : ucfirst($n->name);
 
             //获取主键，作为AuthRule更新依据
-            $id = $this->getAuthRulePK($name . "/" . strtolower($n->name));
+            $id = $this->getAuthRulePK($name.'/'.strtolower($n->name));
 
-            $ruleArr[] = array(
+            $ruleArr[] = [
                 'id'     => $id,
                 'pid'    => $pid,
-                'name'   => $name . "/" . strtolower($n->name),
-                'route'  => tp5ControllerToTp6Controller($name . "/" . strtolower($n->name)),
+                'name'   => $name.'/'.strtolower($n->name),
+                'route'  => tp5ControllerToTp6Controller($name.'/'.strtolower($n->name)),
                 'icon'   => 'fa fa-circle-o',
                 'title'  => $title,
                 'ismenu' => 0,
-                'status' => 'normal'
-            );
+                'status' => 'normal',
+            ];
         }
         $this->model->insertAll($ruleArr);
     }
@@ -361,6 +365,7 @@ class Menu extends Command
             $id = $this->model
                 ->where('name', $name)
                 ->value('id');
+
             return $id ? $id : null;
         }
     }

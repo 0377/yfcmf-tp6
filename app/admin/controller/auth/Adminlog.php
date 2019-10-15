@@ -6,14 +6,13 @@ use app\admin\model\AuthGroup;
 use app\common\controller\Backend;
 
 /**
- * 管理员日志
+ * 管理员日志.
  *
  * @icon fa fa-users
  * @remark 管理员可以查看自己所拥有的权限的管理员日志
  */
 class Adminlog extends Backend
 {
-
     /**
      * @var \app\admin\model\AdminLog
      */
@@ -24,7 +23,7 @@ class Adminlog extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\AdminLog;
+        $this->model = new \app\admin\model\AdminLog();
 
         $this->childrenAdminIds = $this->auth->getChildrenAdminIds(true);
         $this->childrenGroupIds = $this->auth->getChildrenGroupIds($this->auth->isSuperAdmin() ? true : false);
@@ -36,7 +35,7 @@ class Adminlog extends Backend
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -54,15 +53,16 @@ class Adminlog extends Backend
                 ->order($sort, $order)
                 ->limit($offset, $limit)
                 ->select();
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 详情
+     * 详情.
      */
     public function detail($ids)
     {
@@ -70,12 +70,14 @@ class Adminlog extends Backend
         if (!$row) {
             $this->error(__('No Results were found'));
         }
-        $this->view->assign("row", $row->toArray());
+        $this->view->assign('row', $row->toArray());
+
         return $this->view->fetch();
     }
 
     /**
-     * 添加
+     * 添加.
+     *
      * @internal
      */
     public function add()
@@ -84,7 +86,8 @@ class Adminlog extends Backend
     }
 
     /**
-     * 编辑
+     * 编辑.
+     *
      * @internal
      */
     public function edit($ids = null)
@@ -93,9 +96,9 @@ class Adminlog extends Backend
     }
 
     /**
-     * 删除
+     * 删除.
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             $childrenGroupIds = $this->childrenGroupIds;
@@ -118,10 +121,11 @@ class Adminlog extends Backend
     }
 
     /**
-     * 批量更新
+     * 批量更新.
+     *
      * @internal
      */
-    public function multi($ids = "")
+    public function multi($ids = '')
     {
         // 管理员禁止批量操作
         $this->error();
@@ -131,5 +135,4 @@ class Adminlog extends Backend
     {
         return parent::selectpage();
     }
-
 }

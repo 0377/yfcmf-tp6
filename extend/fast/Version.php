@@ -3,16 +3,16 @@
 namespace fast;
 
 /**
- * 版本检测和对比
+ * 版本检测和对比.
  */
 class Version
 {
-
     /**
-     * 检测版本是否的版本要求的数据中
+     * 检测版本是否的版本要求的数据中.
      *
      * @param string $version
      * @param array  $data
+     *
      * @return bool
      */
     public static function check($version, $data = [])
@@ -20,7 +20,7 @@ class Version
         //版本号以.分隔
         $data = is_array($data) ? $data : [$data];
         if ($data) {
-            if (in_array("*", $data) || in_array($version, $data)) {
+            if (in_array('*', $data) || in_array($version, $data)) {
                 return true;
             }
             $ver = explode('.', $version);
@@ -46,19 +46,21 @@ class Version
                 }
             }
         }
+
         return false;
     }
 
     /**
-     * 比较两个版本号
+     * 比较两个版本号.
      *
      * @param string $v1
      * @param string $v2
-     * @return boolean
+     *
+     * @return bool
      */
     public static function compare($v1, $v2)
     {
-        if ($v2 == "*" || $v1 == $v2) {
+        if ($v2 == '*' || $v1 == $v2) {
             return true;
         } else {
             $values = [];
@@ -73,6 +75,7 @@ class Version
                     $values[] = $v;
                 }
             }
+
             return in_array($v1, $values) ? true : false;
         }
     }

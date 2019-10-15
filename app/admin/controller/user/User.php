@@ -5,13 +5,12 @@ namespace app\admin\controller\user;
 use app\common\controller\Backend;
 
 /**
- * 会员管理
+ * 会员管理.
  *
  * @icon fa fa-user
  */
 class User extends Backend
 {
-
     protected $relationSearch = true;
 
     /**
@@ -22,11 +21,11 @@ class User extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\User;
+        $this->model = new \app\admin\model\User();
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -52,15 +51,16 @@ class User extends Backend
             foreach ($list as $k => $v) {
                 $v->hidden(['password', 'salt']);
             }
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 编辑
+     * 编辑.
      */
     public function edit($ids = null)
     {
@@ -69,9 +69,9 @@ class User extends Backend
             $this->error(__('No Results were found'));
         }
         $this->view->assign('groupList',
-            build_select('row[group_id]', \app\admin\model\UserGroup::column('name','id'), $row['group_id'],
+            build_select('row[group_id]', \app\admin\model\UserGroup::column('name', 'id'), $row['group_id'],
                 ['class' => 'form-control selectpicker']));
+
         return parent::edit($ids);
     }
-
 }

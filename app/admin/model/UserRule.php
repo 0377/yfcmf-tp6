@@ -2,12 +2,11 @@
 
 namespace app\admin\model;
 
-use fast\Tree;
 use app\common\model\BaseModel;
+use fast\Tree;
 
 class UserRule extends BaseModel
 {
-
     // 表名
     protected $name = 'user_rule';
     // 自动写入时间戳字段
@@ -17,7 +16,7 @@ class UserRule extends BaseModel
     protected $updateTime = 'updatetime';
     // 追加属性
     protected $append = [
-        'status_text'
+        'status_text',
     ];
 
     public static function onAfterInsert($row)
@@ -35,6 +34,7 @@ class UserRule extends BaseModel
     {
         $value = $value ? $value : $data['status'];
         $list = $this->getStatusList();
+
         return isset($list[$value]) ? $list[$value] : '';
     }
 
@@ -51,15 +51,15 @@ class UserRule extends BaseModel
             }
         }
         foreach ($ruleList as $k => $v) {
-            $state = array('selected' => in_array($v['id'], $selected) && !in_array($v['id'], $hasChildrens));
-            $nodeList[] = array('id'     => $v['id'],
+            $state = ['selected' => in_array($v['id'], $selected) && !in_array($v['id'], $hasChildrens)];
+            $nodeList[] = ['id'          => $v['id'],
                                 'parent' => $v['pid'] ? $v['pid'] : '#',
                                 'text'   => __($v['title']),
                                 'type'   => 'menu',
-                                'state'  => $state
-            );
+                                'state'  => $state,
+            ];
         }
+
         return $nodeList;
     }
-
 }

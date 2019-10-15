@@ -7,15 +7,15 @@ return [
     'disks'   => [
         'local'  => [
             'type' => 'local',
-            'root' => app()->getRuntimePath() . 'storage',
+            'root' => app()->getRuntimePath().'storage',
         ],
         'runtime'  => [
             'type' => 'local',
-            'root' => app()->getRootPath() . 'runtime',
+            'root' => app()->getRootPath().'runtime',
         ],
         'public' => [
             'type'       => 'local',
-            'root'       => app()->getRootPath() . 'public',
+            'root'       => app()->getRootPath().'public',
             'url'        => '/',
             'visibility' => 'public',
         ],

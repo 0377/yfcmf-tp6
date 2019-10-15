@@ -5,11 +5,10 @@ namespace app\common\library\token\driver;
 use app\common\library\token\Driver;
 
 /**
- * Token操作类
+ * Token操作类.
  */
 class Redis extends Driver
 {
-
     protected $options = [
         'host'        => '127.0.0.1',
         'port'        => 6379,
@@ -23,10 +22,11 @@ class Redis extends Driver
     ];
 
     /**
-     * 构造函数
+     * 构造函数.
+     *
      * @param array $options 缓存参数
+     *
      * @throws \BadFunctionCallException
-     * @access public
      */
     public function __construct($options = [])
     {
@@ -36,9 +36,9 @@ class Redis extends Driver
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        $this->handler = new \Redis;
+        $this->handler = new \Redis();
         if ($this->options['persistent']) {
-            $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_' . $this->options['select']);
+            $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_'.$this->options['select']);
         } else {
             $this->handler->connect($this->options['host'], $this->options['port'], $this->options['timeout']);
         }
@@ -53,31 +53,38 @@ class Redis extends Driver
     }
 
     /**
-     * 获取加密后的Token
+     * 获取加密后的Token.
+     *
      * @param string $token Token标识
+     *
      * @return string
      */
     protected function getEncryptedToken($token)
     {
         $config = \think\Config::get('token');
-        return $this->options['tokenprefix'] . hash_hmac($config['hashalgo'], $token, $config['key']);
+
+        return $this->options['tokenprefix'].hash_hmac($config['hashalgo'], $token, $config['key']);
     }
 
     /**
-     * 获取会员的key
+     * 获取会员的key.
+     *
      * @param $user_id
+     *
      * @return string
      */
     protected function getUserKey($user_id)
     {
-        return $this->options['userprefix'] . $user_id;
+        return $this->options['userprefix'].$user_id;
     }
 
     /**
-     * 存储Token
-     * @param   string $token   Token
-     * @param   int    $user_id 会员ID
-     * @param   int    $expire  过期时长,0表示无限,单位秒
+     * 存储Token.
+     *
+     * @param string $token   Token
+     * @param int    $user_id 会员ID
+     * @param int    $expire  过期时长,0表示无限,单位秒
+     *
      * @return bool
      */
     public function set($token, $user_id, $expire = 0)
@@ -96,13 +103,16 @@ class Redis extends Driver
         }
         //写入会员关联的token
         $this->handler->sAdd($this->getUserKey($user_id), $key);
+
         return $result;
     }
 
     /**
-     * 获取Token内的信息
-     * @param   string $token
-     * @return  array
+     * 获取Token内的信息.
+     *
+     * @param string $token
+     *
+     * @return array
      */
     public function get($token)
     {
@@ -122,21 +132,26 @@ class Redis extends Driver
     }
 
     /**
-     * 判断Token是否可用
-     * @param   string $token   Token
-     * @param   int    $user_id 会员ID
-     * @return  boolean
+     * 判断Token是否可用.
+     *
+     * @param string $token   Token
+     * @param int    $user_id 会员ID
+     *
+     * @return bool
      */
     public function check($token, $user_id)
     {
         $data = self::get($token);
+
         return $data && $data['user_id'] == $user_id ? true : false;
     }
 
     /**
-     * 删除Token
-     * @param   string $token
-     * @return  boolean
+     * 删除Token.
+     *
+     * @param string $token
+     *
+     * @return bool
      */
     public function delete($token)
     {
@@ -147,21 +162,23 @@ class Redis extends Driver
             $this->handler->del($key);
             $this->handler->sRem($this->getUserKey($user_id), $key);
         }
-        return true;
 
+        return true;
     }
 
     /**
-     * 删除指定用户的所有Token
-     * @param   int $user_id
-     * @return  boolean
+     * 删除指定用户的所有Token.
+     *
+     * @param int $user_id
+     *
+     * @return bool
      */
     public function clear($user_id)
     {
         $keys = $this->handler->sMembers($this->getUserKey($user_id));
         $this->handler->del($this->getUserKey($user_id));
         $this->handler->del($keys);
+
         return true;
     }
-
 }

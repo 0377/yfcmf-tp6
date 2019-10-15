@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\api\controller;
@@ -21,7 +20,7 @@ use fast\Random;
 use think\facade\Config;
 
 /**
- * 公共接口
+ * 公共接口.
  */
 class Common extends Api
 {
@@ -29,11 +28,11 @@ class Common extends Api
     protected $noNeedRight = '*';
 
     /**
-     * 加载初始化
+     * 加载初始化.
      *
      * @param string $version 版本号
-     * @param string $lng 经度
-     * @param string $lat 纬度
+     * @param string $lng     经度
+     * @param string $lat     纬度
      */
     public function init()
     {
@@ -44,7 +43,7 @@ class Common extends Api
                 'citydata'    => Area::getCityFromLngLat($lng, $lat),
                 'versiondata' => Version::check($version),
                 'uploaddata'  => Config::get('upload'),
-                'coverdata'   => Config::get("cover"),
+                'coverdata'   => Config::get('cover'),
             ];
             $this->success('', $content);
         } else {
@@ -53,8 +52,10 @@ class Common extends Api
     }
 
     /**
-     * 上传文件
+     * 上传文件.
+     *
      * @ApiMethod (POST)
+     *
      * @param File $file 文件流
      */
     public function upload()
@@ -72,10 +73,10 @@ class Common extends Api
         preg_match('/(\d+)(\w+)/', $upload['maxsize'], $matches);
         $type = strtolower($matches[2]);
         $typeDict = ['b' => 0, 'k' => 1, 'kb' => 1, 'm' => 2, 'mb' => 2, 'gb' => 3, 'g' => 3];
-        $size = (int)$upload['maxsize'] * pow(1024, isset($typeDict[$type]) ? $typeDict[$type] : 0);
+        $size = (int) $upload['maxsize'] * pow(1024, isset($typeDict[$type]) ? $typeDict[$type] : 0);
         $fileInfo = $file->getInfo();
         $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
-        $suffix = $suffix && preg_match("/^[a-zA-Z0-9]+$/", $suffix) ? $suffix : 'file';
+        $suffix = $suffix && preg_match('/^[a-zA-Z0-9]+$/', $suffix) ? $suffix : 'file';
 
         $mimetypeArr = explode(',', strtolower($upload['mimetype']));
         $typeArr = explode('/', $fileInfo['type']);
@@ -88,8 +89,8 @@ class Common extends Api
         if ($upload['mimetype'] !== '*' &&
             (
                 !in_array($suffix, $mimetypeArr)
-                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'],
-                            $mimetypeArr) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
+                || (stripos($typeArr[0].'/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'],
+                            $mimetypeArr) && !in_array($typeArr[0].'/*', $mimetypeArr)))
             )
         ) {
             $this->error(__('Uploaded file format is limited'));
@@ -107,18 +108,18 @@ class Common extends Api
             $imageheight = isset($imgInfo[1]) ? $imgInfo[1] : $imageheight;
         }
         $replaceArr = [
-            '{year}'     => date("Y"),
-            '{mon}'      => date("m"),
-            '{day}'      => date("d"),
-            '{hour}'     => date("H"),
-            '{min}'      => date("i"),
-            '{sec}'      => date("s"),
+            '{year}'     => date('Y'),
+            '{mon}'      => date('m'),
+            '{day}'      => date('d'),
+            '{hour}'     => date('H'),
+            '{min}'      => date('i'),
+            '{sec}'      => date('s'),
             '{random}'   => Random::alnum(16),
             '{random32}' => Random::alnum(32),
             '{filename}' => $suffix ? substr($fileInfo['name'], 0,
                 strripos($fileInfo['name'], '.')) : $fileInfo['name'],
             '{suffix}'   => $suffix,
-            '{.suffix}'  => $suffix ? '.' . $suffix : '',
+            '{.suffix}'  => $suffix ? '.'.$suffix : '',
             '{filemd5}'  => md5_file($fileInfo['tmp_name']),
         ];
         $savekey = $upload['savekey'];
@@ -127,28 +128,28 @@ class Common extends Api
         $uploadDir = substr($savekey, 0, strripos($savekey, '/') + 1);
         $fileName = substr($savekey, strripos($savekey, '/') + 1);
         //
-        $splInfo = $file->validate(['size' => $size])->move(app()->getRootPath() . '/public' . $uploadDir, $fileName);
+        $splInfo = $file->validate(['size' => $size])->move(app()->getRootPath().'/public'.$uploadDir, $fileName);
         if ($splInfo) {
-            $params = array(
+            $params = [
                 'admin_id'    => 0,
-                'user_id'     => (int)$this->auth->id,
+                'user_id'     => (int) $this->auth->id,
                 'filesize'    => $fileInfo['size'],
                 'imagewidth'  => $imagewidth,
                 'imageheight' => $imageheight,
                 'imagetype'   => $suffix,
                 'imageframes' => 0,
                 'mimetype'    => $fileInfo['type'],
-                'url'         => $uploadDir . $splInfo->getSaveName(),
+                'url'         => $uploadDir.$splInfo->getSaveName(),
                 'uploadtime'  => time(),
                 'storage'     => 'local',
                 'sha1'        => $sha1,
-            );
+            ];
             $attachment = new Attachment();
             $attachment->data(array_filter($params));
             $attachment->save();
-            \think\facade\Event::trigger("upload_after", $attachment);
+            \think\facade\Event::trigger('upload_after', $attachment);
             $this->success(__('Upload successful'), [
-                'url' => $uploadDir . $splInfo->getSaveName()
+                'url' => $uploadDir.$splInfo->getSaveName(),
             ]);
         } else {
             // 上传失败获取错误信息

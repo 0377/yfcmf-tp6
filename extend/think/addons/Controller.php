@@ -7,27 +7,24 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/20 下午6:00
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace think\addons;
+
 use app\common\controller\BaseController;
 use app\common\library\Auth;
 use think\App;
 use think\facade\Config;
 use think\facade\Event;
 use think\facade\Lang;
-use think\facade\Request;
 use think\facade\View;
 
 /**
- * 插件基类控制器
- * @package think\addons
+ * 插件基类控制器.
  */
 class Controller extends BaseController
 {
-
     // 当前插件操作
     protected $addon = null;
     protected $controller = null;
@@ -36,32 +33,35 @@ class Controller extends BaseController
     protected $template;
 
     /**
-     * 无需登录的方法,同时也就不需要鉴权了
+     * 无需登录的方法,同时也就不需要鉴权了.
+     *
      * @var array
      */
     protected $noNeedLogin = ['*'];
 
     /**
-     * 无需鉴权的方法,但需要登录
+     * 无需鉴权的方法,但需要登录.
+     *
      * @var array
      */
     protected $noNeedRight = ['*'];
 
     /**
-     * 权限Auth
+     * 权限Auth.
+     *
      * @var Auth
      */
     protected $auth = null;
 
     /**
      * 布局模板
+     *
      * @var string
      */
     protected $layout = null;
 
     /**
-     * 架构函数
-     * @access public
+     * 架构函数.
      */
     public function __construct(App $app)
     {
@@ -78,12 +78,11 @@ class Controller extends BaseController
         $controller = isset($var['controller']) ? $var['controller'] : '';
         $action = isset($var['action']) ? $var['action'] : '';
 
-
         $this->addon = $addon ? call_user_func($filter, $addon) : '';
         $this->controller = $controller ? call_user_func($filter, $controller) : 'index';
         $this->action = $action ? call_user_func($filter, $action) : 'index';
         // 重置配置
-        Config::set(['view_path'=> ADDON_PATH . $this->addon . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR],'view');
+        Config::set(['view_path'=> ADDON_PATH.$this->addon.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR], 'view');
         // 父类的调用必须放在设置模板路径之后
         parent::__construct($app);
     }
@@ -92,18 +91,18 @@ class Controller extends BaseController
     {
         // 渲染配置到视图中
         $config = get_addon_config($this->addon);
-        $this->view->config(['view_path'=> ADDON_PATH . $this->addon . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR]);
-        $this->view->assign("config", $config);
+        $this->view->config(['view_path'=> ADDON_PATH.$this->addon.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR]);
+        $this->view->assign('config', $config);
 
         // 加载系统语言包
         Lang::load([
-            ADDON_PATH . $this->addon . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . Lang::getLangset() . '.php',
+            ADDON_PATH.$this->addon.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.Lang::getLangset().'.php',
         ]);
 
         // 设置替换字符串
         $cdnurl = Config::get('site.cdnurl');
         View::filter(function ($content) use ($cdnurl) {
-            return str_replace('__ADDON__', $cdnurl . "/assets/addons/" . $this->addon, $content);
+            return str_replace('__ADDON__', $cdnurl.'/assets/addons/'.$this->addon, $content);
         });
 
         $this->auth = Auth::instance();
@@ -111,7 +110,7 @@ class Controller extends BaseController
         $token = $this->request->server('HTTP_TOKEN',
             $this->request->request('token', \think\facade\Cookie::get('token')) ?: '');
 
-        $path = 'addons/' . $this->addon . '/' . str_replace('.', '/', $this->controller) . '/' . $this->action;
+        $path = 'addons/'.$this->addon.'/'.str_replace('.', '/', $this->controller).'/'.$this->action;
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
@@ -138,16 +137,16 @@ class Controller extends BaseController
 
         // 如果有使用模板布局
         if ($this->layout) {
-            $this->view->layout('layout/' . $this->layout);
+            $this->view->layout('layout/'.$this->layout);
         }
         $this->view->assign('user', $this->auth->getUser());
 
-        $site = Config::get("site");
+        $site = Config::get('site');
 
         $upload = \app\common\model\Config::upload();
 
         // 上传信息配置后
-        Event::trigger("upload_config_init", $upload);
+        Event::trigger('upload_config_init', $upload);
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
 
         // 加载当前控制器语言包
@@ -155,12 +154,13 @@ class Controller extends BaseController
     }
 
     /**
-     * 加载模板输出
-     * @access protected
+     * 加载模板输出.
+     *
      * @param string $template 模板文件名
-     * @param array $vars 模板输出变量
-     * @param array $replace 模板替换
-     * @param array $config 模板参数
+     * @param array  $vars     模板输出变量
+     * @param array  $replace  模板替换
+     * @param array  $config   模板参数
+     *
      * @return mixed
      */
     protected function fetch($template = '', $vars = [], $replace = [], $config = [])
@@ -171,12 +171,12 @@ class Controller extends BaseController
             $template = str_replace(['/', ':'], $depr, $template);
             if ('' == $template) {
                 // 如果模板文件名为空 按照默认规则定位
-                $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $this->action;
+                $template = str_replace('.', DIRECTORY_SEPARATOR, $controller).$depr.$this->action;
             } elseif (false === strpos($template, $depr)) {
-                $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
+                $template = str_replace('.', DIRECTORY_SEPARATOR, $controller).$depr.$template;
             }
         }
+
         return View::fetch($template, $vars);
     }
-
 }

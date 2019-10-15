@@ -8,17 +8,20 @@ use think\facade\Db;
 if (!function_exists('build_select')) {
 
     /**
-     * 生成下拉列表
+     * 生成下拉列表.
+     *
      * @param string $name
-     * @param mixed $options
-     * @param mixed $selected
-     * @param mixed $attr
+     * @param mixed  $options
+     * @param mixed  $selected
+     * @param mixed  $attr
+     *
      * @return string
      */
     function build_select($name, $options, $selected = [], $attr = [])
     {
         $options = is_array($options) ? $options : explode(',', $options);
         $selected = is_array($selected) ? $selected : explode(',', $selected);
+
         return Form::select($name, $options, $selected, $attr);
     }
 }
@@ -26,10 +29,12 @@ if (!function_exists('build_select')) {
 if (!function_exists('build_radios')) {
 
     /**
-     * 生成单选按钮组
+     * 生成单选按钮组.
+     *
      * @param string $name
-     * @param array $list
-     * @param mixed $selected
+     * @param array  $list
+     * @param mixed  $selected
+     *
      * @return string
      */
     function build_radios($name, $list = [], $selected = null)
@@ -41,17 +46,20 @@ if (!function_exists('build_radios')) {
             $html[] = sprintf(Form::label("{$name}-{$k}", "%s {$v}"),
                 Form::radio($name, $k, in_array($k, $selected), ['id' => "{$name}-{$k}"]));
         }
-        return '<div class="radio">' . implode(' ', $html) . '</div>';
+
+        return '<div class="radio">'.implode(' ', $html).'</div>';
     }
 }
 
 if (!function_exists('build_checkboxs')) {
 
     /**
-     * 生成复选按钮组
+     * 生成复选按钮组.
+     *
      * @param string $name
-     * @param array $list
-     * @param mixed $selected
+     * @param array  $list
+     * @param mixed  $selected
+     *
      * @return string
      */
     function build_checkboxs($name, $list = [], $selected = null)
@@ -63,20 +71,22 @@ if (!function_exists('build_checkboxs')) {
             $html[] = sprintf(Form::label("{$name}-{$k}", "%s {$v}"),
                 Form::checkbox($name, $k, in_array($k, $selected), ['id' => "{$name}-{$k}"]));
         }
-        return '<div class="checkbox">' . implode(' ', $html) . '</div>';
+
+        return '<div class="checkbox">'.implode(' ', $html).'</div>';
     }
 }
-
 
 if (!function_exists('build_category_select')) {
 
     /**
-     * 生成分类下拉列表框
+     * 生成分类下拉列表框.
+     *
      * @param string $name
      * @param string $type
-     * @param mixed $selected
-     * @param array $attr
-     * @param array $header
+     * @param mixed  $selected
+     * @param array  $attr
+     * @param array  $header
+     *
      * @return string
      */
     function build_category_select($name, $type, $selected = null, $attr = [], $header = [])
@@ -89,6 +99,7 @@ if (!function_exists('build_category_select')) {
             $categorydata[$v['id']] = $v['name'];
         }
         $attr = array_merge(['id' => "c-{$name}", 'class' => 'form-control selectpicker'], $attr);
+
         return build_select($name, $categorydata, $selected, $attr);
     }
 }
@@ -96,9 +107,11 @@ if (!function_exists('build_category_select')) {
 if (!function_exists('build_toolbar')) {
 
     /**
-     * 生成表格操作按钮栏
+     * 生成表格操作按钮栏.
+     *
      * @param array $btns 按钮组
      * @param array $attr 按钮属性值
+     *
      * @return string
      */
     function build_toolbar($btns = null, $attr = [])
@@ -119,14 +132,14 @@ if (!function_exists('build_toolbar')) {
                 'btn btn-success btn-edit btn-disabled disabled',
                 'fa fa-pencil',
                 __('Edit'),
-                __('Edit')
+                __('Edit'),
             ],
             'del'     => [
                 'javascript:;',
                 'btn btn-danger btn-del btn-disabled disabled',
                 'fa fa-trash',
                 __('Delete'),
-                __('Delete')
+                __('Delete'),
             ],
             'import'  => ['javascript:;', 'btn btn-info btn-import', 'fa fa-upload', __('Import'), __('Import')],
         ];
@@ -150,7 +163,7 @@ if (!function_exists('build_toolbar')) {
                     $download .= "<li><a href=\"/template/{$template}.xls\" target=\"_blank\">XLS模版</a></li>";
                 }
                 if (file_exists("./template/{$template}.csv")) {
-                    $download .= empty($download) ? '' : "<li class=\"divider\"></li>";
+                    $download .= empty($download) ? '' : '<li class="divider"></li>';
                     $download .= "<li><a href=\"/template/{$template}.csv\" target=\"_blank\">CSV模版</a></li>";
                 }
                 $download .= empty($download) ? '' : "\n                            ";
@@ -166,12 +179,13 @@ if (!function_exists('build_toolbar')) {
                         </div>
 EOT;
                 } else {
-                    $html[] = '<a href="' . $href . '" class="' . $class . '" title="' . $title . '" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="' . $icon . '"></i> ' . $text . '</a>';
+                    $html[] = '<a href="'.$href.'" class="'.$class.'" title="'.$title.'" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="'.$icon.'"></i> '.$text.'</a>';
                 }
             } else {
-                $html[] = '<a href="' . $href . '" class="' . $class . '" title="' . $title . '"><i class="' . $icon . '"></i> ' . $text . '</a>';
+                $html[] = '<a href="'.$href.'" class="'.$class.'" title="'.$title.'"><i class="'.$icon.'"></i> '.$text.'</a>';
             }
         }
+
         return implode(' ', $html);
     }
 }
@@ -179,9 +193,10 @@ EOT;
 if (!function_exists('build_heading')) {
 
     /**
-     * 生成页面Heading
+     * 生成页面Heading.
      *
      * @param string $path 指定的path
+     *
      * @return string
      */
     function build_heading($path = null, $container = true)
@@ -190,7 +205,7 @@ if (!function_exists('build_heading')) {
         if (is_null($path)) {
             $action = request()->action();
             $controller = str_replace('.', '/', request()->controller());
-            $path = strtolower($controller . ($action && $action != 'index' ? '/' . $action : ''));
+            $path = strtolower($controller.($action && $action != 'index' ? '/'.$action : ''));
         }
         // 根据当前的URI自动匹配父节点的标题和备注
         $data = Db::name('auth_rule')->where('name', $path)->field('title,remark')->find();
@@ -201,50 +216,52 @@ if (!function_exists('build_heading')) {
         if (!$content) {
             return '';
         }
-        $result = '<div class="panel-lead"><em>' . $title . '</em>' . $content . '</div>';
+        $result = '<div class="panel-lead"><em>'.$title.'</em>'.$content.'</div>';
         if ($container) {
-            $result = '<div class="panel-heading">' . $result . '</div>';
+            $result = '<div class="panel-heading">'.$result.'</div>';
         }
+
         return $result;
     }
 }
 
 if (!function_exists('upload_file')) {
     /**
-     * 上传文件
+     * 上传文件.
      *
-     * @param string $file 上传的文件
-     * @param string $name 上传的位置
-     * @param string $path 上传的文件夹
+     * @param string $file     上传的文件
+     * @param string $name     上传的位置
+     * @param string $path     上传的文件夹
      * @param string $validate 规则验证
-     * @return string|boolean
+     *
+     * @return string|bool
+     *
      * @author niu
      */
-    function upload_file($file = null, $name= 'local',$path='',$validate='')
+    function upload_file($file = null, $name = 'local', $path = '', $validate = '')
     {
         //文件
-        if (!$file){
+        if (!$file) {
             return false;
         }
         //上传配置
-        $config_name='filesystem.disks.'.$name;
-        $filesystem=config($config_name);
-        if (!$filesystem){
+        $config_name = 'filesystem.disks.'.$name;
+        $filesystem = config($config_name);
+        if (!$filesystem) {
             return false;
         }
         //上传文件
-        if ($validate){
+        if ($validate) {
             validate(['file'=>$validate])->check(['file'=>$file]);
         }
-        $savename = \think\facade\Filesystem::disk($name)->putFile( $path, $file,function ($file){
+        $savename = \think\facade\Filesystem::disk($name)->putFile($path, $file, function ($file) {
             //重命名
-            return date('Ymd') . '/' . md5((string) microtime(true));
+            return date('Ymd').'/'.md5((string) microtime(true));
         });
-        if (isset($filesystem['url'])){
-            $savename=$filesystem['url'].$savename;
+        if (isset($filesystem['url'])) {
+            $savename = $filesystem['url'].$savename;
         }
 
         return $savename;
     }
 }
-

@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午3:33
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\common\library;
@@ -17,7 +16,6 @@ use think\facade\Config;
 
 class Email
 {
-
     /**
      * 单例对象
      */
@@ -29,12 +27,12 @@ class Email
     protected $mail = [];
 
     /**
-     * 错误内容
+     * 错误内容.
      */
     protected $_error = '';
 
     /**
-     * 默认配置
+     * 默认配置.
      */
     public $options = [
         'charset' => 'utf-8', //编码格式
@@ -42,9 +40,10 @@ class Email
     ];
 
     /**
-     * 初始化
-     * @access public
+     * 初始化.
+     *
      * @param array $options 参数
+     *
      * @return Email
      */
     public static function instance($options = [])
@@ -57,7 +56,8 @@ class Email
     }
 
     /**
-     * 构造函数
+     * 构造函数.
+     *
      * @param array $options
      */
     public function __construct($options = [])
@@ -85,57 +85,70 @@ class Email
     }
 
     /**
-     * 设置邮件主题
+     * 设置邮件主题.
+     *
      * @param string $subject
+     *
      * @return $this
      */
     public function subject($subject)
     {
         $this->options['subject'] = $subject;
+
         return $this;
     }
 
     /**
-     * 设置发件人
+     * 设置发件人.
+     *
      * @param string $email
      * @param string $name
+     *
      * @return $this
      */
     public function from($email, $name = '')
     {
         $this->options['from'] = $email;
         $this->options['from_name'] = $name;
+
         return $this;
     }
 
     /**
-     * 设置收件人
+     * 设置收件人.
+     *
      * @param string $email
      * @param string $name
+     *
      * @return $this
      */
     public function to($email, $name = '')
     {
         $this->options['to'] = $email;
         $this->options['to_name'] = $name;
+
         return $this;
     }
 
     /**
-     * 设置邮件正文
-     * @param string  $body
-     * @param boolean $ishtml
+     * 设置邮件正文.
+     *
+     * @param string $body
+     * @param bool   $ishtml
+     *
      * @return $this
      */
     public function message($body, $ishtml = true)
     {
         $this->options['body'] = $body;
         $this->options['ishtml'] = $ishtml;
+
         return $this;
     }
 
     /**
-     * 获取最后产生的错误
+     * 获取最后产生的错误.
+     *
      * @return string
      */
     public function getError()
@@ -144,7 +157,8 @@ class Email
     }
 
     /**
-     * 设置错误
+     * 设置错误.
+     *
      * @param string $error 信息信息
      */
     protected function setError($error)
@@ -153,8 +167,9 @@ class Email
     }
 
     /**
-     * 发送邮件
-     * @return boolean
+     * 发送邮件.
+     *
+     * @return bool
      */
     public function send()
     {
@@ -170,6 +185,7 @@ class Email
                 } else {
                     $this->mail->Body = $this->options['body'];
                 }
+
                 try {
                     $result = $this->mail->send();
                 } catch (\phpmailerException $e) {
@@ -180,8 +196,8 @@ class Email
                 break;
             case 2:
                 //使用mail方法发送邮件
-                $headers = 'MIME-Version: 1.0' . "\r\n";
-                $headers .= "Content-type: text/html; charset=" . $this->options['charset'] . "\r\n";
+                $headers = 'MIME-Version: 1.0'."\r\n";
+                $headers .= 'Content-type: text/html; charset='.$this->options['charset']."\r\n";
                 $headers .= "To: {$this->options['to_name']} <{$this->options['to']}>\r\n"; //收件人
                 $headers .= "From: {$this->options['from_name']} <{$this->options['from']}>\r\n"; //发件人
                 $result = mail($this->options['to'], $this->options['subject'], $this->options['body'], $headers);
@@ -192,7 +208,7 @@ class Email
                 $this->setError(__('Mail already closed'));
                 break;
         }
+
         return $result;
     }
-
 }

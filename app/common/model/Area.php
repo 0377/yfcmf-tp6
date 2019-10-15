@@ -3,19 +3,18 @@
 namespace app\common\model;
 
 use think\facade\Cache;
-use app\common\model\BaseModel;
 
 /**
- * 地区数据模型
+ * 地区数据模型.
  */
 class Area extends BaseModel
 {
-
     /**
-     * 根据经纬度获取当前地区信息
+     * 根据经纬度获取当前地区信息.
      *
      * @param string $lng 经度
      * @param string $lat 纬度
+     *
      * @return Area 城市信息
      */
     public static function getAreaFromLngLat($lng, $lat, $level = 3)
@@ -36,14 +35,16 @@ class Area extends BaseModel
             list($id, $distance) = $georadiuslist[0];
         }
         $id = isset($id) && $id ? $id : 3;
+
         return self::find($id);
     }
 
     /**
-     * 根据经纬度获取省份
+     * 根据经纬度获取省份.
      *
      * @param string $lng 经度
      * @param string $lat 纬度
+     *
      * @return Area
      */
     public static function getProvinceFromLngLat($lng, $lat)
@@ -53,6 +54,7 @@ class Area extends BaseModel
         if ($citydata) {
             $provincedata = self::find($citydata['pid']);
         }
+
         return $provincedata;
     }
 
@@ -61,6 +63,7 @@ class Area extends BaseModel
      *
      * @param string $lng 经度
      * @param string $lat 纬度
+     *
      * @return Area
      */
     public static function getCityFromLngLat($lng, $lat)
@@ -70,20 +73,22 @@ class Area extends BaseModel
         if ($districtdata) {
             $citydata = self::find($districtdata['pid']);
         }
+
         return $citydata;
     }
 
     /**
-     * 根据经纬度获取地区
+     * 根据经纬度获取地区.
      *
      * @param string $lng 经度
      * @param string $lat 纬度
+     *
      * @return Area
      */
     public static function getDistrictFromLngLat($lng, $lat)
     {
         $districtdata = self::getAreaFromLngLat($lng, $lat, 3);
+
         return $districtdata;
     }
-
 }

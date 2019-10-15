@@ -8,7 +8,7 @@ use think\facade\Config;
 use think\facade\Log;
 
 /**
- * Token操作类
+ * Token操作类.
  */
 class Token
 {
@@ -23,10 +23,11 @@ class Token
     public static $handler;
 
     /**
-     * 连接Token驱动
-     * @access public
-     * @param  array       $options 配置数组
-     * @param  bool|string $name    Token连接标识 true 强制重新连接
+     * 连接Token驱动.
+     *
+     * @param array       $options 配置数组
+     * @param bool|string $name    Token连接标识 true 强制重新连接
+     *
      * @return Driver
      */
     public static function connect(array $options = [], $name = false)
@@ -39,11 +40,11 @@ class Token
 
         if (true === $name || !isset(self::$instance[$name])) {
             $class = false === strpos($type, '\\') ?
-                '\\app\\common\\library\\token\\driver\\' . ucwords($type) :
+                '\\app\\common\\library\\token\\driver\\'.ucwords($type) :
                 $type;
 
             // 记录初始化信息
-            env('APP_DEBUG') && Log::record('[ TOKEN ] INIT ' . $type, 'info');
+            env('APP_DEBUG') && Log::record('[ TOKEN ] INIT '.$type, 'info');
 
             if (true === $name) {
                 return new $class($options);
@@ -56,9 +57,10 @@ class Token
     }
 
     /**
-     * 自动初始化Token
-     * @access public
-     * @param  array $options 配置数组
+     * 自动初始化Token.
+     *
+     * @param array $options 配置数组
+     *
      * @return Driver
      */
     public static function init(array $options = [])
@@ -67,7 +69,7 @@ class Token
             if (empty($options) && 'complex' == Config::get('token.type')) {
                 $default = Config::get('token.default');
                 // 获取默认Token配置，并连接
-                $options = Config::get('token.' . $default['type']) ?: $default;
+                $options = Config::get('token.'.$default['type']) ?: $default;
             } elseif (empty($options)) {
                 $options = Config::get('token');
             }
@@ -79,9 +81,10 @@ class Token
     }
 
     /**
-     * 判断Token是否可用(check别名)
-     * @access public
-     * @param  string $token Token标识
+     * 判断Token是否可用(check别名).
+     *
+     * @param string $token Token标识
+     *
      * @return bool
      */
     public static function has($token, $user_id)
@@ -90,8 +93,10 @@ class Token
     }
 
     /**
-     * 判断Token是否可用
+     * 判断Token是否可用.
+     *
      * @param string $token Token标识
+     *
      * @return bool
      */
     public static function check($token, $user_id)
@@ -100,10 +105,11 @@ class Token
     }
 
     /**
-     * 读取Token
-     * @access public
-     * @param  string $token   Token标识
-     * @param  mixed  $default 默认值
+     * 读取Token.
+     *
+     * @param string $token   Token标识
+     * @param mixed  $default 默认值
+     *
      * @return mixed
      */
     public static function get($token, $default = false)
@@ -112,12 +118,13 @@ class Token
     }
 
     /**
-     * 写入Token
-     * @access public
-     * @param  string   $token   Token标识
-     * @param  mixed    $user_id 存储数据
-     * @param  int|null $expire  有效时间 0为永久
-     * @return boolean
+     * 写入Token.
+     *
+     * @param string   $token   Token标识
+     * @param mixed    $user_id 存储数据
+     * @param int|null $expire  有效时间 0为永久
+     *
+     * @return bool
      */
     public static function set($token, $user_id, $expire = null)
     {
@@ -125,10 +132,11 @@ class Token
     }
 
     /**
-     * 删除Token(delete别名)
-     * @access public
-     * @param  string $token Token标识
-     * @return boolean
+     * 删除Token(delete别名).
+     *
+     * @param string $token Token标识
+     *
+     * @return bool
      */
     public static function rm($token)
     {
@@ -136,8 +144,10 @@ class Token
     }
 
     /**
-     * 删除Token
+     * 删除Token.
+     *
      * @param string $token 标签名
+     *
      * @return bool
      */
     public static function delete($token)
@@ -146,14 +156,14 @@ class Token
     }
 
     /**
-     * 清除Token
-     * @access public
-     * @param  string $token Token标记
-     * @return boolean
+     * 清除Token.
+     *
+     * @param string $token Token标记
+     *
+     * @return bool
      */
     public static function clear($user_id = null)
     {
         return self::init()->clear($user_id);
     }
-
 }

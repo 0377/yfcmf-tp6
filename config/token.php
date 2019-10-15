@@ -1,4 +1,5 @@
 <?php
+
 return [
     // 驱动方式
     'type'     => 'Mysql',

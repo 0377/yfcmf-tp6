@@ -9,14 +9,13 @@ use fast\Random;
 use fast\Tree;
 
 /**
- * 管理员管理
+ * 管理员管理.
  *
  * @icon fa fa-users
  * @remark 一个管理员可以有多个角色组,左侧的菜单根据管理员所拥有的权限进行生成
  */
 class Admin extends Backend
 {
-
     /**
      * @var \app\admin\model\Admin
      */
@@ -27,7 +26,7 @@ class Admin extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Admin;
+        $this->model = new \app\admin\model\Admin();
 
         $this->childrenAdminIds = $this->auth->getChildrenAdminIds(true);
         $this->childrenGroupIds = $this->auth->getChildrenGroupIds(true);
@@ -56,11 +55,11 @@ class Admin extends Backend
         }
 
         $this->view->assign('groupdata', $groupdata);
-        $this->assignconfig("admin", ['id' => $this->auth->id]);
+        $this->assignconfig('admin', ['id' => $this->auth->id]);
     }
 
     /**
-     * 查看
+     * 查看.
      */
     public function index()
     {
@@ -71,7 +70,7 @@ class Admin extends Backend
             }
             $childrenGroupIds = $this->childrenGroupIds;
             $groupName = AuthGroup::where('id', 'in', $childrenGroupIds)
-                ->column('name','id');
+                ->column('name', 'id');
             $authGroupList = AuthGroupAccess::where('group_id', 'in', $childrenGroupIds)
                 ->field('uid,group_id')
                 ->select();
@@ -106,34 +105,35 @@ class Admin extends Backend
                 $v['groups_text'] = implode(',', array_values($groups));
             }
             unset($v);
-            $result = array("total" => $total, "rows" => $list);
+            $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 添加
+     * 添加.
      */
     public function add()
     {
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+            $params = $this->request->post('row/a');
             if ($params) {
                 $params['salt'] = Random::alnum();
-                $params['password'] = md5(md5($params['password']) . $params['salt']);
+                $params['password'] = md5(md5($params['password']).$params['salt']);
                 $params['avatar'] = '/assets/img/avatar.png'; //设置新管理员默认头像。
                 try {
                     validate('Admin.add')->check($params);
-                }catch (\Exception $e) {
+                } catch (\Exception $e) {
                     $this->error($e->getMessage());
                 }
                 $result = $this->model->save($params);
                 if ($result === false) {
                     $this->error($this->model->getError());
                 }
-                $group = $this->request->post("group/a");
+                $group = $this->request->post('group/a');
 
                 //过滤不允许的组别,避免越权
                 $group = array_intersect($this->childrenGroupIds, $group);
@@ -142,17 +142,18 @@ class Admin extends Backend
                     $dataset[] = ['uid' => $this->model->id, 'group_id' => $value];
                 }
                 //AuthGroupAccess::saveAll($dataset);
-                $model=new AuthGroupAccess();
+                $model = new AuthGroupAccess();
                 $model->saveAll($dataset);
                 $this->success();
             }
             $this->error();
         }
+
         return $this->view->fetch();
     }
 
     /**
-     * 编辑
+     * 编辑.
      */
     public function edit($ids = null)
     {
@@ -161,22 +162,22 @@ class Admin extends Backend
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+            $params = $this->request->post('row/a');
             if ($params) {
                 if ($params['password']) {
                     $params['salt'] = Random::alnum();
-                    $params['password'] = md5(md5($params['password']) . $params['salt']);
+                    $params['password'] = md5(md5($params['password']).$params['salt']);
                 } else {
                     unset($params['password'], $params['salt']);
                 }
                 //这里需要针对username和email做唯一验证
-                $adminValidate = validate('Admin.edit',[],false,false);
+                $adminValidate = validate('Admin.edit', [], false, false);
                 $adminValidate->rule([
-                    'username' => 'require|max:50|unique:admin,username,' . $row->id,
-                    'email'    => 'require|email|unique:admin,email,' . $row->id
+                    'username' => 'require|max:50|unique:admin,username,'.$row->id,
+                    'email'    => 'require|email|unique:admin,email,'.$row->id,
                 ]);
-                $rs=$adminValidate->check($params);
-                if (!$rs){
+                $rs = $adminValidate->check($params);
+                if (!$rs) {
                     $this->error($adminValidate->getError());
                 }
 
@@ -188,7 +189,7 @@ class Admin extends Backend
                 // 先移除所有权限
                 AuthGroupAccess::where('uid', $row->id)->delete();
 
-                $group = $this->request->post("group/a");
+                $group = $this->request->post('group/a');
 
                 // 过滤不允许的组别,避免越权
                 $group = array_intersect($this->childrenGroupIds, $group);
@@ -198,7 +199,7 @@ class Admin extends Backend
                     $dataset[] = ['uid' => $row->id, 'group_id' => $value];
                 }
                 //AuthGroupAccess::saveAll($dataset);
-                $model=new AuthGroupAccess();
+                $model = new AuthGroupAccess();
                 $model->saveAll($dataset);
                 $this->success();
             }
@@ -209,15 +210,16 @@ class Admin extends Backend
         foreach ($grouplist as $k => $v) {
             $groupids[] = $v['id'];
         }
-        $this->view->assign("row", $row);
-        $this->view->assign("groupids", $groupids);
+        $this->view->assign('row', $row);
+        $this->view->assign('groupids', $groupids);
+
         return $this->view->fetch();
     }
 
     /**
-     * 删除
+     * 删除.
      */
-    public function del($ids = "")
+    public function del($ids = '')
     {
         if ($ids) {
             // 避免越权删除管理员
@@ -243,23 +245,24 @@ class Admin extends Backend
     }
 
     /**
-     * 批量更新
+     * 批量更新.
+     *
      * @internal
      */
-    public function multi($ids = "")
+    public function multi($ids = '')
     {
         // 管理员禁止批量操作
         $this->error();
     }
 
     /**
-     * 下拉搜索
+     * 下拉搜索.
      */
     public function selectpage()
     {
         $this->dataLimit = 'auth';
         $this->dataLimitField = 'id';
+
         return parent::selectpage();
     }
-
 }

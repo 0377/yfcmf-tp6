@@ -5,11 +5,10 @@ namespace app\api\controller;
 use app\common\controller\Api;
 
 /**
- * 示例接口
+ * 示例接口.
  */
 class Demo extends Api
 {
-
     //如果$noNeedLogin为空表示所有接口都需要登录才能请求
     //如果$noNeedRight为空表示所有接口都需要验证权限才能请求
     //如果接口已经设置无需登录,那也就无需鉴权了
@@ -20,7 +19,7 @@ class Demo extends Api
     protected $noNeedRight = ['test2'];
 
     /**
-     * 测试方法
+     * 测试方法.
      *
      * @ApiTitle    (测试名称)
      * @ApiSummary  (测试描述信息)
@@ -34,9 +33,9 @@ class Demo extends Api
      * @ApiReturnParams   (name="msg", type="string", required=true, sample="返回成功")
      * @ApiReturnParams   (name="data", type="object", sample="{'user_id':'int','user_name':'string','profile':{'email':'string','age':'integer'}}", description="扩展数据返回")
      * @ApiReturn   ({
-         'code':'1',
-         'msg':'返回成功'
-        })
+     * 'code':'1',
+     * 'msg':'返回成功'
+     * })
      */
     public function test()
     {
@@ -44,8 +43,7 @@ class Demo extends Api
     }
 
     /**
-     * 无需登录的接口
-     *
+     * 无需登录的接口.
      */
     public function test1()
     {
@@ -53,8 +51,7 @@ class Demo extends Api
     }
 
     /**
-     * 需要登录的接口
-     *
+     * 需要登录的接口.
      */
     public function test2()
     {
@@ -62,12 +59,10 @@ class Demo extends Api
     }
 
     /**
-     * 需要登录且需要验证有相应组的权限
-     *
+     * 需要登录且需要验证有相应组的权限.
      */
     public function test3()
     {
         $this->success('返回成功', ['action' => 'test3']);
     }
-
 }

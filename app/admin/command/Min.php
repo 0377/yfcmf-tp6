@@ -7,8 +7,7 @@
  *  * 邮箱: ice@sbing.vip
  *  * 网址: https://sbing.vip
  *  * Date: 2019/9/19 下午5:05
- *  * ============================================================================
- *
+ *  * ============================================================================.
  */
 
 namespace app\admin\command;
@@ -21,9 +20,8 @@ use think\Exception;
 
 class Min extends Command
 {
-
     /**
-     * 路径和文件名配置
+     * 路径和文件名配置.
      */
     protected $options = [
         'cssBaseUrl'  => 'public/assets/css/',
@@ -58,9 +56,9 @@ class Min extends Command
         $moduleArr = $module == 'all' ? ['frontend', 'backend'] : [$module];
         $resourceArr = $resource == 'all' ? ['js', 'css'] : [$resource];
 
-        $minPath = __DIR__ . DIRECTORY_SEPARATOR . 'Min' . DIRECTORY_SEPARATOR;
-        $publicPath = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR;
-        $tempFile = $minPath . 'temp.js';
+        $minPath = __DIR__.DIRECTORY_SEPARATOR.'Min'.DIRECTORY_SEPARATOR;
+        $publicPath = app()->getRootPath().'public'.DIRECTORY_SEPARATOR;
+        $tempFile = $minPath.'temp.js';
 
         $nodeExec = '';
 
@@ -69,7 +67,7 @@ class Min extends Command
                 // Winsows下请手动配置配置该值,一般将该值配置为 '"C:\Program Files\nodejs\node.exe"'，除非你的Node安装路径有变更
                 $nodeExec = 'C:\Program Files\nodejs\node.exe';
                 if (file_exists($nodeExec)) {
-                    $nodeExec = '"' . $nodeExec . '"';
+                    $nodeExec = '"'.$nodeExec.'"';
                 } else {
                     // 如果 '"C:\Program Files\nodejs\node.exe"' 不存在，可能是node安装路径有变更
                     // 但安装node会自动配置环境变量，直接执行 '"node.exe"' 提高第一次使用压缩打包的成功率
@@ -77,9 +75,9 @@ class Min extends Command
                 }
             } else {
                 try {
-                    $nodeExec = exec("which node");
+                    $nodeExec = exec('which node');
                     if (!$nodeExec) {
-                        throw new Exception("node environment not found!please install node first!");
+                        throw new Exception('node environment not found!please install node first!');
                     }
                 } catch (Exception $e) {
                     throw new Exception($e->getMessage());
@@ -95,23 +93,23 @@ class Min extends Command
                     'jsBaseUrl'   => $this->options['jsBaseUrl'],
                     'cssBaseName' => str_replace('{module}', $mod, $this->options['cssBaseName']),
                     'cssBaseUrl'  => $this->options['cssBaseUrl'],
-                    'jsBasePath'  => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath() . $this->options['jsBaseUrl']),
-                    'cssBasePath' => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath() . $this->options['cssBaseUrl']),
+                    'jsBasePath'  => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath().$this->options['jsBaseUrl']),
+                    'cssBasePath' => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath().$this->options['cssBaseUrl']),
                     'optimize'    => $optimize,
                     'ds'          => DIRECTORY_SEPARATOR,
                 ];
 
                 //源文件
-                $from = $data["{$res}BasePath"] . $data["{$res}BaseName"] . '.' . $res;
+                $from = $data["{$res}BasePath"].$data["{$res}BaseName"].'.'.$res;
                 if (!is_file($from)) {
                     $output->error("{$res} source file not found!file:{$from}");
                     continue;
                 }
-                if ($res == "js") {
+                if ($res == 'js') {
                     $content = file_get_contents($from);
                     preg_match("/require\.config\(\{[\r\n]?[\n]?+(.*?)[\r\n]?[\n]?}\);/is", $content, $matches);
                     if (!isset($matches[1])) {
-                        $output->error("js config not found!");
+                        $output->error('js config not found!');
                         continue;
                     }
                     $config = preg_replace("/(urlArgs|baseUrl):(.*)\n/", '', $matches[1]);
@@ -120,7 +118,7 @@ class Min extends Command
                 // 生成压缩文件
                 $this->writeToFile($res, $data, $tempFile);
 
-                $output->info("Compress " . $data["{$res}BaseName"] . ".{$res}");
+                $output->info('Compress '.$data["{$res}BaseName"].".{$res}");
 
                 // 执行压缩
                 $command = "{$nodeExec} \"{$minPath}r.js\" -o \"{$tempFile}\" >> \"{$minPath}node.log\"";
@@ -135,14 +133,16 @@ class Min extends Command
             @unlink($tempFile);
         }
 
-        $output->info("Build Successed!");
+        $output->info('Build Successed!');
     }
 
     /**
-     * 写入到文件
+     * 写入到文件.
+     *
      * @param string $name
-     * @param array $data
+     * @param array  $data
      * @param string $pathname
+     *
      * @return mixed
      */
     protected function writeToFile($name, $data, $pathname)
@@ -158,16 +158,19 @@ class Min extends Command
         if (!is_dir(dirname($pathname))) {
             mkdir(strtolower(dirname($pathname)), 0755, true);
         }
+
         return file_put_contents($pathname, $content);
     }
 
     /**
      * 获取基础模板
+     *
      * @param string $name
+     *
      * @return string
      */
     protected function getStub($name)
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'Min' . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . $name . '.stub';
+        return __DIR__.DIRECTORY_SEPARATOR.'Min'.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.$name.'.stub';
     }
 }
