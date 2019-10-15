@@ -168,6 +168,7 @@ class Backend extends BaseController
 
         // 非选项卡时重定向
         if (!$this->request->isPost() && !IS_AJAX && !IS_ADDTABS && !IS_DIALOG && input("ref") == 'addtabs') {
+
             $url = preg_replace_callback("/([\?|&]+)ref=addtabs(&?)/i", function ($matches) {
                 return $matches[2] == '&' ? $matches[1] : '';
             }, $this->request->url());
@@ -177,7 +178,7 @@ class Backend extends BaseController
                 }
                 $url = url($url, [], false);
             }
-            $this->redirect('index/index', [], 302, ['referer' => $url]);
+            $this->redirect(url('index/index'), [], 302, ['referer' => $url]);
             exit;
         }
 
