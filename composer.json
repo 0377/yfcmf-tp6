@@ -27,9 +27,7 @@
         "topthink/think-trace": "^1.1"
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.2",
-        "mockery/mockery": "^1.2",
-        "phpunit/phpunit": "^7.0"
+        "symfony/var-dumper": "^4.2"
     },
     "autoload": {
         "psr-4": {
