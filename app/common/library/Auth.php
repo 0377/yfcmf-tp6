@@ -221,7 +221,7 @@ class Auth
     {
         $field = Validate::is($account, 'email') ? 'email' : (Validate::regex($account,
             '/^1\d{10}$/') ? 'mobile' : 'username');
-        $user = User::find([$field => $account]);
+        $user = User::where([$field => $account])->find();
         if (!$user) {
             $this->setError('Account is incorrect');
 

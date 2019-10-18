@@ -17,6 +17,7 @@ use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\facade\Config;
 use think\facade\Event;
+use think\facade\Lang;
 use think\Loader;
 use think\Request;
 use think\Response;
@@ -102,8 +103,8 @@ class Api
      */
     protected function _initialize()
     {
-        if (Config::get('url_domain_deploy')) {
-            $domain = Route::rules('domain');
+        if (Config::get('site.url_domain_deploy')) {
+            $domain = app()->route->domain('domain');//Route::rules('domain');
             if (isset($domain['api'])) {
                 if (isset($_SERVER['HTTP_ORIGIN'])) {
                     header('Access-Control-Allow-Origin: '.$this->request->server('HTTP_ORIGIN'));
@@ -163,7 +164,7 @@ class Api
         // 上传信息配置后
         Event::trigger('upload_config_init', $upload);
 
-        Config::set('upload', array_merge(Config::get('upload'), $upload));
+        Config::set(array_merge(Config::get('upload'), $upload),'upload');
 
         // 加载当前控制器语言包
         $this->loadlang($controllername);
@@ -176,8 +177,8 @@ class Api
      */
     protected function loadlang($name)
     {
-        Lang::load(APP_PATH.app()->http->getName().'/lang/'.$this->request->langset().'/'.str_replace('.',
-                '/', $name).'.php');
+        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.str_replace('.', '/',
+                strtolower($name)).'.php');
     }
 
     /**
@@ -226,7 +227,7 @@ class Api
         $result = [
             'code' => $code,
             'msg'  => $msg,
-            'time' => Request::instance()->server('REQUEST_TIME'),
+            'time' => time(),
             'data' => $data,
         ];
         // 如果未设置类型则自动判断
@@ -239,8 +240,9 @@ class Api
             //未设置状态码,根据code值判断
             $code = $code >= 1000 || $code < 200 ? 200 : $code;
         }
-        $response = Response::create($result, $type, $code)->header($header);
 
+        $response = Response::create($result, $type, $code)->header($header);
+        //halt($response);
         throw new HttpResponseException($response);
     }
 
