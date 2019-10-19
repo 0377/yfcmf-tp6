@@ -47,7 +47,7 @@ class Route
             if (!$class) {
                 throw new HttpException(404, __('addon controller %s not found', parseName($controller, 1)));
             }
-            $instance = new $class(app()->request);
+            $instance = new $class(app());
             $vars = [];
             if (is_callable([$instance, $action])) {
                 // 执行操作方法
