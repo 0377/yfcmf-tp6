@@ -188,7 +188,7 @@ class Auth
         Db::startTrans();
 
         try {
-            $user = User::create($params, true);
+            $user = User::create($params);
 
             $this->_user = User::find($user->id);
 
@@ -197,7 +197,7 @@ class Auth
             Token::set($this->_token, $user->id, $this->keeptime);
 
             //注册成功的事件
-            Event::trigger('user_register_successed', $this->_user, $data);
+            Event::trigger('user_register_successed', $this->_user);
             Db::commit();
         } catch (Exception $e) {
             $this->setError($e->getMessage());

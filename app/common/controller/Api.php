@@ -15,6 +15,7 @@ namespace app\common\controller;
 use app\common\library\Auth;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
+use think\App;
 use think\facade\Config;
 use think\facade\Event;
 use think\facade\Lang;
@@ -81,9 +82,9 @@ class Api
      *
      * @param Request $request Request 对象
      */
-    public function __construct(Request $request = null)
+    public function __construct(App $app)
     {
-        $this->request = is_null($request) ? Request::instance() : $request;
+        $this->request = is_null($app->request) ? \think\facade\Request::instance() : $app->request;
 
         // 控制器初始化
         $this->_initialize();

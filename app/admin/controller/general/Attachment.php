@@ -67,7 +67,7 @@ class Attachment extends Backend
                 ->order($sort, $order)
                 ->limit($offset, $limit)
                 ->select();
-            $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', $this->request->root());
+            $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', $this->request->domain());
             foreach ($list as $k => &$v) {
                 $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']).$v['url'];
             }

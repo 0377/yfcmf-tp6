@@ -112,6 +112,12 @@ class User extends Api
         if ($mobile && !Validate::regex($mobile, "^1\d{10}$")) {
             $this->error(__('Mobile is incorrect'));
         }
+        if (empty($email)){
+            $email=$username;
+        }
+        if (empty($mobile)){
+            $mobile=$username;
+        }
         $ret = $this->auth->register($username, $password, $email, $mobile, []);
         if ($ret) {
             $data = ['userinfo' => $this->auth->getUserinfo()];
