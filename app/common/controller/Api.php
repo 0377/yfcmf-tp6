@@ -13,16 +13,15 @@
 namespace app\common\controller;
 
 use app\common\library\Auth;
+use think\App;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
-use think\App;
 use think\facade\Config;
 use think\facade\Event;
 use think\facade\Lang;
 use think\Loader;
 use think\Request;
 use think\Response;
-use think\Route;
 
 /**
  * API控制器基类.
@@ -108,7 +107,7 @@ class Api
             $domain = app()->route->domain('domain');
             if (isset($domain['api'])) {
                 if (isset($_SERVER['HTTP_ORIGIN'])) {
-                    header('Access-Control-Allow-Origin: ' . $this->request->server('HTTP_ORIGIN'));
+                    header('Access-Control-Allow-Origin: '.$this->request->server('HTTP_ORIGIN'));
                     header('Access-Control-Allow-Credentials: true');
                     header('Access-Control-Max-Age: 86400');
                 }
@@ -135,7 +134,7 @@ class Api
         // token
         $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
 
-        $path = str_replace('.', '/', $controllername) . '/' . $actionname;
+        $path = str_replace('.', '/', $controllername).'/'.$actionname;
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
@@ -178,18 +177,18 @@ class Api
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath() . '/lang/' . Lang::getLangset() . '/' . str_replace('.', '/',
-                strtolower($name)) . '.php');
+        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.str_replace('.', '/',
+                strtolower($name)).'.php');
     }
 
     /**
      * 操作成功返回的数据.
      *
-     * @param string $msg 提示信息
-     * @param mixed $data 要返回的数据
-     * @param int $code 错误码，默认为1
-     * @param string $type 输出类型
-     * @param array $header 发送的 Header 信息
+     * @param string $msg    提示信息
+     * @param mixed  $data   要返回的数据
+     * @param int    $code   错误码，默认为1
+     * @param string $type   输出类型
+     * @param array  $header 发送的 Header 信息
      */
     protected function success($msg = '', $data = null, $code = 1, $type = null, array $header = [])
     {
@@ -199,11 +198,11 @@ class Api
     /**
      * 操作失败返回的数据.
      *
-     * @param string $msg 提示信息
-     * @param mixed $data 要返回的数据
-     * @param int $code 错误码，默认为0
-     * @param string $type 输出类型
-     * @param array $header 发送的 Header 信息
+     * @param string $msg    提示信息
+     * @param mixed  $data   要返回的数据
+     * @param int    $code   错误码，默认为0
+     * @param string $type   输出类型
+     * @param array  $header 发送的 Header 信息
      */
     protected function error($msg = '', $data = null, $code = 0, $type = null, array $header = [])
     {
@@ -213,15 +212,15 @@ class Api
     /**
      * 返回封装后的 API 数据到客户端.
      *
-     * @param mixed $msg 提示信息
-     * @param mixed $data 要返回的数据
-     * @param int $code 错误码，默认为0
-     * @param string $type 输出类型，支持json/xml/jsonp
-     * @param array $header 发送的 Header 信息
+     * @param mixed  $msg    提示信息
+     * @param mixed  $data   要返回的数据
+     * @param int    $code   错误码，默认为0
+     * @param string $type   输出类型，支持json/xml/jsonp
+     * @param array  $header 发送的 Header 信息
      *
-     * @return void
      * @throws HttpResponseException
      *
+     * @return void
      */
     protected function result($msg, $data = null, $code = 0, $type = null, array $header = [])
     {
@@ -250,8 +249,8 @@ class Api
     /**
      * 前置操作.
      *
-     * @param string $method 前置操作方法名
-     * @param array $options 调用参数 ['only'=>[...]] 或者 ['except'=>[...]]
+     * @param string $method  前置操作方法名
+     * @param array  $options 调用参数 ['only'=>[...]] 或者 ['except'=>[...]]
      *
      * @return void
      */
@@ -295,15 +294,15 @@ class Api
     /**
      * 验证数据.
      *
-     * @param array $data 数据
+     * @param array        $data     数据
      * @param string|array $validate 验证器名或者验证规则数组
-     * @param array $message 提示信息
-     * @param bool $batch 是否批量验证
-     * @param mixed $callback 回调方法（闭包）
+     * @param array        $message  提示信息
+     * @param bool         $batch    是否批量验证
+     * @param mixed        $callback 回调方法（闭包）
      *
-     * @return array|string|true
      * @throws ValidateException
      *
+     * @return array|string|true
      */
     protected function validate($data, $validate, $message = [], $batch = false, $callback = null)
     {
