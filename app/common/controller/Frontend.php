@@ -53,7 +53,6 @@ class Frontend extends BaseController
 
     public function _initialize()
     {
-        url();
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
         $modulename = app()->http->getName();
@@ -64,7 +63,7 @@ class Frontend extends BaseController
         if ($this->layout) {
             View::engine()->layout('layout/'.$this->layout);
         }
-        $this->auth = Auth::instance();
+        $this->auth = app()->auth;
 
         // token
         $token = $this->request->server('HTTP_TOKEN',

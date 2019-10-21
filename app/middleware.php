@@ -10,5 +10,4 @@ return [
     \think\middleware\SessionInit::class,
     // 页面Trace调试
     //\think\middleware\TraceDebug::class,
-    //\app\common\middleware\Tracy::class,
 ];

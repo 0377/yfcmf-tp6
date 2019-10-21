@@ -33,7 +33,7 @@
                                 <ins>{:__('Array value')}</ins>
                             </dd>
                             <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
-                            <textarea name="row[{$item.name}]" cols="30" rows="5" class="hide">{$item.value|json_encode|htmlentities}</textarea>
+                            <textarea name="row[{$item.name}]" cols="30" rows="5" class="hide">{$item.value|json_encode}</textarea>
                         </dl>
                         {/case}
                         {case datetime}

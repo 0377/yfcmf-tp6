@@ -1,7 +1,9 @@
 <IfModule mod_rewrite.c>
   Options +FollowSymlinks -Multiviews
   RewriteEngine On
-
+  RewriteCond %{HTTP:Authorization} ^(.*)
+  RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+  SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^(.*)$ index.php?s=$1 [QSA,PT,L]

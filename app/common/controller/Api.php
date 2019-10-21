@@ -125,7 +125,7 @@ class Api
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
 
-        $this->auth = Auth::instance();
+        $this->auth = app()->auth;
 
         $modulename = app()->http->getName();
         $controllername = strtolower($this->request->controller());

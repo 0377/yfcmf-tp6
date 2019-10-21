@@ -10,14 +10,20 @@
  *  * ============================================================================.
  */
 
-namespace app\common\provider;
+namespace app\common\service;
 
-class Addons
+use app\common\library\Auth;
+use think\Service;
+
+/**
+ * 认证服务
+ *
+ * @package app\common\provider
+ */
+class AuthService extends Service
 {
-    public $a = 'b';
-
-    public function __construct()
+    public function register()
     {
-        exit('aaaaaaaaaaa');
+        $this->app->bind('auth', Auth::class);
     }
 }

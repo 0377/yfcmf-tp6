@@ -151,12 +151,12 @@ class User extends Frontend
         if ($this->request->isPost()) {
             $account = $this->request->post('account');
             $password = $this->request->post('password');
-            $keeplogin = (int) $this->request->post('keeplogin');
+            $keeplogin = (int)$this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
                 'account'   => 'require|length:3,50',
                 'password'  => 'require|length:6,30',
-                '__token__' => 'require|token',
+                //'__token__' => 'require|token',
             ];
 
             $msg = [
@@ -170,17 +170,17 @@ class User extends Frontend
                 'password'  => $password,
                 '__token__' => $token,
             ];
-            $validate = new Validate($rule, $msg);
+            $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
             if (!$result) {
-                $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+                $this->error(__($validate->getError()), null, ['token' => $this->request->buildToken()]);
 
                 return false;
             }
             if ($this->auth->login($account, $password)) {
                 $this->success(__('Logged in successful'), $url ? $url : url('user/index'));
             } else {
-                $this->error($this->auth->getError(), null, ['token' => $this->request->token()]);
+                $this->error($this->auth->getError(), null, ['token' => $this->request->buildToken()]);
             }
         }
         //判断来源

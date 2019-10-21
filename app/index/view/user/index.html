@@ -61,9 +61,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-4 col-md-2">{:__('Logintime')}</div>
-                                        <div class="col-xs-8 col-md-4">{$user.logintime|date="Y-m-d H:i:s",###}</div>
+                                        <div class="col-xs-8 col-md-4">{:date('Y-m-d H:i:s',$user['logintime'])}</div>
                                         <div class="col-xs-4 col-md-2">{:__('Prevtime')}</div>
-                                        <div class="col-xs-8 col-md-4">{$user.prevtime|date="Y-m-d H:i:s",###}</div>
+                                        <div class="col-xs-8 col-md-4">{:date('Y-m-d H:i:s',$user['prevtime'])}</div>
                                     </div>
                                 </div>
                             </div>

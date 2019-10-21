@@ -6,7 +6,7 @@ return [
     ],
 
     'listen' => [
-        'AppInit'  => [app\common\event\AddAddons::class],
+        'AppInit'  => [],
         'HttpRun'  => [],
         'HttpEnd'  => [],
         'LogLevel' => [],

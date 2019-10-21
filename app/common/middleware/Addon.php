@@ -18,7 +18,7 @@ use think\Request;
 use think\Response;
 
 /**
- * Fast初始化.
+ * 插件中间件.
  */
 class Addon
 {
@@ -32,6 +32,7 @@ class Addon
      */
     public function handle($request, Closure $next)
     {
+        hook('addon_middleware', $request);
         return $next($request);
     }
 }

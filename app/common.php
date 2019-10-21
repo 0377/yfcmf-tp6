@@ -16,7 +16,6 @@ use think\facade\Event;
 use think\facade\Lang;
 use think\Model;
 
-!defined('DS') && define('DS', DIRECTORY_SEPARATOR);
 if (!function_exists('tp5ControllerToTp6Controller')) {
     /**
      * TP5二级目录转TP6二级目录.
@@ -51,9 +50,8 @@ if (!function_exists('model')) {
      * @param string $layer
      * @param bool   $appendSuffix
      *
-     * @throws \think\Exception
-     *
      * @return Model
+     * @throws \think\Exception
      */
     function model($name = '', $layer = 'model', $appendSuffix = false)
     {
@@ -72,17 +70,19 @@ if (!function_exists('model')) {
         }
     }
 }
+
 /**
- * 处理插件钩子.
+ * 处理插件钩子
  *
- * @param string $hook   钩子名称
- * @param mixed  $params 传入参数
+ * @param string     $event  钩子名称
+ * @param array|null $params 传入参数
+ * @param bool       $once
  *
- * @return void
+ * @return mixed
  */
-function hook($hook, $params = [])
+function hook($event, $params = null, bool $once = false)
 {
-    Event::trigger($hook, $params);
+    return Event::trigger($event, $params, $once);
 }
 
 /**
@@ -138,7 +138,7 @@ function get_addon_list()
 function get_addon_autoload_config($truncate = false)
 {
     // 读取addons的配置
-    $config = (array) Config::get('addons');
+    $config = (array)Config::get('addons');
     if ($truncate) {
         // 清空手动配置的钩子
         $config['hooks'] = [];
@@ -157,7 +157,7 @@ function get_addon_autoload_config($truncate = false)
         }
 
         // 读取出所有公共方法
-        $methods = (array) get_class_methods('\\app\\addons\\'.$name.'\\'.ucfirst($name));
+        $methods = (array)get_class_methods('\\app\\addons\\'.$name.'\\'.ucfirst($name));
         // 跟插件基类方法做比对，得到差异结果
         $hooks = array_diff($methods, $base);
         // 循环将钩子方法写入配置中
@@ -180,7 +180,7 @@ function get_addon_autoload_config($truncate = false)
             $rule = array_map(function ($value) use ($addon) {
                 return "{$addon['name']}/{$value}";
             }, array_flip($conf['rewrite']));
-            if ($url_domain_deploy && isset($conf['domain']) && $conf['domain']) {
+            if (isset($conf['domain']) && $conf['domain']) {
                 $domain[] = [
                     'addon'  => $addon['name'],
                     'domain' => $conf['domain'],
@@ -218,7 +218,6 @@ function get_addon_class($name, $type = 'hook', $class = null)
     } else {
         $class = parseName(is_null($class) ? $name : $class, 1);
     }
-    //halt($class,$name);
     switch ($type) {
         case 'controller':
             $namespace = '\\addons\\'.$name.'\\controller\\'.$class;
@@ -336,7 +335,6 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
 
     if ($rewrite) {
         $path = substr($url, stripos($url, '/') + 1);
-        //dump($addon,$url,$rewrite,$path);
         if (isset($rewrite[$path]) && $rewrite[$path]) {
             $val = $rewrite[$path];
             array_walk($params, function ($value, $key) use (&$val) {
@@ -363,7 +361,6 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
             $vars[substr($k, 1)] = $v;
         }
     }
-    //var_dump($val);
     $url = url($val, [], $suffix, $domain).($vars ? '?'.http_build_query($vars) : '');
     $url = preg_replace("/\/((?!index)[\w]+)\.php\//i", '/', $url);
 
@@ -376,9 +373,8 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
  * @param string $name  插件名
  * @param array  $array 配置数据
  *
- * @throws Exception
- *
  * @return bool
+ * @throws Exception
  */
 function set_addon_info($name, $array)
 {
@@ -418,9 +414,8 @@ function set_addon_info($name, $array)
  * @param array  $config    配置数据
  * @param bool   $writefile 是否写入配置文件
  *
- * @throws Exception
- *
  * @return bool
+ * @throws Exception
  */
 function set_addon_config($name, $config, $writefile = true)
 {
@@ -448,9 +443,8 @@ function set_addon_config($name, $config, $writefile = true)
  * @param string $name  插件名
  * @param array  $array 配置数据
  *
- * @throws Exception
- *
  * @return bool
+ * @throws Exception
  */
 function set_addon_fullconfig($name, $array)
 {
