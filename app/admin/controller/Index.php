@@ -12,11 +12,11 @@
 
 namespace app\admin\controller;
 
+use think\Validate;
+use think\facade\Event;
+use think\facade\Config;
 use app\admin\model\AdminLog;
 use app\common\controller\Backend;
-use think\facade\Config;
-use think\facade\Event;
-use think\Validate;
 
 /**
  * 后台首页.
@@ -40,7 +40,7 @@ class Index extends Backend
     public function index()
     {
         //左侧菜单
-        list($menulist, $navlist, $fixedmenu, $referermenu) = $this->auth->getSidebar([
+        [$menulist, $navlist, $fixedmenu, $referermenu] = $this->auth->getSidebar([
             'dashboard' => 'hot',
             'addon'     => ['new', 'red', 'badge'],
             'auth/rule' => __('Menu'),
@@ -93,7 +93,7 @@ class Index extends Backend
             $validate = new Validate($rule, [],
                 ['username' => __('Username'), 'password' => __('Password'), 'captcha' => __('Captcha')]);
             $result = $validate->check($data);
-            if (!$result) {
+            if (! $result) {
                 $this->error($validate->getError(), $url, ['token' => $this->request->buildToken()]);
             }
             AdminLog::setTitle(__('Login'));

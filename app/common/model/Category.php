@@ -76,10 +76,10 @@ class Category extends BaseModel
     public static function getCategoryArray($type = null, $status = null)
     {
         $list = self::where(function ($query) use ($type, $status) {
-            if (!is_null($type)) {
+            if (! is_null($type)) {
                 $query->where('type', '=', $type);
             }
-            if (!is_null($status)) {
+            if (! is_null($status)) {
                 $query->where('status', '=', $status);
             }
         })->order('weigh', 'desc')->select()->toArray();

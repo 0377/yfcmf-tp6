@@ -13,7 +13,7 @@ class ExceptionHandle extends Handle
     public function render(Exception $e)
     {
         // 在生产环境下返回code信息
-        if (!\think\Config::get('app.app_debug')) {
+        if (! \think\Config::get('app.app_debug')) {
             $statuscode = $code = 500;
             $msg = 'An error occurred';
             // 验证异常

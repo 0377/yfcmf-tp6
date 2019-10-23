@@ -12,8 +12,8 @@
 
 namespace app\admin\controller;
 
-use app\common\controller\Backend;
 use think\facade\Config;
+use app\common\controller\Backend;
 
 /**
  * 控制台.

@@ -32,7 +32,7 @@ class Area extends BaseModel
         }
 
         if ($georadiuslist) {
-            list($id, $distance) = $georadiuslist[0];
+            [$id, $distance] = $georadiuslist[0];
         }
         $id = isset($id) && $id ? $id : 3;
 

@@ -2,11 +2,11 @@
 
 namespace app\admin\controller\general;
 
+use fast\Random;
+use think\facade\Session;
 use app\admin\model\Admin;
 use app\admin\model\AdminLog;
 use app\common\controller\Backend;
-use fast\Random;
-use think\facade\Session;
 
 /**
  * 个人配置.
@@ -24,7 +24,7 @@ class Profile extends Backend
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax()) {
             $model = new AdminLog();
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
 
             $total = $model
                 ->where($where)

@@ -2,9 +2,9 @@
 
 namespace app\admin\controller;
 
+use fast\Tree;
 use app\common\controller\Backend;
 use app\common\model\Category as CategoryModel;
-use fast\Tree;
 
 /**
  * 分类管理.
@@ -88,12 +88,12 @@ class Category extends Backend
     public function edit($ids = null)
     {
         $row = $this->model->get($ids);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         $adminIds = $this->getDataLimitAdminIds();
         if (is_array($adminIds)) {
-            if (!in_array($row[$this->dataLimitField], $adminIds)) {
+            if (! in_array($row[$this->dataLimitField], $adminIds)) {
                 $this->error(__('You have no permission'));
             }
         }

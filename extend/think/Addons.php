@@ -12,8 +12,8 @@
 
 namespace think;
 
-use think\facade\Config;
 use think\facade\View;
+use think\facade\Config;
 
 /**
  * 插件基类
@@ -192,7 +192,7 @@ abstract class Addons
         $info = $this->getInfo();
         $info_check_keys = ['name', 'title', 'intro', 'author', 'version', 'state'];
         foreach ($info_check_keys as $value) {
-            if (!array_key_exists($value, $info)) {
+            if (! array_key_exists($value, $info)) {
                 return false;
             }
         }
@@ -214,7 +214,7 @@ abstract class Addons
      */
     public function fetch($template = '', $vars = [], $replace = [], $config = [])
     {
-        if (!is_file($template)) {
+        if (! is_file($template)) {
             $template = '/'.$template;
         }
         // 关闭模板布局

@@ -1,8 +1,7 @@
 <?php
 
-use app\common\provider\Addons;
-use app\ExceptionHandle;
 use app\Request;
+use app\ExceptionHandle;
 
 // 容器Provider定义文件
 return [

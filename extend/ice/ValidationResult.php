@@ -3,26 +3,24 @@
 namespace Ice;
 
 /**
- * Validation result
+ * Validation result.
  */
 class ValidationResult
 {
     /**
-     * Callback for translating the error message
+     * Callback for translating the error message.
      *
      * @var callback
      */
     public static $translate;
-
 
     /**
      * @var array
      */
     protected $errors = [];
 
-
     /**
-     * Translate a message
+     * Translate a message.
      *
      * @param string $message
      *
@@ -30,12 +28,15 @@ class ValidationResult
      */
     public function translate($message)
     {
-        if (!isset(static::$translate)) return $message;
+        if (! isset(static::$translate)) {
+            return $message;
+        }
+
         return call_user_func(static::$translate, $message);
     }
 
     /**
-     * Add an error
+     * Add an error.
      *
      * @param string $message
      * @param mixed  ...$args Arguments to insert into the message
@@ -43,18 +44,20 @@ class ValidationResult
     public function addError($message, ...$args)
     {
         $message = $this->translate($message);
-        if (!empty($args)) $message = vsprintf($message, $args);
+        if (! empty($args)) {
+            $message = vsprintf($message, $args);
+        }
 
         $this->errors[] = $message;
     }
 
     /**
-     * Add errors from a validation object
+     * Add errors from a validation object.
      *
      * @param ValidationResult $validation
      * @param string           $prefix
      */
-    public function add(ValidationResult $validation, $prefix = null)
+    public function add(self $validation, $prefix = null)
     {
         $prefix = $this->translate($prefix);
 
@@ -63,11 +66,10 @@ class ValidationResult
         }
     }
 
-
     /**
-     * Check if there are no validation errors
+     * Check if there are no validation errors.
      *
-     * @return boolean
+     * @return bool
      */
     public function succeeded()
     {
@@ -75,9 +77,9 @@ class ValidationResult
     }
 
     /**
-     * Alias of succeeded()
+     * Alias of succeeded().
      *
-     * @return boolean
+     * @return bool
      */
     final public function isSuccess()
     {
@@ -85,32 +87,31 @@ class ValidationResult
     }
 
     /**
-     * Check if there are validation errors
+     * Check if there are validation errors.
      *
-     * @return boolean
+     * @return bool
      */
     public function failed()
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 
-
     /**
-     * Get the (first) validation error
+     * Get the (first) validation error.
      *
      * @return string|null
      */
     public function getError()
     {
         if (count($this->errors) > 1) {
-            trigger_error("There are multiple errors, returning only the first", E_USER_NOTICE);
+            trigger_error('There are multiple errors, returning only the first', E_USER_NOTICE);
         }
 
         return reset($this->errors) ?: null;
     }
 
     /**
-     * Get the validation errors
+     * Get the validation errors.
      *
      * @return array
      */
@@ -119,9 +120,8 @@ class ValidationResult
         return $this->errors;
     }
 
-
     /**
-     * Throw a validation exception if there are any errors
+     * Throw a validation exception if there are any errors.
      */
     public function mustSucceed()
     {
@@ -130,9 +130,8 @@ class ValidationResult
         }
     }
 
-
     /**
-     * Factory method for successful validation
+     * Factory method for successful validation.
      *
      * @return static
      */
@@ -142,7 +141,7 @@ class ValidationResult
     }
 
     /**
-     * Factory method for failed validation
+     * Factory method for failed validation.
      *
      * @param string $message
      * @param mixed  ...$args Arguments to insert into the message

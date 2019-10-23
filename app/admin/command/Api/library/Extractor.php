@@ -91,7 +91,7 @@ class Extractor
      */
     public static function getClassAnnotations($className)
     {
-        if (!isset(self::$classAnnotationCache[$className])) {
+        if (! isset(self::$classAnnotationCache[$className])) {
             $class = new \ReflectionClass($className);
             self::$classAnnotationCache[$className] = self::parseAnnotations($class->getDocComment());
         }
@@ -139,11 +139,11 @@ class Extractor
      */
     public static function getMethodAnnotations($className, $methodName)
     {
-        if (!isset(self::$annotationCache[$className.'::'.$methodName])) {
+        if (! isset(self::$annotationCache[$className.'::'.$methodName])) {
             try {
                 $method = new \ReflectionMethod($className, $methodName);
                 $class = new \ReflectionClass($className);
-                if (!$method->isPublic() || $method->isConstructor()) {
+                if (! $method->isPublic() || $method->isConstructor()) {
                     $annotations = [];
                 } else {
                     $annotations = self::consolidateAnnotations($method, $class);
@@ -180,7 +180,7 @@ class Extractor
 
             // verify is the annotation class exists, depending if Annotations::strict is true
             // if not, just skip the annotation instance creation.
-            if (!class_exists($class)) {
+            if (! class_exists($class)) {
                 if ($this->strict) {
                     throw new Exception(sprintf('Runtime Error: Annotation Class Not Found: %s', $class));
                 } else {
@@ -226,13 +226,13 @@ class Extractor
         preg_match_all("/\*[\s]+(.*)(\\r\\n|\\r|\\n)/U", str_replace('/**', '', $docblockMethod), $methodArr);
         preg_match_all("/\*[\s]+(.*)(\\r\\n|\\r|\\n)/U", str_replace('/**', '', $dockblockClass), $classArr);
 
-        if (!isset($methodAnnotations['ApiMethod'])) {
+        if (! isset($methodAnnotations['ApiMethod'])) {
             $methodAnnotations['ApiMethod'] = ['get'];
         }
-        if (!isset($methodAnnotations['ApiWeigh'])) {
+        if (! isset($methodAnnotations['ApiWeigh'])) {
             $methodAnnotations['ApiWeigh'] = [0];
         }
-        if (!isset($methodAnnotations['ApiSummary'])) {
+        if (! isset($methodAnnotations['ApiSummary'])) {
             $methodAnnotations['ApiSummary'] = $methodAnnotations['ApiTitle'];
         }
 
@@ -255,11 +255,11 @@ class Extractor
                 }
             }
         }
-        if (!isset($methodAnnotations['ApiRoute'])) {
+        if (! isset($methodAnnotations['ApiRoute'])) {
             $urlArr = [];
             $className = $class->getName();
 
-            list($prefix, $suffix) = explode('\\'.\think\Config::get('url_controller_layer').'\\', $className);
+            [$prefix, $suffix] = explode('\\'.\think\Config::get('url_controller_layer').'\\', $className);
             $prefixArr = explode('\\', $prefix);
             $suffixArr = explode('\\', $suffix);
             if ($prefixArr[0] == \think\Config::get('app_namespace')) {
@@ -273,10 +273,10 @@ class Extractor
 
             $methodAnnotations['ApiRoute'] = [implode('/', $urlArr)];
         }
-        if (!isset($methodAnnotations['ApiSector'])) {
+        if (! isset($methodAnnotations['ApiSector'])) {
             $methodAnnotations['ApiSector'] = isset($classAnnotations['ApiSector']) ? $classAnnotations['ApiSector'] : $classAnnotations['ApiTitle'];
         }
-        if (!isset($methodAnnotations['ApiParams'])) {
+        if (! isset($methodAnnotations['ApiParams'])) {
             $params = self::parseCustomAnnotations($docblockMethod, 'param');
             foreach ($params as $k => $v) {
                 $arr = explode(' ', preg_replace("/[\s]+/", ' ', $v));
@@ -288,8 +288,8 @@ class Extractor
                 ];
             }
         }
-        $methodAnnotations['ApiPermissionLogin'] = [!in_array('*', $noNeedLogin) && !in_array($methodName, $noNeedLogin)];
-        $methodAnnotations['ApiPermissionRight'] = [!in_array('*', $noNeedRight) && !in_array($methodName, $noNeedRight)];
+        $methodAnnotations['ApiPermissionLogin'] = [! in_array('*', $noNeedLogin) && ! in_array($methodName, $noNeedLogin)];
+        $methodAnnotations['ApiPermissionRight'] = [! in_array('*', $noNeedRight) && ! in_array($methodName, $noNeedRight)];
 
         return $methodAnnotations;
     }
@@ -354,7 +354,7 @@ class Extractor
         if (stripos($docblock, '@ApiInternal') !== false) {
             $annotations['ApiInternal'] = [true];
         }
-        if (!isset($annotations['ApiTitle'])) {
+        if (! isset($annotations['ApiTitle'])) {
             preg_match_all("/\*[\s]+(.*)(\\r\\n|\\r|\\n)/U", str_replace('/**', '', $docblock), $matchArr);
             $title = isset($matchArr[1]) && isset($matchArr[1][0]) ? $matchArr[1][0] : '';
             $annotations['ApiTitle'] = [$title];
@@ -398,7 +398,7 @@ class Extractor
             if ($c === '"' && $prev_c !== '\\') {
                 $delimiter = $c;
                 //open delimiter
-                if (!$composing && empty($prevDelimiter) && empty($nextDelimiter)) {
+                if (! $composing && empty($prevDelimiter) && empty($nextDelimiter)) {
                     $prevDelimiter = $nextDelimiter = $delimiter;
                     $val = '';
                     $composing = true;
@@ -427,7 +427,7 @@ class Extractor
                     $composing = false;
                     $delimiter = null;
                 }
-            } elseif (!$composing && in_array($c, $tokens)) {
+            } elseif (! $composing && in_array($c, $tokens)) {
                 switch ($c) {
                     case '=':
                         $prevDelimiter = $nextDelimiter = '';
@@ -441,7 +441,7 @@ class Extractor
 
                         // If composing flag is true yet,
                         // it means that the string was not enclosed, so it is parsing error.
-                        if ($composing === true && !empty($prevDelimiter) && !empty($nextDelimiter)) {
+                        if ($composing === true && ! empty($prevDelimiter) && ! empty($nextDelimiter)) {
                             throw new Exception(sprintf(
                                 'Parse Error: enclosing error -> expected: [%s], given: [%s]',
                                 $nextDelimiter,
@@ -494,7 +494,7 @@ class Extractor
                 if ($type == 'plain' && $i === $len) {
                     $data = self::castValue($var);
                 } else {
-                    $data[trim($var)] = self::castValue($val, !$quoted);
+                    $data[trim($var)] = self::castValue($val, ! $quoted);
                 }
 
                 $level = 1;

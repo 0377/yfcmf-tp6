@@ -2,8 +2,8 @@
 
 namespace app\admin\model;
 
-use app\common\model\BaseModel;
 use think\facade\Cache;
+use app\common\model\BaseModel;
 
 class AuthRule extends BaseModel
 {

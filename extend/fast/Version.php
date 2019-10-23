@@ -29,12 +29,12 @@ class Version
                 //验证允许的版本
                 foreach ($data as $m) {
                     $c = explode('.', $m);
-                    if (!$c || $versize != count($c)) {
+                    if (! $c || $versize != count($c)) {
                         continue;
                     }
                     $i = 0;
                     foreach ($c as $a => $k) {
-                        if (!self::compare($ver[$a], $k)) {
+                        if (! self::compare($ver[$a], $k)) {
                             continue 2;
                         } else {
                             $i++;
@@ -67,7 +67,7 @@ class Version
             $k = explode(',', $v2);
             foreach ($k as $v) {
                 if (strpos($v, '-') !== false) {
-                    list($start, $stop) = explode('-', $v);
+                    [$start, $stop] = explode('-', $v);
                     for ($i = $start; $i <= $stop; $i++) {
                         $values[] = $i;
                     }

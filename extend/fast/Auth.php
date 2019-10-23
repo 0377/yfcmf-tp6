@@ -14,8 +14,8 @@
 
 namespace fast;
 
-use think\facade\Config;
 use think\facade\Db;
+use think\facade\Config;
 use think\facade\Request;
 use think\facade\Session;
 
@@ -93,7 +93,7 @@ class Auth
      */
     public function check($name, $uid, $relation = 'or', $mode = 'url')
     {
-        if (!$this->config['auth_on']) {
+        if (! $this->config['auth_on']) {
             return true;
         }
         // 获取用户需要验证的所有有效规则列表
@@ -130,7 +130,7 @@ class Auth
                 }
             }
         }
-        if ('or' == $relation && !empty($list)) {
+        if ('or' == $relation && ! empty($list)) {
             return true;
         }
         $diff = array_diff($name, $list);
@@ -198,7 +198,7 @@ class Auth
         $where = [
             'status' => 'normal',
         ];
-        if (!in_array('*', $ids)) {
+        if (! in_array('*', $ids)) {
             $where['id'] = ['in', $ids];
         }
         //读取用户组所有权限规则
@@ -211,7 +211,7 @@ class Auth
         }
         foreach ($this->rules as $rule) {
             //超级管理员无需验证condition
-            if (!empty($rule['condition']) && !in_array('*', $ids)) {
+            if (! empty($rule['condition']) && ! in_array('*', $ids)) {
                 //根据condition进行验证
                 $user = $this->getUserInfo($uid); //获取用户信息,一维数组
                 $command = preg_replace('/\{(\w*?)\}/', '$user[\'\\1\']', $rule['condition']);
@@ -261,7 +261,7 @@ class Auth
         $user = Db::name($this->config['auth_user']);
         // 获取用户表主键
         $_pk = is_string($user->getPk()) ? $user->getPk() : 'uid';
-        if (!isset($user_info[$uid])) {
+        if (! isset($user_info[$uid])) {
             $user_info[$uid] = $user->where($_pk, $uid)->find();
         }
 

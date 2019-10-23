@@ -12,15 +12,15 @@
 
 namespace app\admin\library\traits;
 
+use think\Exception;
+use think\facade\Db;
 use app\admin\library\Auth;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use think\exception\PDOException;
+use think\exception\ValidateException;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use think\Exception;
-use think\exception\PDOException;
-use think\exception\ValidateException;
-use think\facade\Db;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 trait Backend
 {
@@ -60,7 +60,7 @@ trait Backend
             if ($this->request->request('keyField')) {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             $total = $this->model
                 ->where($where)
                 ->order($sort, $order)
@@ -89,7 +89,7 @@ trait Backend
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax()) {
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             $total = $this->model
                 ->onlyTrashed()
                 ->where($where)
@@ -164,12 +164,12 @@ trait Backend
     public function edit($ids = null)
     {
         $row = $this->model->get($ids);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         $adminIds = $this->getDataLimitAdminIds();
         if (is_array($adminIds)) {
-            if (!in_array($row[$this->dataLimitField], $adminIds)) {
+            if (! in_array($row[$this->dataLimitField], $adminIds)) {
                 $this->error(__('You have no permission'));
             }
         }
@@ -374,16 +374,16 @@ trait Backend
     protected function import()
     {
         $file = $this->request->request('file');
-        if (!$file) {
+        if (! $file) {
             $this->error(__('Parameter %s can not be empty', 'file'));
         }
         $filePath = app()->getRootPath().DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.$file;
-        if (!is_file($filePath)) {
+        if (! is_file($filePath)) {
             $this->error(__('No results were found'));
         }
         //实例化reader
         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-        if (!in_array($ext, ['csv', 'xls', 'xlsx'])) {
+        if (! in_array($ext, ['csv', 'xls', 'xlsx'])) {
             $this->error(__('Unknown data format'));
         }
         if ($ext === 'csv') {
@@ -433,7 +433,7 @@ trait Backend
         $insert = [];
 
         try {
-            if (!$PHPExcel = $reader->load($filePath)) {
+            if (! $PHPExcel = $reader->load($filePath)) {
                 $this->error(__('Unknown data format'));
             }
             $currentSheet = $PHPExcel->getSheet(0);  //读取文件中的第一个工作表
@@ -468,7 +468,7 @@ trait Backend
         } catch (Exception $exception) {
             $this->error($exception->getMessage());
         }
-        if (!$insert) {
+        if (! $insert) {
             $this->error(__('No rows were updated'));
         }
 
@@ -484,7 +484,7 @@ trait Backend
             if ($has_admin_id) {
                 $auth = Auth::instance();
                 foreach ($insert as &$val) {
-                    if (!isset($val['admin_id']) || empty($val['admin_id'])) {
+                    if (! isset($val['admin_id']) || empty($val['admin_id'])) {
                         $val['admin_id'] = $auth->isLogin() ? $auth->id : 0;
                     }
                 }

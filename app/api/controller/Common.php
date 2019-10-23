@@ -12,12 +12,12 @@
 
 namespace app\api\controller;
 
-use app\common\controller\Api;
-use app\common\model\Area;
-use app\common\model\Attachment;
-use app\common\model\Version;
 use fast\Random;
 use think\facade\Config;
+use app\common\model\Area;
+use app\common\model\Version;
+use app\common\controller\Api;
+use app\common\model\Attachment;
 
 /**
  * 公共接口.
@@ -88,9 +88,9 @@ class Common extends Api
         //验证文件后缀
         if ($upload['mimetype'] !== '*' &&
             (
-                !in_array($suffix, $mimetypeArr)
-                || (stripos($typeArr[0].'/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'],
-                            $mimetypeArr) && !in_array($typeArr[0].'/*', $mimetypeArr)))
+                ! in_array($suffix, $mimetypeArr)
+                || (stripos($typeArr[0].'/', $upload['mimetype']) !== false && (! in_array($fileInfo['type'],
+                            $mimetypeArr) && ! in_array($typeArr[0].'/*', $mimetypeArr)))
             )
         ) {
             $this->error(__('Uploaded file format is limited'));
@@ -101,7 +101,7 @@ class Common extends Api
                 ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']) || in_array($suffix,
                 ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp'])) {
             $imgInfo = getimagesize($fileInfo['tmp_name']);
-            if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
+            if (! $imgInfo || ! isset($imgInfo[0]) || ! isset($imgInfo[1])) {
                 $this->error(__('Uploaded file is not a valid image'));
             }
             $imagewidth = isset($imgInfo[0]) ? $imgInfo[0] : $imagewidth;

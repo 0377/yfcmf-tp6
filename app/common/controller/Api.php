@@ -12,16 +12,16 @@
 
 namespace app\common\controller;
 
-use app\common\library\Auth;
 use think\App;
-use think\exception\HttpResponseException;
-use think\exception\ValidateException;
-use think\facade\Config;
-use think\facade\Event;
-use think\facade\Lang;
 use think\Loader;
 use think\Request;
 use think\Response;
+use think\facade\Lang;
+use think\facade\Event;
+use think\facade\Config;
+use app\common\library\Auth;
+use think\exception\ValidateException;
+use think\exception\HttpResponseException;
 
 /**
  * API控制器基类.
@@ -138,17 +138,17 @@ class Api
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
-        if (!$this->auth->match($this->noNeedLogin)) {
+        if (! $this->auth->match($this->noNeedLogin)) {
             //初始化
             $this->auth->init($token);
             //检测是否登录
-            if (!$this->auth->isLogin()) {
+            if (! $this->auth->isLogin()) {
                 $this->error(__('Please login first'), null, 401);
             }
             // 判断是否需要验证权限
-            if (!$this->auth->match($this->noNeedRight)) {
+            if (! $this->auth->match($this->noNeedRight)) {
                 // 判断控制器和方法判断是否有对应权限
-                if (!$this->auth->check($path)) {
+                if (! $this->auth->check($path)) {
                     $this->error(__('You have no permission'), null, 403);
                 }
             }
@@ -261,7 +261,7 @@ class Api
                 $options['only'] = explode(',', $options['only']);
             }
 
-            if (!in_array($this->request->action(), $options['only'])) {
+            if (! in_array($this->request->action(), $options['only'])) {
                 return;
             }
         } elseif (isset($options['except'])) {
@@ -312,12 +312,12 @@ class Api
         } else {
             // 支持场景
             if (strpos($validate, '.')) {
-                list($validate, $scene) = explode('.', $validate);
+                [$validate, $scene] = explode('.', $validate);
             }
 
             $v = Loader::validate($validate);
 
-            !empty($scene) && $v->scene($scene);
+            ! empty($scene) && $v->scene($scene);
         }
 
         // 批量验证
@@ -333,7 +333,7 @@ class Api
             call_user_func_array($callback, [$v, &$data]);
         }
 
-        if (!$v->check($data)) {
+        if (! $v->check($data)) {
             if ($this->failException) {
                 throw new ValidateException($v->getError());
             }

@@ -34,7 +34,7 @@ class Group extends Backend
     public function edit($ids = null)
     {
         $row = $this->model->get($ids);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         $rules = explode(',', $row['rules']);

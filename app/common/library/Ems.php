@@ -68,7 +68,7 @@ class Ems
         $ip = request()->ip();
         $ems = \app\common\model\Ems::create(['event' => $event, 'email' => $email, 'code' => $code, 'ip' => $ip, 'createtime' => $time]);
         $result = Event::trigger('ems_send', $ems, null, true);
-        if (!$result) {
+        if (! $result) {
             $ems->delete();
 
             return false;
@@ -116,7 +116,7 @@ class Ems
         if ($ems) {
             if ($ems['createtime'] > $time && $ems['times'] <= self::$maxCheckNums) {
                 $correct = $code == $ems['code'];
-                if (!$correct) {
+                if (! $correct) {
                     $ems->times = $ems->times + 1;
                     $ems->save();
 

@@ -12,13 +12,11 @@
 
 namespace app\common\service;
 
-use app\common\library\Auth;
 use think\Service;
+use app\common\library\Auth;
 
 /**
  * 认证服务
- *
- * @package app\common\provider
  */
 class AuthService extends Service
 {

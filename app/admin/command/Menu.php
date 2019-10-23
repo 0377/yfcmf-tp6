@@ -16,17 +16,17 @@
 
 namespace app\admin\command;
 
-use app\admin\model\AuthRule;
-use ReflectionClass;
-use ReflectionMethod;
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
-use think\Exception;
-use think\facade\Cache;
-use think\facade\Config;
 use think\Model;
+use ReflectionClass;
+use think\Exception;
+use ReflectionMethod;
+use think\facade\Cache;
+use think\console\Input;
+use think\facade\Config;
+use think\console\Output;
+use think\console\Command;
+use app\admin\model\AuthRule;
+use think\console\input\Option;
 
 class Menu extends Command
 {
@@ -52,7 +52,7 @@ class Menu extends Command
         $adminPath = dirname(__DIR__).DIRECTORY_SEPARATOR;
         //控制器名
         $controller = $input->getOption('controller') ?: '';
-        if (!$controller) {
+        if (! $controller) {
             throw new Exception('please input controller name');
         }
         $force = $input->getOption('force');
@@ -91,10 +91,10 @@ class Menu extends Command
                 $output->warning($v->name);
                 $ids[] = $v->id;
             }
-            if (!$ids) {
+            if (! $ids) {
                 throw new Exception('There is no menu to delete');
             }
-            if (!$force) {
+            if (! $force) {
                 $output->info("Are you sure you want to delete all those menu?  Type 'yes' to continue: ");
                 $line = fgets(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'));
                 if (trim($line) != 'yes') {
@@ -109,7 +109,7 @@ class Menu extends Command
             return;
         }
 
-        if (!in_array('all-controller', $controller)) {
+        if (! in_array('all-controller', $controller)) {
             foreach ($controller as $index => $item) {
                 if (stripos($item, '_') !== false) {
                     $item = parseName($item, 1);
@@ -124,7 +124,7 @@ class Menu extends Command
                 }
                 $adminPath = dirname(__DIR__).DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR,
                         $controllerArr).'.php';
-                if (!is_file($adminPath)) {
+                if (! is_file($adminPath)) {
                     $output->error('controller not found');
 
                     return;
@@ -157,7 +157,7 @@ class Menu extends Command
         $result = [];
         $cdir = scandir($dir);
         foreach ($cdir as $value) {
-            if (!in_array($value, ['.', '..'])) {
+            if (! in_array($value, ['.', '..'])) {
                 if (is_dir($dir.DIRECTORY_SEPARATOR.$value)) {
                     $result[$value] = $this->scandir($dir.DIRECTORY_SEPARATOR.$value);
                 } else {
@@ -187,7 +187,7 @@ class Menu extends Command
                 $this->import($v, $nowparentdir);
             } else {
                 //只匹配PHP文件
-                if (!preg_match('/^(\w+)\.php$/', $v, $matchone)) {
+                if (! preg_match('/^(\w+)\.php$/', $v, $matchone)) {
                     continue;
                 }
                 //导入文件
@@ -293,12 +293,12 @@ class Menu extends Command
             }
             unset($val);
             $name = implode('/', $controllerNameArr);
-            $title = (!isset($controllerArr[$key]) ? $controllerTitle : '');
-            $icon = (!isset($controllerArr[$key]) ? $controllerIcon : 'fa fa-list');
-            $remark = (!isset($controllerArr[$key]) ? $controllerRemark : '');
+            $title = (! isset($controllerArr[$key]) ? $controllerTitle : '');
+            $icon = (! isset($controllerArr[$key]) ? $controllerIcon : 'fa fa-list');
+            $remark = (! isset($controllerArr[$key]) ? $controllerRemark : '');
             $title = $title ? $title : $v;
             $rulemodel = $this->model->get(['name' => $name]);
-            if (!$rulemodel) {
+            if (! $rulemodel) {
                 $this->model
                     ->insert([
                         'pid'    => $pid,
@@ -322,11 +322,11 @@ class Menu extends Command
                 continue;
             }
             //未启用软删除时过滤相关方法
-            if (!$withSofeDelete && in_array($n->name, $softDeleteMethods)) {
+            if (! $withSofeDelete && in_array($n->name, $softDeleteMethods)) {
                 continue;
             }
             //只匹配符合的方法
-            if (!preg_match('/^(\w+)'.Config::get('route.action_suffix').'/', $n->name, $matchtwo)) {
+            if (! preg_match('/^(\w+)'.Config::get('route.action_suffix').'/', $n->name, $matchtwo)) {
                 unset($methods[$m]);
                 continue;
             }
@@ -361,7 +361,7 @@ class Menu extends Command
     //获取主键
     protected function getAuthRulePK($name)
     {
-        if (!empty($name)) {
+        if (! empty($name)) {
             $id = $this->model
                 ->where('name', $name)
                 ->value('id');

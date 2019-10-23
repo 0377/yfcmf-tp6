@@ -12,11 +12,11 @@
 
 namespace app\common\controller;
 
-use app\common\library\Auth;
-use think\facade\Config;
-use think\facade\Event;
 use think\facade\Lang;
 use think\facade\View;
+use think\facade\Event;
+use think\facade\Config;
+use app\common\library\Auth;
 
 /**
  * 前台控制器基类.
@@ -73,17 +73,17 @@ class Frontend extends BaseController
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
-        if (!$this->auth->match($this->noNeedLogin)) {
+        if (! $this->auth->match($this->noNeedLogin)) {
             //初始化
             $this->auth->init($token);
             //检测是否登录
-            if (!$this->auth->isLogin()) {
+            if (! $this->auth->isLogin()) {
                 $this->error(__('Please login first'), 'index/user/login');
             }
             // 判断是否需要验证权限
-            if (!$this->auth->match($this->noNeedRight)) {
+            if (! $this->auth->match($this->noNeedRight)) {
                 // 判断控制器和方法判断是否有对应权限
-                if (!$this->auth->check($path)) {
+                if (! $this->auth->check($path)) {
                     $this->error(__('You have no permission'));
                 }
             }

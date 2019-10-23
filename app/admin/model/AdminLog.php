@@ -33,7 +33,7 @@ class AdminLog extends BaseModel
         $admin_id = $auth->isLogin() ? $auth->id : 0;
         $username = $auth->isLogin() ? $auth->username : __('Unknown');
         $content = self::$content;
-        if (!$content) {
+        if (! $content) {
             $content = request()->param();
             foreach ($content as $k => $v) {
                 if (is_string($v) && strlen($v) > 200 || stripos($k, 'password') !== false) {
@@ -42,7 +42,7 @@ class AdminLog extends BaseModel
             }
         }
         $title = self::$title;
-        if (!$title) {
+        if (! $title) {
             $title = [];
             $breadcrumb = Auth::instance()->getBreadcrumb();
             foreach ($breadcrumb as $k => $v) {
@@ -52,7 +52,7 @@ class AdminLog extends BaseModel
         }
         self::create([
             'title'     => $title,
-            'content'   => !is_scalar($content) ? json_encode($content) : $content,
+            'content'   => ! is_scalar($content) ? json_encode($content) : $content,
             'url'       => substr(request()->url(), 0, 1500),
             'admin_id'  => $admin_id,
             'username'  => $username,

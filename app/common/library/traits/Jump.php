@@ -14,12 +14,12 @@
 
 namespace app\common\library\traits;
 
-use think\exception\HttpResponseException;
+use think\Response;
 use think\facade\Config;
 use think\facade\Request;
-use think\facade\View as ViewTemplate;
-use think\Response;
 use think\response\Redirect;
+use think\facade\View as ViewTemplate;
+use think\exception\HttpResponseException;
 
 trait Jump
 {
@@ -36,9 +36,9 @@ trait Jump
      */
     protected function success($msg = '', $url = null, $data = '', $wait = 3, array $header = [])
     {
-        if (is_null($url) && !is_null(Request::server('HTTP_REFERER'))) {
+        if (is_null($url) && ! is_null(Request::server('HTTP_REFERER'))) {
             $url = Request::server('HTTP_REFERER');
-        } elseif ('' !== $url && !strpos($url, '://') && 0 !== strpos($url, '/')) {
+        } elseif ('' !== $url && ! strpos($url, '://') && 0 !== strpos($url, '/')) {
             $url = url($url);
         }
 
@@ -75,7 +75,7 @@ trait Jump
     {
         if (is_null($url)) {
             $url = Request::isAjax() ? '' : 'javascript:history.back(-1);';
-        } elseif ('' !== $url && !strpos($url, '://') && 0 !== strpos($url, '/')) {
+        } elseif ('' !== $url && ! strpos($url, '://') && 0 !== strpos($url, '/')) {
             $url = url($url);
         }
 

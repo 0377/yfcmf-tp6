@@ -13,10 +13,10 @@
 namespace think;
 
 use fast\Http;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use think\facade\Db;
 use ZipArchive;
+use think\facade\Db;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 
 /**
  * 插件服务
@@ -36,7 +36,7 @@ class AddonService
     public static function download($name, $extend = [])
     {
         $addonTmpDir = app()->getRootPath().'runtime'.DIRECTORY_SEPARATOR.'addons'.DIRECTORY_SEPARATOR;
-        if (!is_dir($addonTmpDir)) {
+        if (! is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
         }
         $tmpFile = $addonTmpDir.$name.'.zip';
@@ -59,7 +59,7 @@ class AddonService
                 if ($json['data'] && isset($json['data']['url'])) {
                     array_pop($options);
                     $ret = Http::sendRequest($json['data']['url'], [], 'GET', $options);
-                    if (!$ret['ret']) {
+                    if (! $ret['ret']) {
                         //下载返回错误，抛出异常
                         throw new Exception($json['msg'], $json['code']);
                     }
@@ -99,7 +99,7 @@ class AddonService
             if ($zip->open($file) !== true) {
                 throw new Exception('Unable to open the zip file');
             }
-            if (!$zip->extractTo($dir)) {
+            if (! $zip->extractTo($dir)) {
                 $zip->close();
 
                 throw new Exception('Unable to extract the file');
@@ -160,15 +160,15 @@ class AddonService
      */
     public static function check($name)
     {
-        if (!$name || !is_dir(ADDON_PATH.$name)) {
+        if (! $name || ! is_dir(ADDON_PATH.$name)) {
             throw new Exception('Addon not exists');
         }
         $addonClass = get_addon_class($name);
-        if (!$addonClass) {
+        if (! $addonClass) {
             throw new Exception('插件主启动程序不存在');
         }
         $addon = new $addonClass();
-        if (!$addon->checkInfo()) {
+        if (! $addon->checkInfo()) {
             throw new Exception('配置文件不完整');
         }
 
@@ -269,7 +269,7 @@ EOD;
             return;
         }
 
-        if (!is_really_writable($file)) {
+        if (! is_really_writable($file)) {
             throw new Exception('addons.php文件没有写入权限');
         }
 
@@ -296,7 +296,7 @@ EOD;
      */
     public static function install($name, $force = false, $extend = [])
     {
-        if (!$name || (is_dir(ADDON_PATH.$name) && !$force)) {
+        if (! $name || (is_dir(ADDON_PATH.$name) && ! $force)) {
             throw new Exception('Addon already exists');
         }
 
@@ -311,7 +311,7 @@ EOD;
             // 检查插件是否完整
             self::check($name);
 
-            if (!$force) {
+            if (! $force) {
                 self::noconflict($name);
             }
         } catch (Exception $e) {
@@ -335,7 +335,7 @@ EOD;
         try {
             // 默认启用该插件
             $info = get_addon_info($name);
-            if (!$info['state']) {
+            if (! $info['state']) {
                 $info['state'] = 1;
                 set_addon_info($name, $info);
             }
@@ -371,11 +371,11 @@ EOD;
      */
     public static function uninstall($name, $force = false)
     {
-        if (!$name || !is_dir(ADDON_PATH.$name)) {
+        if (! $name || ! is_dir(ADDON_PATH.$name)) {
             throw new Exception('Addon not exists');
         }
 
-        if (!$force) {
+        if (! $force) {
             self::noconflict($name);
         }
 
@@ -423,11 +423,11 @@ EOD;
      */
     public static function enable($name, $force = false)
     {
-        if (!$name || !is_dir(ADDON_PATH.$name)) {
+        if (! $name || ! is_dir(ADDON_PATH.$name)) {
             throw new Exception('Addon not exists');
         }
 
-        if (!$force) {
+        if (! $force) {
             self::noconflict($name);
         }
 
@@ -482,10 +482,10 @@ EOD;
      */
     public static function disable($name, $force = false)
     {
-        if (!$name || !is_dir(ADDON_PATH.$name)) {
+        if (! $name || ! is_dir(ADDON_PATH.$name)) {
             throw new Exception('Addon not exists');
         }
-        if (!$force) {
+        if (! $force) {
             self::noconflict($name);
         }
 
@@ -598,7 +598,7 @@ EOD;
         // 扫描插件目录是否有覆盖的文件
         foreach (self::getCheckDirs() as $dir => $app_dir) {
             $checkDir = app()->getRootPath().DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR;
-            if (!is_dir($checkDir)) {
+            if (! is_dir($checkDir)) {
                 continue;
             }
             //检测到存在插件外目录
@@ -653,7 +653,7 @@ EOD;
     protected static function getDestAssetsDir($name)
     {
         $assetsDir = app()->getRootPath().str_replace('/', DIRECTORY_SEPARATOR, "public/assets/addons/{$name}/");
-        if (!is_dir($assetsDir)) {
+        if (! is_dir($assetsDir)) {
             mkdir($assetsDir, 0755, true);
         }
 

@@ -13,10 +13,10 @@
 namespace think\addons;
 
 use think\App;
-use think\exception\HttpException;
-use think\facade\Event;
 use think\facade\Lang;
+use think\facade\Event;
 use think\facade\Request;
+use think\exception\HttpException;
 
 class Route
 {
@@ -31,12 +31,12 @@ class Route
         $controller = $controller ? trim(call_user_func($filter, $controller)) : 'index';
         $action = $action ? trim(call_user_func($filter, $action)) : 'index';
         Event::trigger('addon_begin', $request);
-        if (!empty($addon) && !empty($controller) && !empty($action)) {
+        if (! empty($addon) && ! empty($controller) && ! empty($action)) {
             $info = get_addon_info($addon);
-            if (!$info) {
+            if (! $info) {
                 throw new HttpException(404, __('addon %s not found', $addon));
             }
-            if (!$info['state']) {
+            if (! $info['state']) {
                 throw new HttpException(500, __('addon %s is disabled', $addon));
             }
             // 设置当前请求的控制器、操作
@@ -44,7 +44,7 @@ class Route
             // 监听addon_module_init
             Event::trigger('addon_module_init', $request);
             $class = get_addon_class($addon, 'controller', $controller);
-            if (!$class) {
+            if (! $class) {
                 throw new HttpException(404, __('addon controller %s not found', parseName($controller, 1)));
             }
             $instance = new $class(app());

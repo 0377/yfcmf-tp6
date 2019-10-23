@@ -2,8 +2,8 @@
 
 namespace app\common\model;
 
-use think\db\Query;
 use think\Model;
+use think\db\Query;
 
 /**
  * 模型基类.

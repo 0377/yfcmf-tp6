@@ -2,9 +2,9 @@
 
 namespace app\api\controller;
 
+use app\common\model\User;
 use app\common\controller\Api;
 use app\common\library\Ems as Emslib;
-use app\common\model\User;
 
 /**
  * 邮箱验证码接口.
@@ -53,7 +53,7 @@ class Ems extends Api
             } elseif (in_array($event, ['changeemail']) && $userinfo) {
                 //被占用
                 $this->error(__('已被占用'));
-            } elseif (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
+            } elseif (in_array($event, ['changepwd', 'resetpwd']) && ! $userinfo) {
                 //未注册
                 $this->error(__('未注册'));
             }
@@ -88,7 +88,7 @@ class Ems extends Api
             } elseif (in_array($event, ['changeemail']) && $userinfo) {
                 //被占用
                 $this->error(__('已被占用'));
-            } elseif (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
+            } elseif (in_array($event, ['changepwd', 'resetpwd']) && ! $userinfo) {
                 //未注册
                 $this->error(__('未注册'));
             }

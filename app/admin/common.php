@@ -1,11 +1,11 @@
 <?php
 
-use app\common\model\Category;
 use fast\Form;
 use fast\Tree;
 use think\facade\Db;
+use app\common\model\Category;
 
-if (!function_exists('build_select')) {
+if (! function_exists('build_select')) {
 
     /**
      * 生成下拉列表.
@@ -26,7 +26,7 @@ if (!function_exists('build_select')) {
     }
 }
 
-if (!function_exists('build_radios')) {
+if (! function_exists('build_radios')) {
 
     /**
      * 生成单选按钮组.
@@ -51,7 +51,7 @@ if (!function_exists('build_radios')) {
     }
 }
 
-if (!function_exists('build_checkboxs')) {
+if (! function_exists('build_checkboxs')) {
 
     /**
      * 生成复选按钮组.
@@ -76,7 +76,7 @@ if (!function_exists('build_checkboxs')) {
     }
 }
 
-if (!function_exists('build_category_select')) {
+if (! function_exists('build_category_select')) {
 
     /**
      * 生成分类下拉列表框.
@@ -104,7 +104,7 @@ if (!function_exists('build_category_select')) {
     }
 }
 
-if (!function_exists('build_toolbar')) {
+if (! function_exists('build_toolbar')) {
 
     /**
      * 生成表格操作按钮栏.
@@ -147,10 +147,10 @@ if (!function_exists('build_toolbar')) {
         $html = [];
         foreach ($btns as $k => $v) {
             //如果未定义或没有权限
-            if (!isset($btnAttr[$v]) || ($v !== 'refresh' && !$auth->check("{$controller}/{$v}"))) {
+            if (! isset($btnAttr[$v]) || ($v !== 'refresh' && ! $auth->check("{$controller}/{$v}"))) {
                 continue;
             }
-            list($href, $class, $icon, $text, $title) = $btnAttr[$v];
+            [$href, $class, $icon, $text, $title] = $btnAttr[$v];
             //$extend = $v == 'import' ? 'id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"' : '';
             //$html[] = '<a href="' . $href . '" class="' . $class . '" title="' . $title . '" ' . $extend . '><i class="' . $icon . '"></i> ' . $text . '</a>';
             if ($v == 'import') {
@@ -167,7 +167,7 @@ if (!function_exists('build_toolbar')) {
                     $download .= "<li><a href=\"/template/{$template}.csv\" target=\"_blank\">CSV模版</a></li>";
                 }
                 $download .= empty($download) ? '' : "\n                            ";
-                if (!empty($download)) {
+                if (! empty($download)) {
                     $html[] = <<<EOT
                         <div class="btn-group">
                             <button type="button" href="{$href}" class="btn btn-info btn-import" title="{$title}" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="{$icon}"></i> {$text}</button>
@@ -190,7 +190,7 @@ EOT;
     }
 }
 
-if (!function_exists('build_heading')) {
+if (! function_exists('build_heading')) {
 
     /**
      * 生成页面Heading.
@@ -213,7 +213,7 @@ if (!function_exists('build_heading')) {
             $title = __($data['title']);
             $content = __($data['remark']);
         }
-        if (!$content) {
+        if (! $content) {
             return '';
         }
         $result = '<div class="panel-lead"><em>'.$title.'</em>'.$content.'</div>';
@@ -225,7 +225,7 @@ if (!function_exists('build_heading')) {
     }
 }
 
-if (!function_exists('upload_file')) {
+if (! function_exists('upload_file')) {
     /**
      * 上传文件.
      *
@@ -241,13 +241,13 @@ if (!function_exists('upload_file')) {
     function upload_file($file = null, $name = 'local', $path = '', $validate = '')
     {
         //文件
-        if (!$file) {
+        if (! $file) {
             return false;
         }
         //上传配置
         $config_name = 'filesystem.disks.'.$name;
         $filesystem = config($config_name);
-        if (!$filesystem) {
+        if (! $filesystem) {
             return false;
         }
         //上传文件

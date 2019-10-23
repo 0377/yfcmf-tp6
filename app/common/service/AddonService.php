@@ -12,18 +12,16 @@
 
 namespace app\common\service;
 
-use app\common\middleware\Addon;
-use think\facade\Cache;
-use think\facade\Config;
+use think\Service;
 use think\facade\Env;
+use think\facade\Cache;
 use think\facade\Event;
 use think\facade\Route;
-use think\Service;
+use think\facade\Config;
+use app\common\middleware\Addon;
 
 /**
  * 插件服务
- *
- * @package app\common\service
  */
 class AddonService extends Service
 {
@@ -31,9 +29,9 @@ class AddonService extends Service
     {
         // 插件目录
         define('ADDON_PATH', app()->getRootPath().'addons'.DIRECTORY_SEPARATOR);
-        !defined('DS') && define('DS', DIRECTORY_SEPARATOR);
+        ! defined('DS') && define('DS', DIRECTORY_SEPARATOR);
         // 如果插件目录不存在则创建
-        if (!is_dir(ADDON_PATH)) {
+        if (! is_dir(ADDON_PATH)) {
             @mkdir(ADDON_PATH, 0755, true);
         }
         //挂载插件服务
@@ -45,19 +43,19 @@ class AddonService extends Service
     }
 
     /**
-     * 注册插件事件
+     * 注册插件事件.
      */
     private function addon_event()
     {
         $hooks = Env::get('APP_DEBUG') ? [] : Cache::get('hooks', []);
         if (empty($hooks)) {
-            $hooks = (array)Config::get('addons.hooks');
+            $hooks = (array) Config::get('addons.hooks');
             // 初始化钩子
             foreach ($hooks as $key => $values) {
                 if (is_string($values)) {
                     $values = explode(',', $values);
                 } else {
-                    $values = (array)$values;
+                    $values = (array) $values;
                 }
                 $hooks[$key] = array_filter(array_map('get_addon_class', $values));
             }
@@ -73,7 +71,7 @@ class AddonService extends Service
     }
 
     /**
-     * 注册插件路由
+     * 注册插件路由.
      */
     private function addon_route()
     {
@@ -81,14 +79,14 @@ class AddonService extends Service
             ->middleware(Addon::class);
 
         //注册路由
-        $routeArr = (array)Config::get('addons.route');
+        $routeArr = (array) Config::get('addons.route');
         $execute = '\\think\\addons\\Route::execute';
         foreach ($routeArr as $k => $v) {
             if (is_array($v)) {
                 $domain = $v['domain'];
                 $drules = [];
                 foreach ($v['rule'] as $m => $n) {
-                    list($addon, $controller, $action) = explode('/', $n);
+                    [$addon, $controller, $action] = explode('/', $n);
                     $drules[$m] = ['addon' => $addon, 'controller' => $controller, 'action' => $action, 'indomain' => 1];
                 }
                 Route::domain($domain, function () use ($drules, $execute) {
@@ -101,10 +99,10 @@ class AddonService extends Service
                     }
                 });
             } else {
-                if (!$v) {
+                if (! $v) {
                     continue;
                 }
-                list($addon, $controller, $action) = explode('/', $v);
+                [$addon, $controller, $action] = explode('/', $v);
                 Route::rule($k, $execute)
                     ->name($k)
                     ->completeMatch(true)
@@ -128,16 +126,16 @@ class AddonService extends Service
                 continue;
             }
             $addonDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
-            if (!is_dir($addonDir)) {
+            if (! is_dir($addonDir)) {
                 continue;
             }
 
-            if (!is_file($addonDir.ucfirst($name).'.php')) {
+            if (! is_file($addonDir.ucfirst($name).'.php')) {
                 continue;
             }
 
             $service_file = $addonDir.'service.ini';
-            if (!is_file($service_file)) {
+            if (! is_file($service_file)) {
                 continue;
             }
             $service = parse_ini_file($service_file, true, INI_SCANNER_TYPED) ?: [];

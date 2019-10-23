@@ -2,10 +2,10 @@
 
 namespace app\admin\controller\auth;
 
-use app\admin\model\AuthRule;
-use app\common\controller\Backend;
 use fast\Tree;
 use think\facade\Cache;
+use app\admin\model\AuthRule;
+use app\common\controller\Backend;
 
 /**
  * 规则管理.
@@ -37,7 +37,7 @@ class Rule extends Backend
         $this->rulelist = Tree::instance()->getTreeList(Tree::instance()->getTreeArray(0), 'title');
         $ruledata = [0 => __('None')];
         foreach ($this->rulelist as $k => &$v) {
-            if (!$v['ismenu']) {
+            if (! $v['ismenu']) {
                 continue;
             }
             $ruledata[$v['id']] = $v['title'];
@@ -71,7 +71,7 @@ class Rule extends Backend
         if ($this->request->isPost()) {
             $params = $this->request->post('row/a', [], 'strip_tags');
             if ($params) {
-                if (!$params['ismenu'] && !$params['pid']) {
+                if (! $params['ismenu'] && ! $params['pid']) {
                     $this->error(__('The non-menu rule must have parent'));
                 }
                 $result = $this->model->save($params);
@@ -93,13 +93,13 @@ class Rule extends Backend
     public function edit($ids = null)
     {
         $row = $this->model->find(['id' => $ids]);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
             $params = $this->request->post('row/a', [], 'strip_tags');
             if ($params) {
-                if (!$params['ismenu'] && !$params['pid']) {
+                if (! $params['ismenu'] && ! $params['pid']) {
                     $this->error(__('The non-menu rule must have parent'));
                 }
                 if ($params['pid'] != $row['pid']) {
@@ -114,7 +114,7 @@ class Rule extends Backend
                     'name' => 'require|format|unique:AuthRule,name,'.$row->id,
                 ]);
                 $rs = $ruleValidate->check($params);
-                if (!$rs) {
+                if (! $rs) {
                     $this->error($ruleValidate->getError());
                 }
                 $result = $row->save($params);

@@ -54,7 +54,7 @@ class Attachment extends Backend
                 };
             }
 
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             $total = $this->model
                 ->where($mimetypeQuery)
                 ->where($where)

@@ -2,11 +2,11 @@
 
 namespace app\admin\controller\auth;
 
-use app\admin\model\AuthGroup;
-use app\admin\model\AuthGroupAccess;
-use app\common\controller\Backend;
-use fast\Random;
 use fast\Tree;
+use fast\Random;
+use app\admin\model\AuthGroup;
+use app\common\controller\Backend;
+use app\admin\model\AuthGroupAccess;
 
 /**
  * 管理员管理.
@@ -85,7 +85,7 @@ class Admin extends Backend
             foreach ($groups as $m => $n) {
                 $adminGroupName[$this->auth->id][$n['id']] = $n['name'];
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             //halt($this->childrenAdminIds);
             $total = $this->model
                 ->where($where)
@@ -158,7 +158,7 @@ class Admin extends Backend
     public function edit($ids = null)
     {
         $row = $this->model->find($ids);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
@@ -177,7 +177,7 @@ class Admin extends Backend
                     'email'    => 'require|email|unique:admin,email,'.$row->id,
                 ]);
                 $rs = $adminValidate->check($params);
-                if (!$rs) {
+                if (! $rs) {
                     $this->error($adminValidate->getError());
                 }
 

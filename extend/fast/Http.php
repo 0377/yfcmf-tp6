@@ -90,7 +90,7 @@ class Http
         $ret = curl_exec($ch);
         $err = curl_error($ch);
 
-        if (false === $ret || !empty($err)) {
+        if (false === $ret || ! empty($err)) {
             $errno = curl_errno($ch);
             $info = curl_getinfo($ch);
             curl_close($ch);
@@ -145,7 +145,7 @@ class Http
         $parts['query'] = isset($parts['query']) && $parts['query'] ? '?'.$parts['query'] : '';
         //发送socket请求,获得连接句柄
         $fp = fsockopen($parts['host'], isset($parts['port']) ? $parts['port'] : 80, $errno, $errstr, 3);
-        if (!$fp) {
+        if (! $fp) {
             return false;
         }
         //设置超时时间

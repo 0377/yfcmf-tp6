@@ -13,13 +13,13 @@
 namespace app\admin\command;
 
 use PDO;
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
 use think\Exception;
-use think\facade\Config;
 use think\facade\Db;
+use think\console\Input;
+use think\facade\Config;
+use think\console\Output;
+use think\console\Command;
+use think\console\input\Option;
 
 class Install extends Command
 {
@@ -52,7 +52,7 @@ class Install extends Command
         $password = $input->getOption('password');
 
         $installLockFile = __DIR__.'/Install/install.lock';
-        if (is_file($installLockFile) && !$force) {
+        if (is_file($installLockFile) && ! $force) {
             throw new Exception("\nFastAdmin already installed!\nIf you need to reinstall again, use the parameter --force=true ");
         }
 

@@ -12,13 +12,13 @@
 
 namespace app\admin\command;
 
-use app\admin\command\Api\library\Builder;
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
 use think\Exception;
+use think\console\Input;
 use think\facade\Config;
+use think\console\Output;
+use think\console\Command;
+use think\console\input\Option;
+use app\admin\command\Api\library\Builder;
 
 class Api extends Command
 {
@@ -48,20 +48,20 @@ class Api extends Command
         $language = $input->getOption('language');
         $language = $language ? $language : 'zh-cn';
         $langFile = $apiDir.'lang'.DIRECTORY_SEPARATOR.$language.'.php';
-        if (!is_file($langFile)) {
+        if (! is_file($langFile)) {
             throw new Exception('language file not found');
         }
         $lang = include_once $langFile;
         // 目标目录
         $output_dir = app()->getRootPath().'public'.DIRECTORY_SEPARATOR;
         $output_file = $output_dir.$input->getOption('output');
-        if (is_file($output_file) && !$force) {
+        if (is_file($output_file) && ! $force) {
             throw new Exception("api index file already exists!\nIf you need to rebuild again, use the parameter --force=true ");
         }
         // 模板文件
         $template_dir = $apiDir.'template'.DIRECTORY_SEPARATOR;
         $template_file = $template_dir.$input->getOption('template');
-        if (!is_file($template_file)) {
+        if (! is_file($template_file)) {
             throw new Exception('template file not found');
         }
         // 额外的类
@@ -74,7 +74,7 @@ class Api extends Command
         $module = $input->getOption('module');
 
         $moduleDir = APP_PATH.$module.DIRECTORY_SEPARATOR;
-        if (!is_dir($moduleDir)) {
+        if (! is_dir($moduleDir)) {
             throw new Exception('module not found');
         }
 
@@ -83,7 +83,7 @@ class Api extends Command
                 $configuration = opcache_get_configuration();
                 $directives = $configuration['directives'];
                 $configName = request()->isCli() ? 'opcache.enable_cli' : 'opcache.enable';
-                if (!$directives[$configName]) {
+                if (! $directives[$configName]) {
                     throw new Exception("Please make sure {$configName} is turned on, Get help:https://forum.fastadmin.net/d/1321");
                 }
             } else {
@@ -98,7 +98,7 @@ class Api extends Command
         );
 
         foreach ($files as $name => $file) {
-            if (!$file->isDir() && $file->getExtension() == 'php') {
+            if (! $file->isDir() && $file->getExtension() == 'php') {
                 $filePath = $file->getRealPath();
                 $classes[] = $this->get_class_from_file($filePath);
             }
@@ -115,7 +115,7 @@ class Api extends Command
         $builder = new Builder($classes);
         $content = $builder->render($template_file, ['config' => $config, 'lang' => $lang]);
 
-        if (!file_put_contents($output_file, $content)) {
+        if (! file_put_contents($output_file, $content)) {
             throw new Exception('Cannot save the content to '.$output_file);
         }
         $output->info('Build Successed!');

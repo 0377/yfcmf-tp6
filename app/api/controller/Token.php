@@ -2,8 +2,8 @@
 
 namespace app\api\controller;
 
-use app\common\controller\Api;
 use fast\Random;
+use app\common\controller\Api;
 
 /**
  * Token接口.

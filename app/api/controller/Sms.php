@@ -2,9 +2,9 @@
 
 namespace app\api\controller;
 
+use app\common\model\User;
 use app\common\controller\Api;
 use app\common\library\Sms as Smslib;
-use app\common\model\User;
 
 /**
  * 手机短信接口.
@@ -26,7 +26,7 @@ class Sms extends Api
         $event = $this->request->request('event');
         $event = $event ? $event : 'register';
 
-        if (!$mobile || !\think\Validate::regex($mobile, "^1\d{10}$")) {
+        if (! $mobile || ! \think\Validate::regex($mobile, "^1\d{10}$")) {
             $this->error(__('手机号不正确'));
         }
         $last = Smslib::get($mobile, $event);
@@ -45,7 +45,7 @@ class Sms extends Api
             } elseif (in_array($event, ['changemobile']) && $userinfo) {
                 //被占用
                 $this->error(__('已被占用'));
-            } elseif (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
+            } elseif (in_array($event, ['changepwd', 'resetpwd']) && ! $userinfo) {
                 //未注册
                 $this->error(__('未注册'));
             }
@@ -72,7 +72,7 @@ class Sms extends Api
         $event = $event ? $event : 'register';
         $captcha = $this->request->request('captcha');
 
-        if (!$mobile || !\think\Validate::regex($mobile, "^1\d{10}$")) {
+        if (! $mobile || ! \think\Validate::regex($mobile, "^1\d{10}$")) {
             $this->error(__('手机号不正确'));
         }
         if ($event) {
@@ -83,7 +83,7 @@ class Sms extends Api
             } elseif (in_array($event, ['changemobile']) && $userinfo) {
                 //被占用
                 $this->error(__('已被占用'));
-            } elseif (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
+            } elseif (in_array($event, ['changepwd', 'resetpwd']) && ! $userinfo) {
                 //未注册
                 $this->error(__('未注册'));
             }

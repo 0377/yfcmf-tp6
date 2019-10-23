@@ -134,7 +134,7 @@ class FormBuilder
      */
     public function escape($value)
     {
-        if (!$this->escapeHtml) {
+        if (! $this->escapeHtml) {
             return $value;
         }
         if (is_array($value)) {
@@ -205,13 +205,13 @@ class FormBuilder
      */
     public function input($type, $name, $value = null, $options = [])
     {
-        if (!isset($options['name'])) {
+        if (! isset($options['name'])) {
             $options['name'] = $name;
         }
 
         $id = $this->getIdAttribute($name, $options);
 
-        if (!in_array($type, $this->skipValueTypes)) {
+        if (! in_array($type, $this->skipValueTypes)) {
             $value = $this->getValueAttribute($name, $value);
             $options['class'] = isset($options['class']) ? $options['class'].(stripos($options['class'], 'form-control') !== false ? '' : ' form-control') : 'form-control';
         }
@@ -315,7 +315,7 @@ class FormBuilder
      */
     public function textarea($name, $value = null, $options = [])
     {
-        if (!isset($options['name'])) {
+        if (! isset($options['name'])) {
             $options['name'] = $name;
         }
 
@@ -416,7 +416,7 @@ class FormBuilder
 
         $options['id'] = $this->getIdAttribute($name, $options);
 
-        if (!isset($options['name'])) {
+        if (! isset($options['name'])) {
             $options['name'] = $name;
         }
 
@@ -1126,7 +1126,7 @@ EOD;
      */
     public function button($value = null, $options = [])
     {
-        if (!array_key_exists('type', $options)) {
+        if (! array_key_exists('type', $options)) {
             $options['type'] = 'button';
         }
 
@@ -1166,7 +1166,7 @@ EOD;
             return $value;
         }
 
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             return $value;
         }
     }
@@ -1186,7 +1186,7 @@ EOD;
         // 会已 required="required" 拼接起来,而不是用数字keys去拼接
         foreach ((array) $attributes as $key => $value) {
             $element = $this->attributeElement($key, $value);
-            if (!is_null($element)) {
+            if (! is_null($element)) {
                 $html[] = $element;
             }
         }
@@ -1207,7 +1207,7 @@ EOD;
         if (is_numeric($key)) {
             $key = $value;
         }
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             if (is_array($value) || stripos($value, '"') !== false) {
                 $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
 
@@ -1261,7 +1261,7 @@ class Arr
      */
     public static function get($array, $key, $default = null)
     {
-        if (!static::accessible($array)) {
+        if (! static::accessible($array)) {
             return $default;
         }
         if (is_null($key)) {
@@ -1333,7 +1333,7 @@ class Arr
     }
 }
 
-if (!function_exists('array_get')) {
+if (! function_exists('array_get')) {
 
     /**
      * Get an item from an array using "dot" notation.
@@ -1349,7 +1349,7 @@ if (!function_exists('array_get')) {
         return Arr::get($array, $key, $default);
     }
 }
-if (!function_exists('e')) {
+if (! function_exists('e')) {
 
     /**
      * Escape HTML special characters in a string.
@@ -1366,7 +1366,7 @@ if (!function_exists('e')) {
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false);
     }
 }
-if (!function_exists('array_except')) {
+if (! function_exists('array_except')) {
 
     /**
      * Get all of the given array except for a specified array of items.

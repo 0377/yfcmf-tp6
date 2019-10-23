@@ -2,8 +2,8 @@
 
 namespace app\admin\controller\user;
 
-use app\common\controller\Backend;
 use fast\Tree;
+use app\common\controller\Backend;
 
 /**
  * 会员规则管理.
@@ -35,7 +35,7 @@ class Rule extends Backend
         $this->rulelist = Tree::instance()->getTreeList(Tree::instance()->getTreeArray(0), 'title');
         $ruledata = [0 => __('None')];
         foreach ($this->rulelist as $k => &$v) {
-            if (!$v['ismenu']) {
+            if (! $v['ismenu']) {
                 continue;
             }
             $ruledata[$v['id']] = $v['title'];

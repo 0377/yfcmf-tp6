@@ -2,9 +2,9 @@
 
 namespace app\common\library;
 
-use app\admin\model\AuthRule;
 use fast\Tree;
 use think\Exception;
+use app\admin\model\AuthRule;
 use think\exception\PDOException;
 
 class Menu
@@ -17,7 +17,7 @@ class Menu
      */
     public static function create($menu, $parent = 0)
     {
-        if (!is_numeric($parent)) {
+        if (! is_numeric($parent)) {
             $parentRule = AuthRule::getByName($parent);
             $pid = $parentRule ? $parentRule['id'] : 0;
         } else {
@@ -27,7 +27,7 @@ class Menu
         foreach ($menu as $k => $v) {
             $hasChild = isset($v['sublist']) && $v['sublist'] ? true : false;
             $data = array_intersect_key($v, $allow);
-            if (!isset($data['route'])) {
+            if (! isset($data['route'])) {
                 if (empty($data['route'])) {
                     $_arr = explode('/', $data['name']);
                     if (count($_arr) >= 3) {
@@ -69,7 +69,7 @@ class Menu
     public static function delete($name)
     {
         $ids = self::getAuthRuleIdsByName($name);
-        if (!$ids) {
+        if (! $ids) {
             return false;
         }
         AuthRule::destroy($ids);
@@ -87,7 +87,7 @@ class Menu
     public static function enable($name)
     {
         $ids = self::getAuthRuleIdsByName($name);
-        if (!$ids) {
+        if (! $ids) {
             return false;
         }
         AuthRule::where('id', 'in', $ids)->update(['status' => 'normal']);
@@ -105,7 +105,7 @@ class Menu
     public static function disable($name)
     {
         $ids = self::getAuthRuleIdsByName($name);
-        if (!$ids) {
+        if (! $ids) {
             return false;
         }
         AuthRule::where('id', 'in', $ids)->update(['status' => 'hidden']);
@@ -123,7 +123,7 @@ class Menu
     public static function export($name)
     {
         $ids = self::getAuthRuleIdsByName($name);
-        if (!$ids) {
+        if (! $ids) {
             return [];
         }
         $menuList = [];
