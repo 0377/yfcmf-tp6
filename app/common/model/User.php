@@ -40,7 +40,7 @@ class User extends BaseModel
      */
     public function getAvatarAttr($value, $data)
     {
-        if (!$value) {
+        if (! $value) {
             //如果不需要启用首字母头像，请使用
             //$value = '/assets/img/avatar.png';
             $value = letter_avatar($data['nickname']);

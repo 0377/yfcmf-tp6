@@ -12,13 +12,13 @@
 
 namespace app\admin\library;
 
-use app\admin\model\Admin;
-use fast\Random;
 use fast\Tree;
+use fast\Random;
 use think\facade\Config;
 use think\facade\Cookie;
 use think\facade\Request;
 use think\facade\Session;
+use app\admin\model\Admin;
 
 class Auth extends \fast\Auth
 {
@@ -49,7 +49,7 @@ class Auth extends \fast\Auth
     public function login($username, $password, $keeptime = 0)
     {
         $admin = Admin::where(['username' => $username])->find();
-        if (!$admin) {
+        if (! $admin) {
             $this->setError('Username is incorrect');
 
             return false;
@@ -87,7 +87,7 @@ class Auth extends \fast\Auth
     public function logout()
     {
         $admin = Admin::find(intval($this->id));
-        if (!$admin) {
+        if (! $admin) {
             $admin->token = '';
             $admin->save();
         }
@@ -106,13 +106,13 @@ class Auth extends \fast\Auth
     public function autologin()
     {
         $keeplogin = Cookie::get('keeplogin');
-        if (!$keeplogin) {
+        if (! $keeplogin) {
             return false;
         }
-        list($id, $keeptime, $expiretime, $key) = explode('|', $keeplogin);
+        [$id, $keeptime, $expiretime, $key] = explode('|', $keeplogin);
         if ($id && $keeptime && $expiretime && $key && $expiretime > time()) {
             $admin = Admin::find($id);
-            if (!$admin || !$admin->token) {
+            if (! $admin || ! $admin->token) {
                 return false;
             }
             //token有变更
@@ -166,7 +166,7 @@ class Auth extends \fast\Auth
     {
         $request = Request::instance();
         $arr = is_array($arr) ? $arr : explode(',', $arr);
-        if (!$arr) {
+        if (! $arr) {
             return false;
         }
 
@@ -191,13 +191,13 @@ class Auth extends \fast\Auth
             return true;
         }
         $admin = Session::get('admin');
-        if (!$admin) {
+        if (! $admin) {
             return false;
         }
         //判断是否同一时间同一账号只能在一个地方登录
         if (Config::get('fastadmin.login_unique')) {
             $my = Admin::find($admin['id']);
-            if (!$my || $my['token'] != $admin['token']) {
+            if (! $my || $my['token'] != $admin['token']) {
                 return false;
             }
         }
@@ -309,7 +309,7 @@ class Auth extends \fast\Auth
         foreach ($objList as $k => $v) {
             $childrenGroupIds[] = $v['id'];
         }
-        if (!$withself) {
+        if (! $withself) {
             $childrenGroupIds = array_diff($childrenGroupIds, $groupIds);
         }
 
@@ -326,7 +326,7 @@ class Auth extends \fast\Auth
     public function getChildrenAdminIds($withself = false)
     {
         $childrenAdminIds = [];
-        if (!$this->isSuperAdmin()) {
+        if (! $this->isSuperAdmin()) {
             $groupIds = $this->getChildrenGroupIds(false);
             $authGroupList = \app\admin\model\AuthGroupAccess::
             field('uid,group_id')
@@ -341,7 +341,7 @@ class Auth extends \fast\Auth
             $childrenAdminIds = Admin::column('id');
         }
         if ($withself) {
-            if (!in_array($this->id, $childrenAdminIds)) {
+            if (! in_array($this->id, $childrenAdminIds)) {
                 $childrenAdminIds[] = $this->id;
             }
         } else {
@@ -360,7 +360,7 @@ class Auth extends \fast\Auth
      */
     public function getBreadCrumb($path = '')
     {
-        if ($this->breadcrumb || !$path) {
+        if ($this->breadcrumb || ! $path) {
             return $this->breadcrumb;
         }
         $path_rule_id = 0;
@@ -429,18 +429,18 @@ class Auth extends \fast\Auth
             return $item['pid'];
         }, $ruleList)));
         foreach ($ruleList as $k => &$v) {
-            if (!in_array($v['name'], $userRule)) {
+            if (! in_array($v['name'], $userRule)) {
                 unset($ruleList[$k]);
                 continue;
             }
             $indexRuleName = $v['name'].'/index';
-            if (isset($indexRuleList[$indexRuleName]) && !in_array($indexRuleName, $userRule)) {
+            if (isset($indexRuleList[$indexRuleName]) && ! in_array($indexRuleName, $userRule)) {
                 unset($ruleList[$k]);
                 continue;
             }
             $v['icon'] = $v['icon'].' fa-fw';
             //$v['url'] = '/' . $module . '/' . $v['name'];
-            if (!empty($v['route'])) {
+            if (! empty($v['route'])) {
                 $v['url'] = \request()->rootUrl().'/'.$v['route'];
             } else {
                 $v['url'] = \request()->rootUrl().'/'.$v['name'];
@@ -471,7 +471,7 @@ class Auth extends \fast\Auth
         if (Config::get('fastadmin.multiplenav')) {
             $topList = [];
             foreach ($ruleList as $index => $item) {
-                if (!$item['pid']) {
+                if (! $item['pid']) {
                     $topList[] = $item;
                 }
             }
@@ -487,7 +487,7 @@ class Auth extends \fast\Auth
                     $select_id, '', 'ul', 'class="treeview-menu"');
                 $current = in_array($item['id'], $selectParentIds);
                 $url = $childList ? 'javascript:;' : url($item['url']);
-                $addtabs = $childList || !$url ? '' : (stripos($url, '?') !== false ? '&' : '?').'ref=addtabs';
+                $addtabs = $childList || ! $url ? '' : (stripos($url, '?') !== false ? '&' : '?').'ref=addtabs';
                 $childList = str_replace('" pid="'.$item['id'].'"',
                     ' treeview '.($current ? '' : 'hidden').'" pid="'.$item['id'].'"', $childList);
                 $nav .= '<li class="'.($current ? 'active' : '').'"><a href="'.$url.$addtabs.'" addtabs="'.$item['id'].'" url="'.$url.'"><i class="'.$item['icon'].'"></i> <span>'.$item['title'].'</span> <span class="pull-right-container"> </span></a> </li>';

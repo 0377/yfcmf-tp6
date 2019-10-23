@@ -2,8 +2,8 @@
 
 namespace app\admin\model;
 
-use app\common\model\BaseModel;
 use app\common\model\MoneyLog;
+use app\common\model\BaseModel;
 
 class User extends BaseModel
 {
@@ -106,17 +106,17 @@ class User extends BaseModel
 
     protected function setPrevtimeAttr($value)
     {
-        return $value && !is_numeric($value) ? strtotime($value) : $value;
+        return $value && ! is_numeric($value) ? strtotime($value) : $value;
     }
 
     protected function setLogintimeAttr($value)
     {
-        return $value && !is_numeric($value) ? strtotime($value) : $value;
+        return $value && ! is_numeric($value) ? strtotime($value) : $value;
     }
 
     protected function setJointimeAttr($value)
     {
-        return $value && !is_numeric($value) ? strtotime($value) : $value;
+        return $value && ! is_numeric($value) ? strtotime($value) : $value;
     }
 
     public function group()

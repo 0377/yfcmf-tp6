@@ -11,12 +11,12 @@
  */
 
 // 公共助手函数
-use think\facade\Config;
-use think\facade\Event;
-use think\facade\Lang;
 use think\Model;
+use think\facade\Lang;
+use think\facade\Event;
+use think\facade\Config;
 
-if (!function_exists('tp5ControllerToTp6Controller')) {
+if (! function_exists('tp5ControllerToTp6Controller')) {
     /**
      * TP5二级目录转TP6二级目录.
      *
@@ -42,7 +42,7 @@ if (!function_exists('tp5ControllerToTp6Controller')) {
         return $route;
     }
 }
-if (!function_exists('model')) {
+if (! function_exists('model')) {
     /**
      * 实例化Model.
      *
@@ -72,7 +72,7 @@ if (!function_exists('model')) {
 }
 
 /**
- * 处理插件钩子
+ * 处理插件钩子.
  *
  * @param string     $event  钩子名称
  * @param array|null $params 传入参数
@@ -102,23 +102,23 @@ function get_addon_list()
             continue;
         }
         $addonDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
-        if (!is_dir($addonDir)) {
+        if (! is_dir($addonDir)) {
             continue;
         }
 
-        if (!is_file($addonDir.ucfirst($name).'.php')) {
+        if (! is_file($addonDir.ucfirst($name).'.php')) {
             continue;
         }
 
         //这里不采用get_addon_info是因为会有缓存
         //$info = get_addon_info($name);
         $info_file = $addonDir.'info.ini';
-        if (!is_file($info_file)) {
+        if (! is_file($info_file)) {
             continue;
         }
         $info = parse_ini_file($info_file, true, INI_SCANNER_TYPED) ?: [];
         //$info = Config::parse($info_file, '', "addon-info-{$name}");
-        if (!isset($info['name'])) {
+        if (! isset($info['name'])) {
             continue;
         }
         $info['url'] = addon_url($name);
@@ -138,7 +138,7 @@ function get_addon_list()
 function get_addon_autoload_config($truncate = false)
 {
     // 读取addons的配置
-    $config = (array)Config::get('addons');
+    $config = (array) Config::get('addons');
     if ($truncate) {
         // 清空手动配置的钩子
         $config['hooks'] = [];
@@ -152,25 +152,25 @@ function get_addon_autoload_config($truncate = false)
     $addons = get_addon_list();
     $domain = [];
     foreach ($addons as $name => $addon) {
-        if (!$addon['state']) {
+        if (! $addon['state']) {
             continue;
         }
 
         // 读取出所有公共方法
-        $methods = (array)get_class_methods('\\app\\addons\\'.$name.'\\'.ucfirst($name));
+        $methods = (array) get_class_methods('\\app\\addons\\'.$name.'\\'.ucfirst($name));
         // 跟插件基类方法做比对，得到差异结果
         $hooks = array_diff($methods, $base);
         // 循环将钩子方法写入配置中
         foreach ($hooks as $hook) {
             $hook = parseName($hook, 0, false);
-            if (!isset($config['hooks'][$hook])) {
+            if (! isset($config['hooks'][$hook])) {
                 $config['hooks'][$hook] = [];
             }
             // 兼容手动配置项
             if (is_string($config['hooks'][$hook])) {
                 $config['hooks'][$hook] = explode(',', $config['hooks'][$hook]);
             }
-            if (!in_array($name, $config['hooks'][$hook])) {
+            if (! in_array($name, $config['hooks'][$hook])) {
                 $config['hooks'][$hook][] = $name;
             }
         }
@@ -210,7 +210,7 @@ function get_addon_class($name, $type = 'hook', $class = null)
 {
     $name = parseName($name);
     // 处理多级控制器情况
-    if (!is_null($class) && strpos($class, '.')) {
+    if (! is_null($class) && strpos($class, '.')) {
         $class = explode('.', $class);
 
         $class[count($class) - 1] = parseName(end($class), 1);
@@ -239,7 +239,7 @@ function get_addon_class($name, $type = 'hook', $class = null)
 function get_addon_info($name)
 {
     $addon = get_addon_instance($name);
-    if (!$addon) {
+    if (! $addon) {
         return [];
     }
 
@@ -256,7 +256,7 @@ function get_addon_info($name)
 function get_addon_fullconfig($name)
 {
     $addon = get_addon_instance($name);
-    if (!$addon) {
+    if (! $addon) {
         return [];
     }
 
@@ -273,7 +273,7 @@ function get_addon_fullconfig($name)
 function get_addon_config($name)
 {
     $addon = get_addon_instance($name);
-    if (!$addon) {
+    if (! $addon) {
         return [];
     }
 
@@ -317,7 +317,7 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
 {
     $url = ltrim($url, '/');
     $addon = substr($url, 0, stripos($url, '/'));
-    if (!is_array($vars)) {
+    if (! is_array($vars)) {
         parse_str($vars, $params);
         $vars = $params;
     }
@@ -381,7 +381,7 @@ function set_addon_info($name, $array)
     $file = ADDON_PATH.$name.DIRECTORY_SEPARATOR.'info.ini';
     $addon = get_addon_instance($name);
     $array = $addon->setInfo($name, $array);
-    if (!isset($array['name']) || !isset($array['title']) || !isset($array['version'])) {
+    if (! isset($array['name']) || ! isset($array['title']) || ! isset($array['version'])) {
         throw new Exception('插件配置写入失败');
     }
     $res = [];
@@ -449,7 +449,7 @@ function set_addon_config($name, $config, $writefile = true)
 function set_addon_fullconfig($name, $array)
 {
     $file = ADDON_PATH.$name.DIRECTORY_SEPARATOR.'config.php';
-    if (!is_really_writable($file)) {
+    if (! is_really_writable($file)) {
         throw new Exception('文件没有写入权限');
     }
     if ($handle = fopen($file, 'w')) {
@@ -462,7 +462,7 @@ function set_addon_fullconfig($name, $array)
     return true;
 }
 
-if (!function_exists('input_token')) {
+if (! function_exists('input_token')) {
     /**
      * 生成表单令牌.
      *
@@ -475,7 +475,7 @@ if (!function_exists('input_token')) {
         return '<input type="hidden" name="'.$name.'" value="'.token($name).'" />';
     }
 }
-if (!function_exists('parseName')) {
+if (! function_exists('parseName')) {
     function parseName($name, $type = 0, $ucfirst = true)
     {
         if ($type) {
@@ -489,7 +489,7 @@ if (!function_exists('parseName')) {
         return strtolower(trim(preg_replace('/[A-Z]/', '_\\0', $name), '_'));
     }
 }
-if (!function_exists('__')) {
+if (! function_exists('__')) {
 
     /**
      * 获取语言变量值
@@ -502,10 +502,10 @@ if (!function_exists('__')) {
      */
     function __($name, $vars = [], $lang = '')
     {
-        if (is_numeric($name) || !$name) {
+        if (is_numeric($name) || ! $name) {
             return $name;
         }
-        if (!is_array($vars)) {
+        if (! is_array($vars)) {
             $vars = func_get_args();
             array_shift($vars);
             $lang = '';
@@ -515,7 +515,7 @@ if (!function_exists('__')) {
     }
 }
 
-if (!function_exists('format_bytes')) {
+if (! function_exists('format_bytes')) {
 
     /**
      * 将字节转换为可读文本.
@@ -536,7 +536,7 @@ if (!function_exists('format_bytes')) {
     }
 }
 
-if (!function_exists('datetime')) {
+if (! function_exists('datetime')) {
 
     /**
      * 将时间戳转换为日期时间.
@@ -554,7 +554,7 @@ if (!function_exists('datetime')) {
     }
 }
 
-if (!function_exists('human_date')) {
+if (! function_exists('human_date')) {
 
     /**
      * 获取语义化时间.
@@ -570,7 +570,7 @@ if (!function_exists('human_date')) {
     }
 }
 
-if (!function_exists('cdnurl')) {
+if (! function_exists('cdnurl')) {
 
     /**
      * 获取上传资源的CDN的地址
@@ -584,7 +584,7 @@ if (!function_exists('cdnurl')) {
     {
         $regex = "/^((?:[a-z]+:)?\/\/|data:image\/)(.*)/i";
         $url = preg_match($regex, $url) ? $url : \think\facade\Config::get('upload.cdnurl').$url;
-        if ($domain && !preg_match($regex, $url)) {
+        if ($domain && ! preg_match($regex, $url)) {
             $domain = is_bool($domain) ? request()->domain() : $domain;
             $url = $domain.$url;
         }
@@ -593,7 +593,7 @@ if (!function_exists('cdnurl')) {
     }
 }
 
-if (!function_exists('is_really_writable')) {
+if (! function_exists('is_really_writable')) {
 
     /**
      * 判断文件或文件夹是否可写.
@@ -617,7 +617,7 @@ if (!function_exists('is_really_writable')) {
             @unlink($file);
 
             return true;
-        } elseif (!is_file($file) or ($fp = @fopen($file, 'ab')) === false) {
+        } elseif (! is_file($file) or ($fp = @fopen($file, 'ab')) === false) {
             return false;
         }
         fclose($fp);
@@ -626,7 +626,7 @@ if (!function_exists('is_really_writable')) {
     }
 }
 
-if (!function_exists('rmdirs')) {
+if (! function_exists('rmdirs')) {
 
     /**
      * 删除文件夹.
@@ -638,7 +638,7 @@ if (!function_exists('rmdirs')) {
      */
     function rmdirs($dirname, $withself = true)
     {
-        if (!is_dir($dirname)) {
+        if (! is_dir($dirname)) {
             return false;
         }
         $files = new RecursiveIteratorIterator(
@@ -658,7 +658,7 @@ if (!function_exists('rmdirs')) {
     }
 }
 
-if (!function_exists('copydirs')) {
+if (! function_exists('copydirs')) {
 
     /**
      * 复制文件夹.
@@ -668,7 +668,7 @@ if (!function_exists('copydirs')) {
      */
     function copydirs($source, $dest)
     {
-        if (!is_dir($dest)) {
+        if (! is_dir($dest)) {
             mkdir($dest, 0755, true);
         }
         foreach (
@@ -679,7 +679,7 @@ if (!function_exists('copydirs')) {
         ) {
             if ($item->isDir()) {
                 $sontDir = $dest.DIRECTORY_SEPARATOR.$iterator->getSubPathName();
-                if (!is_dir($sontDir)) {
+                if (! is_dir($sontDir)) {
                     mkdir($sontDir, 0755, true);
                 }
             } else {
@@ -689,14 +689,14 @@ if (!function_exists('copydirs')) {
     }
 }
 
-if (!function_exists('mb_ucfirst')) {
+if (! function_exists('mb_ucfirst')) {
     function mb_ucfirst($string)
     {
         return mb_strtoupper(mb_substr($string, 0, 1)).mb_strtolower(mb_substr($string, 1));
     }
 }
 
-if (!function_exists('addtion')) {
+if (! function_exists('addtion')) {
 
     /**
      * 附加关联字段数据.
@@ -708,11 +708,11 @@ if (!function_exists('addtion')) {
      */
     function addtion($items, $fields)
     {
-        if (!$items || !$fields) {
+        if (! $items || ! $fields) {
             return $items;
         }
         $fieldsArr = [];
-        if (!is_array($fields)) {
+        if (! is_array($fields)) {
             $arr = explode(',', $fields);
             foreach ($arr as $k => $v) {
                 $fieldsArr[$v] = ['field' => $v];
@@ -773,7 +773,7 @@ if (!function_exists('addtion')) {
     }
 }
 
-if (!function_exists('var_export_short')) {
+if (! function_exists('var_export_short')) {
 
     /**
      * 返回打印数组结构.
@@ -806,7 +806,7 @@ if (!function_exists('var_export_short')) {
     }
 }
 
-if (!function_exists('letter_avatar')) {
+if (! function_exists('letter_avatar')) {
     /**
      * 首字母头像.
      *
@@ -818,7 +818,7 @@ if (!function_exists('letter_avatar')) {
     {
         $total = unpack('L', hash('adler32', $text, true))[1];
         $hue = $total % 360;
-        list($r, $g, $b) = hsv2rgb($hue / 360, 0.3, 0.9);
+        [$r, $g, $b] = hsv2rgb($hue / 360, 0.3, 0.9);
 
         $bg = "rgb({$r},{$g},{$b})";
         $color = '#ffffff';
@@ -830,7 +830,7 @@ if (!function_exists('letter_avatar')) {
     }
 }
 
-if (!function_exists('hsv2rgb')) {
+if (! function_exists('hsv2rgb')) {
     function hsv2rgb($h, $s, $v)
     {
         $r = $g = $b = 0;

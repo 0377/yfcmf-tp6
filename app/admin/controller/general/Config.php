@@ -12,10 +12,10 @@
 
 namespace app\admin\controller\general;
 
-use app\common\controller\Backend;
-use app\common\library\Email;
-use app\common\model\Config as ConfigModel;
 use think\Exception;
+use app\common\library\Email;
+use app\common\controller\Backend;
+use app\common\model\Config as ConfigModel;
 
 /**
  * 系统配置.
@@ -50,7 +50,7 @@ class Config extends Backend
             $siteList[$k]['list'] = [];
         }
         foreach ($this->model->select() as $k => $v) {
-            if (!isset($siteList[$v['group']])) {
+            if (! isset($siteList[$v['group']])) {
                 continue;
             }
             $value = $v->toArray();
@@ -64,7 +64,7 @@ class Config extends Backend
         }
         $index = 0;
         foreach ($siteList as $k => &$v) {
-            $v['active'] = !$index ? true : false;
+            $v['active'] = ! $index ? true : false;
             $index++;
         }
         $this->view->assign('siteList', $siteList);
@@ -197,7 +197,7 @@ class Config extends Backend
         $params = $this->request->post('row/a');
         if ($params) {
             $config = $this->model->find($params);
-            if (!$config) {
+            if (! $config) {
                 return $this->success();
             } else {
                 return $this->error(__('Name already exist'));

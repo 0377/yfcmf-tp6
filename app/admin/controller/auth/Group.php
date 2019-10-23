@@ -2,11 +2,11 @@
 
 namespace app\admin\controller\auth;
 
-use app\admin\model\AuthGroup;
-use app\admin\model\AuthGroupAccess;
-use app\admin\model\AuthRule;
-use app\common\controller\Backend;
 use fast\Tree;
+use app\admin\model\AuthRule;
+use app\admin\model\AuthGroup;
+use app\common\controller\Backend;
+use app\admin\model\AuthGroupAccess;
 
 /**
  * 角色组.
@@ -94,11 +94,11 @@ class Group extends Backend
         if ($this->request->isPost()) {
             $params = $this->request->post('row/a', [], 'strip_tags');
             $params['rules'] = explode(',', $params['rules']);
-            if (!in_array($params['pid'], $this->childrenGroupIds)) {
+            if (! in_array($params['pid'], $this->childrenGroupIds)) {
                 $this->error(__('The parent group can not be its own child'));
             }
             $parentmodel = AuthGroup::find($params['pid']);
-            if (!$parentmodel) {
+            if (! $parentmodel) {
                 $this->error(__('The parent group can not found'));
             }
             // 父级别的规则节点
@@ -127,19 +127,19 @@ class Group extends Backend
     public function edit($ids = null)
     {
         $row = $this->model->find(['id' => $ids]);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
             $params = $this->request->post('row/a', [], 'strip_tags');
             // 父节点不能是它自身的子节点
-            if (!in_array($params['pid'], $this->childrenGroupIds)) {
+            if (! in_array($params['pid'], $this->childrenGroupIds)) {
                 $this->error(__('The parent group can not be its own child'));
             }
             $params['rules'] = explode(',', $params['rules']);
 
             $parentmodel = AuthGroup::find($params['pid']);
-            if (!$parentmodel) {
+            if (! $parentmodel) {
                 $this->error(__('The parent group can not found'));
             }
             // 父级别的规则节点
@@ -196,7 +196,7 @@ class Group extends Backend
                     continue;
                 }
             }
-            if (!$ids) {
+            if (! $ids) {
                 $this->error(__('You can not delete group that contain child group and administrators'));
             }
             $count = $this->model->where('id', 'in', $ids)->delete();
@@ -235,7 +235,7 @@ class Group extends Backend
         if ($id) {
             $currentGroupModel = $model->find($id);
         }
-        if (($pid || $parentGroupModel) && (!$id || $currentGroupModel)) {
+        if (($pid || $parentGroupModel) && (! $id || $currentGroupModel)) {
             $id = $id ? $id : null;
             $ruleList = AuthRule::order('weigh', 'desc')->order('id', 'asc')->select()->toArray();
             //读取父类角色所有节点列表
@@ -266,7 +266,7 @@ class Group extends Backend
             //当前拥有的规则ID集合
             $currentRuleIds = $id ? explode(',', $currentGroupModel->rules) : [];
 
-            if (!$id || !in_array($pid, $this->childrenGroupIds) || !in_array($pid,
+            if (! $id || ! in_array($pid, $this->childrenGroupIds) || ! in_array($pid,
                     $groupTree->getChildrenIds($id, true))) {
                 $parentRuleList = $ruleTree->getTreeList($ruleTree->getTreeArray(0), 'name');
                 $hasChildrens = [];
@@ -280,14 +280,14 @@ class Group extends Backend
                 }, $parentRuleList);
                 $nodeList = [];
                 foreach ($parentRuleList as $k => $v) {
-                    if (!$superadmin && !in_array($v['id'], $adminRuleIds)) {
+                    if (! $superadmin && ! in_array($v['id'], $adminRuleIds)) {
                         continue;
                     }
-                    if ($v['pid'] && !in_array($v['pid'], $parentRuleIds)) {
+                    if ($v['pid'] && ! in_array($v['pid'], $parentRuleIds)) {
                         continue;
                     }
                     $state = [
-                        'selected' => in_array($v['id'], $currentRuleIds) && !in_array($v['id'], $hasChildrens),
+                        'selected' => in_array($v['id'], $currentRuleIds) && ! in_array($v['id'], $hasChildrens),
                     ];
                     $nodeList[] = [
                         'id'     => $v['id'],

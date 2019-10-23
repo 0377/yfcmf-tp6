@@ -106,7 +106,7 @@ class Random
      */
     public static function lottery($ps, $num = 1, $unique = true)
     {
-        if (!$ps) {
+        if (! $ps) {
             return $num == 1 ? '' : [];
         }
         if ($num >= count($ps) && $unique) {

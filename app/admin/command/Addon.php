@@ -12,15 +12,15 @@
 
 namespace app\admin\command;
 
-use think\AddonService;
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
 use think\Exception;
-use think\exception\PDOException;
-use think\facade\Config;
 use think\facade\Db;
+use think\AddonService;
+use think\console\Input;
+use think\facade\Config;
+use think\console\Output;
+use think\console\Command;
+use think\console\input\Option;
+use think\exception\PDOException;
 
 class Addon extends Command
 {
@@ -56,10 +56,10 @@ class Addon extends Command
 
         include dirname(__DIR__).DIRECTORY_SEPARATOR.'common.php';
 
-        if (!$name) {
+        if (! $name) {
             throw new Exception('Addon name could not be empty');
         }
-        if (!$action || !in_array($action, ['create', 'disable', 'enable', 'install', 'uninstall', 'refresh', 'upgrade', 'package'])) {
+        if (! $action || ! in_array($action, ['create', 'disable', 'enable', 'install', 'uninstall', 'refresh', 'upgrade', 'package'])) {
             throw new Exception('Please input correct action name');
         }
 
@@ -70,7 +70,7 @@ class Addon extends Command
         switch ($action) {
             case 'create':
                 //非覆盖模式时如果存在则报错
-                if (is_dir($addonDir) && !$force) {
+                if (is_dir($addonDir) && ! $force) {
                     throw new Exception("addon already exists!\nIf you need to create again, use the parameter --force=true ");
                 }
                 //如果存在先移除
@@ -121,7 +121,7 @@ class Addon extends Command
                     if ($e->getCode() != -3) {
                         throw new Exception($e->getMessage());
                     }
-                    if (!$force) {
+                    if (! $force) {
                         //如果有冲突文件则提醒
                         $data = $e->getData();
                         foreach ($data['conflictlist'] as $k => $v) {
@@ -140,7 +140,7 @@ class Addon extends Command
                 break;
             case 'install':
                 //非覆盖模式时如果存在则报错
-                if (is_dir($addonDir) && !$force) {
+                if (is_dir($addonDir) && ! $force) {
                     throw new Exception("addon already exists!\nIf you need to install again, use the parameter --force=true ");
                 }
                 //如果存在先移除
@@ -156,7 +156,7 @@ class Addon extends Command
                     if ($e->getCode() != -3) {
                         throw new Exception($e->getMessage());
                     }
-                    if (!$force) {
+                    if (! $force) {
                         //如果有冲突文件则提醒
                         $data = $e->getData();
                         foreach ($data['conflictlist'] as $k => $v) {
@@ -175,7 +175,7 @@ class Addon extends Command
                 break;
             case 'uninstall':
                 //非覆盖模式时如果存在则报错
-                if (!$force) {
+                if (! $force) {
                     throw new Exception('If you need to uninstall addon, use the parameter --force=true ');
                 }
 
@@ -185,7 +185,7 @@ class Addon extends Command
                     if ($e->getCode() != -3) {
                         throw new Exception($e->getMessage());
                     }
-                    if (!$force) {
+                    if (! $force) {
                         //如果有冲突文件则提醒
                         $data = $e->getData();
                         foreach ($data['conflictlist'] as $k => $v) {
@@ -212,30 +212,30 @@ class Addon extends Command
                 break;
             case 'package':
                 $infoFile = $addonDir.'info.ini';
-                if (!is_file($infoFile)) {
+                if (! is_file($infoFile)) {
                     throw new Exception(__('Addon info file was not found'));
                 }
 
                 $info = get_addon_info($name);
-                if (!$info) {
+                if (! $info) {
                     throw new Exception(__('Addon info file data incorrect'));
                 }
                 $infoname = isset($info['name']) ? $info['name'] : '';
-                if (!$infoname || !preg_match('/^[a-z]+$/i', $infoname) || $infoname != $name) {
+                if (! $infoname || ! preg_match('/^[a-z]+$/i', $infoname) || $infoname != $name) {
                     throw new Exception(__('Addon info name incorrect'));
                 }
 
                 $infoversion = isset($info['version']) ? $info['version'] : '';
-                if (!$infoversion || !preg_match("/^\d+\.\d+\.\d+$/i", $infoversion)) {
+                if (! $infoversion || ! preg_match("/^\d+\.\d+\.\d+$/i", $infoversion)) {
                     throw new Exception(__('Addon info version incorrect'));
                 }
 
                 $addonTmpDir = app()->getRootPath().'runtime'.DIRECTORY_SEPARATOR.'addons'.DIRECTORY_SEPARATOR;
-                if (!is_dir($addonTmpDir)) {
+                if (! is_dir($addonTmpDir)) {
                     @mkdir($addonTmpDir, 0755, true);
                 }
                 $addonFile = $addonTmpDir.$infoname.'-'.$infoversion.'.zip';
-                if (!class_exists('ZipArchive')) {
+                if (! class_exists('ZipArchive')) {
                     throw new Exception(__('ZinArchive not install'));
                 }
                 $zip = new \ZipArchive();
@@ -246,10 +246,10 @@ class Addon extends Command
                 );
 
                 foreach ($files as $name => $file) {
-                    if (!$file->isDir()) {
+                    if (! $file->isDir()) {
                         $filePath = $file->getRealPath();
                         $relativePath = str_replace(DS, '/', substr($filePath, strlen($addonDir)));
-                        if (!in_array($file->getFilename(), ['.git', '.DS_Store', 'Thumbs.db'])) {
+                        if (! in_array($file->getFilename(), ['.git', '.DS_Store', 'Thumbs.db'])) {
                             $zip->addFile($filePath, $relativePath);
                         }
                     }
@@ -312,7 +312,7 @@ class Addon extends Command
         $stub = file_get_contents($this->getStub($name));
         $content = str_replace($search, $replace, $stub);
 
-        if (!is_dir(dirname($pathname))) {
+        if (! is_dir(dirname($pathname))) {
             mkdir(strtolower(dirname($pathname)), 0755, true);
         }
 

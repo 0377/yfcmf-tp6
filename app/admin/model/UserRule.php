@@ -2,8 +2,8 @@
 
 namespace app\admin\model;
 
-use app\common\model\BaseModel;
 use fast\Tree;
+use app\common\model\BaseModel;
 
 class UserRule extends BaseModel
 {
@@ -51,7 +51,7 @@ class UserRule extends BaseModel
             }
         }
         foreach ($ruleList as $k => $v) {
-            $state = ['selected' => in_array($v['id'], $selected) && !in_array($v['id'], $hasChildrens)];
+            $state = ['selected' => in_array($v['id'], $selected) && ! in_array($v['id'], $hasChildrens)];
             $nodeList[] = ['id'          => $v['id'],
                                 'parent' => $v['pid'] ? $v['pid'] : '#',
                                 'text'   => __($v['title']),

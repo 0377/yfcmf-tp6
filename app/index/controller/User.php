@@ -2,11 +2,11 @@
 
 namespace app\index\controller;
 
-use app\common\controller\Frontend;
+use think\facade\Event;
 use think\facade\Config;
 use think\facade\Cookie;
-use think\facade\Event;
 use think\facade\Validate;
+use app\common\controller\Frontend;
 
 /**
  * 会员中心.
@@ -22,7 +22,7 @@ class User extends Frontend
         parent::_initialize();
         $auth = $this->auth;
 
-        if (!Config::get('fastadmin.usercenter')) {
+        if (! Config::get('fastadmin.usercenter')) {
             $this->error(__('User center already closed'));
         }
 
@@ -118,7 +118,7 @@ class User extends Frontend
             ];
             $validate = new Validate($rule, $msg);
             $result = $validate->check($data);
-            if (!$result) {
+            if (! $result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
             }
             if ($this->auth->register($username, $password, $email, $mobile)) {
@@ -129,8 +129,8 @@ class User extends Frontend
         }
         //判断来源
         $referer = $this->request->server('HTTP_REFERER');
-        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
-            && !preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
+        if (! $url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+            && ! preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
             $url = $referer;
         }
         $this->view->assign('url', $url);
@@ -151,7 +151,7 @@ class User extends Frontend
         if ($this->request->isPost()) {
             $account = $this->request->post('account');
             $password = $this->request->post('password');
-            $keeplogin = (int)$this->request->post('keeplogin');
+            $keeplogin = (int) $this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
                 'account'   => 'require|length:3,50',
@@ -172,7 +172,7 @@ class User extends Frontend
             ];
             $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
-            if (!$result) {
+            if (! $result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->buildToken()]);
 
                 return false;
@@ -185,8 +185,8 @@ class User extends Frontend
         }
         //判断来源
         $referer = $this->request->server('HTTP_REFERER');
-        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
-            && !preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
+        if (! $url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+            && ! preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
             $url = $referer;
         }
         $this->view->assign('url', $url);
@@ -247,7 +247,7 @@ class User extends Frontend
             ];
             $validate = new Validate($rule, $msg, $field);
             $result = $validate->check($data);
-            if (!$result) {
+            if (! $result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
 
                 return false;

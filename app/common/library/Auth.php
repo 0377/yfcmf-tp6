@@ -12,15 +12,15 @@
 
 namespace app\common\library;
 
-use app\common\model\User;
-use app\common\model\UserRule;
 use fast\Random;
 use think\Exception;
-use think\facade\Config;
 use think\facade\Db;
 use think\facade\Event;
+use think\facade\Config;
 use think\facade\Request;
+use app\common\model\User;
 use think\facade\Validate;
+use app\common\model\UserRule;
 
 class Auth
 {
@@ -98,13 +98,13 @@ class Auth
             return false;
         }
         $data = Token::get($token);
-        if (!$data) {
+        if (! $data) {
             return false;
         }
         $user_id = intval($data['user_id']);
         if ($user_id > 0) {
             $user = User::find($user_id);
-            if (!$user) {
+            if (! $user) {
                 $this->setError('Account not exist');
 
                 return false;
@@ -222,7 +222,7 @@ class Auth
         $field = Validate::is($account, 'email') ? 'email' : (Validate::regex($account,
             '/^1\d{10}$/') ? 'mobile' : 'username');
         $user = User::where([$field => $account])->find();
-        if (!$user) {
+        if (! $user) {
             $this->setError('Account is incorrect');
 
             return false;
@@ -252,7 +252,7 @@ class Auth
      */
     public function logout()
     {
-        if (!$this->_logined) {
+        if (! $this->_logined) {
             $this->setError('You are not logged in');
 
             return false;
@@ -278,7 +278,7 @@ class Auth
      */
     public function changepwd($newpassword, $oldpassword = '', $ignoreoldpassword = false)
     {
-        if (!$this->_logined) {
+        if (! $this->_logined) {
             $this->setError('You are not logged in');
 
             return false;
@@ -376,7 +376,7 @@ class Auth
      */
     public function check($path = null, $module = null)
     {
-        if (!$this->_logined) {
+        if (! $this->_logined) {
             return false;
         }
 
@@ -439,7 +439,7 @@ class Auth
             return $this->rules;
         }
         $group = $this->_user->group;
-        if (!$group) {
+        if (! $group) {
             return [];
         }
         $rules = explode(',', $group->rules);
@@ -499,7 +499,7 @@ class Auth
     public function delete($user_id)
     {
         $user = User::find($user_id);
-        if (!$user) {
+        if (! $user) {
             return false;
         }
         Db::startTrans();
@@ -546,7 +546,7 @@ class Auth
     {
         $request = Request::instance();
         $arr = is_array($arr) ? $arr : explode(',', $arr);
-        if (!$arr) {
+        if (! $arr) {
             return false;
         }
         $arr = array_map('strtolower', $arr);
@@ -581,18 +581,18 @@ class Auth
      */
     public function render(&$datalist, $fields = [], $fieldkey = 'user_id', $renderkey = 'userinfo')
     {
-        $fields = !$fields ? ['id', 'nickname', 'level', 'avatar'] : (is_array($fields) ? $fields : explode(',',
+        $fields = ! $fields ? ['id', 'nickname', 'level', 'avatar'] : (is_array($fields) ? $fields : explode(',',
             $fields));
         $ids = [];
         foreach ($datalist as $k => $v) {
-            if (!isset($v[$fieldkey])) {
+            if (! isset($v[$fieldkey])) {
                 continue;
             }
             $ids[] = $v[$fieldkey];
         }
         $list = [];
         if ($ids) {
-            if (!in_array('id', $fields)) {
+            if (! in_array('id', $fields)) {
                 $fields[] = 'id';
             }
             $ids = array_unique($ids);

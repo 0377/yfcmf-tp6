@@ -44,10 +44,10 @@ class Rsa
      */
     public function setKey($publicKey = null, $privateKey = null)
     {
-        if (!is_null($publicKey)) {
+        if (! is_null($publicKey)) {
             $this->publicKey = $publicKey;
         }
-        if (!is_null($privateKey)) {
+        if (! is_null($privateKey)) {
             $this->privateKey = $privateKey;
         }
     }
@@ -87,7 +87,7 @@ class Rsa
      */
     public function privEncrypt($data)
     {
-        if (!is_string($data)) {
+        if (! is_string($data)) {
             return;
         }
         $this->setupPrivKey();
@@ -102,7 +102,7 @@ class Rsa
      */
     public function privDecrypt($encrypted)
     {
-        if (!is_string($encrypted)) {
+        if (! is_string($encrypted)) {
             return;
         }
         $this->setupPrivKey();
@@ -118,7 +118,7 @@ class Rsa
      */
     public function pubEncrypt($data)
     {
-        if (!is_string($data)) {
+        if (! is_string($data)) {
             return;
         }
         $this->setupPubKey();
@@ -133,7 +133,7 @@ class Rsa
      */
     public function pubDecrypt($crypted)
     {
-        if (!is_string($crypted)) {
+        if (! is_string($crypted)) {
             return;
         }
         $this->setupPubKey();

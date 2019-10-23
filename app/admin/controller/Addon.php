@@ -12,13 +12,13 @@
 
 namespace app\admin\controller;
 
-use app\common\controller\Backend;
 use fast\Http;
-use think\AddonService;
 use think\Exception;
+use think\AddonService;
 use think\facade\Cache;
 use think\facade\Config;
 use think\facade\Filesystem;
+use app\common\controller\Backend;
 
 /**
  * 插件管理.
@@ -57,18 +57,18 @@ class Addon extends Backend
     public function config($ids = null)
     {
         $name = $this->request->get('name');
-        if (!$name) {
+        if (! $name) {
             $this->error(__('Parameter %s can not be empty', $ids ? 'id' : 'name'));
         }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $name)) {
+        if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             $this->error(__('Addon name incorrect'));
         }
-        if (!is_dir(ADDON_PATH.$name)) {
+        if (! is_dir(ADDON_PATH.$name)) {
             $this->error(__('Directory not found'));
         }
         $info = get_addon_info($name);
         $config = get_addon_fullconfig($name);
-        if (!$info) {
+        if (! $info) {
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
@@ -120,10 +120,10 @@ class Addon extends Backend
     {
         $name = $this->request->post('name');
         $force = (int) $this->request->post('force');
-        if (!$name) {
+        if (! $name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $name)) {
+        if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             $this->error(__('Addon name incorrect'));
         }
 
@@ -155,10 +155,10 @@ class Addon extends Backend
     {
         $name = $this->request->post('name');
         $force = (int) $this->request->post('force');
-        if (!$name) {
+        if (! $name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $name)) {
+        if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             $this->error(__('Addon name incorrect'));
         }
 
@@ -178,10 +178,10 @@ class Addon extends Backend
         $name = $this->request->post('name');
         $action = $this->request->post('action');
         $force = (int) $this->request->post('force');
-        if (!$name) {
+        if (! $name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $name)) {
+        if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             $this->error(__('Addon name incorrect'));
         }
 
@@ -204,11 +204,11 @@ class Addon extends Backend
         Config::set(['default_return_type' => 'json'], 'app');
         $file = $this->request->file('file');
         $addonTmpDir = app()->getRootPath().'runtime'.DIRECTORY_SEPARATOR;
-        if (!is_dir($addonTmpDir)) {
+        if (! is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
         }
         $validate = validate(['zip' => 'filesize:10240000|fileExt:zip'], [], false, false);
-        if (!$validate->check(['zip' => $file])) {
+        if (! $validate->check(['zip' => $file])) {
             $this->error(__($validate->getError()));
         }
         $info = Filesystem::disk('runtime')->putFile('addons', $file, function ($file) {
@@ -224,17 +224,17 @@ class Addon extends Backend
                 unset($info);
                 @unlink($tmpFile);
                 $infoFile = $tmpAddonDir.'info.ini';
-                if (!is_file($infoFile)) {
+                if (! is_file($infoFile)) {
                     throw new Exception(__('Addon info file was not found'));
                 }
 
                 //$config = Config::parse($infoFile, '', $tmpName);
                 $config = parse_ini_file($infoFile, true, INI_SCANNER_TYPED) ?: [];
                 $name = isset($config['name']) ? $config['name'] : '';
-                if (!$name) {
+                if (! $name) {
                     throw new Exception(__('Addon info file data incorrect'));
                 }
-                if (!preg_match('/^[a-zA-Z0-9]+$/', $name)) {
+                if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
                     throw new Exception(__('Addon name incorrect'));
                 }
 
@@ -290,10 +290,10 @@ class Addon extends Backend
     public function upgrade()
     {
         $name = $this->request->post('name');
-        if (!$name) {
+        if (! $name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $name)) {
+        if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             $this->error(__('Addon name incorrect'));
         }
 
@@ -328,7 +328,7 @@ class Addon extends Backend
         $search = $this->request->get('search');
         $search = htmlspecialchars(strip_tags($search));
         $onlineaddons = Cache::get('onlineaddons');
-        if (!is_array($onlineaddons)) {
+        if (! is_array($onlineaddons)) {
             $onlineaddons = [];
             $result = Http::sendRequest(config('fastadmin.api_url').'/addon/index');
             if ($result['ret']) {

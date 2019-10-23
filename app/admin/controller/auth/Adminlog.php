@@ -40,7 +40,7 @@ class Adminlog extends Backend
     public function index()
     {
         if ($this->request->isAjax()) {
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             $total = $this->model
                 ->where($where)
                 ->where('admin_id', 'in', $this->childrenAdminIds)
@@ -67,7 +67,7 @@ class Adminlog extends Backend
     public function detail($ids)
     {
         $row = $this->model->get(['id' => $ids]);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         $this->view->assign('row', $row->toArray());

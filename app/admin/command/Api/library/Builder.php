@@ -70,7 +70,7 @@ class Builder
 
     protected function generateHeadersTemplate($docs)
     {
-        if (!isset($docs['ApiHeaders'])) {
+        if (! isset($docs['ApiHeaders'])) {
             return [];
         }
 
@@ -91,7 +91,7 @@ class Builder
 
     protected function generateParamsTemplate($docs)
     {
-        if (!isset($docs['ApiParams'])) {
+        if (! isset($docs['ApiParams'])) {
             return [];
         }
 
@@ -112,7 +112,7 @@ class Builder
 
     protected function generateReturnHeadersTemplate($docs)
     {
-        if (!isset($docs['ApiReturnHeaders'])) {
+        if (! isset($docs['ApiReturnHeaders'])) {
             return [];
         }
 
@@ -133,7 +133,7 @@ class Builder
 
     protected function generateReturnParamsTemplate($st_params)
     {
-        if (!isset($st_params['ApiReturnParams'])) {
+        if (! isset($st_params['ApiReturnParams'])) {
             return [];
         }
 
@@ -168,7 +168,7 @@ class Builder
 
     public function parse()
     {
-        list($allClassAnnotations, $allClassMethodAnnotations) = $this->extractAnnotations();
+        [$allClassAnnotations, $allClassMethodAnnotations] = $this->extractAnnotations();
 
         $sectorArr = [];
         foreach ($allClassAnnotations as $index => $allClassAnnotation) {

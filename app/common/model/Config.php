@@ -89,7 +89,7 @@ class Config extends BaseModel
 
     public static function getArrayData($data)
     {
-        if (!isset($data['value'])) {
+        if (! isset($data['value'])) {
             $result = [];
             foreach ($data as $index => $datum) {
                 $result['field'][$index] = $datum['key'];

@@ -77,10 +77,10 @@ class Tree
     public function init($arr = [], $pidname = null, $nbsp = null)
     {
         $this->arr = $arr;
-        if (!is_null($pidname)) {
+        if (! is_null($pidname)) {
             $this->pidname = $pidname;
         }
-        if (!is_null($nbsp)) {
+        if (! is_null($nbsp)) {
             $this->nbsp = $nbsp;
         }
 
@@ -98,7 +98,7 @@ class Tree
     {
         $newarr = [];
         foreach ($this->arr as $value) {
-            if (!isset($value['id'])) {
+            if (! isset($value['id'])) {
                 continue;
             }
             if ($value[$this->pidname] == $myid) {
@@ -121,7 +121,7 @@ class Tree
     {
         $newarr = [];
         foreach ($this->arr as $value) {
-            if (!isset($value['id'])) {
+            if (! isset($value['id'])) {
                 continue;
             }
             if ($value[$this->pidname] == $myid) {
@@ -166,7 +166,7 @@ class Tree
         $pid = 0;
         $newarr = [];
         foreach ($this->arr as $value) {
-            if (!isset($value['id'])) {
+            if (! isset($value['id'])) {
                 continue;
             }
             if ($value['id'] == $myid) {
@@ -199,7 +199,7 @@ class Tree
         $pid = 0;
         $newarr = [];
         foreach ($this->arr as $value) {
-            if (!isset($value['id'])) {
+            if (! isset($value['id'])) {
                 continue;
             }
             if ($value['id'] == $myid) {
@@ -355,9 +355,9 @@ class Tree
                 $childlist = strtr($childlist, ['@class' => $childdata ? 'last' : '']);
                 $value = [
                     '@childlist' => $childlist,
-                    '@url'       => $childdata || !isset($value['@url']) ? 'javascript:;' : url($value['@url']),
-                    '@addtabs'   => $childdata || !isset($value['@url']) ? '' : (stripos($value['@url'], '?') !== false ? '&' : '?').'ref=addtabs',
-                    '@caret'     => ($childdata && (!isset($value['@badge']) || !$value['@badge']) ? '<i class="fa fa-angle-left"></i>' : ''),
+                    '@url'       => $childdata || ! isset($value['@url']) ? 'javascript:;' : url($value['@url']),
+                    '@addtabs'   => $childdata || ! isset($value['@url']) ? '' : (stripos($value['@url'], '?') !== false ? '&' : '?').'ref=addtabs',
+                    '@caret'     => ($childdata && (! isset($value['@badge']) || ! $value['@badge']) ? '<i class="fa fa-angle-left"></i>' : ''),
                     '@badge'     => isset($value['@badge']) ? $value['@badge'] : '',
                     '@class'     => ($selected ? ' active' : '').($disabled ? ' disabled' : '').($childdata ? ' treeview' : ''),
                 ];
@@ -403,7 +403,7 @@ class Tree
                 $value = array_combine(array_map(function ($k) {
                     return '@'.$k;
                 }, array_keys($value)), $value);
-                $nstr = strtr(!isset($value['@disabled']) || !$value['@disabled'] ? $itemtpl1 : $itemtpl2, $value);
+                $nstr = strtr(! isset($value['@disabled']) || ! $value['@disabled'] ? $itemtpl1 : $itemtpl2, $value);
 
                 $ret .= $nstr;
                 $ret .= $this->getTreeSpecial($id, $itemtpl1, $itemtpl2, $selectedids, $disabledids, $itemprefix.$k.$this->nbsp);

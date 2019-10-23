@@ -17,16 +17,16 @@
 namespace app\admin\command;
 
 use fast\Form;
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
 use think\Exception;
-use think\exception\ErrorException;
-use think\facade\Config;
 use think\facade\Db;
 use think\facade\Env;
 use think\facade\Lang;
+use think\console\Input;
+use think\facade\Config;
+use think\console\Output;
+use think\console\Command;
+use think\console\input\Option;
+use think\exception\ErrorException;
 
 class Crud extends Command
 {
@@ -221,7 +221,7 @@ class Crud extends Command
         $force = $input->getOption('force');
         //是否为本地model,为0时表示为全局model将会把model放在app/common/model中
         $local = $input->getOption('local');
-        if (!$table) {
+        if (! $table) {
             throw new Exception('table name can\'t empty');
         }
         //是否生成菜单
@@ -326,11 +326,11 @@ class Crud extends Command
         $modelTableTypeName = $modelTableName = $modelName;
         $modelTableInfo = $dbconnect->query("SHOW TABLE STATUS LIKE '{$modelTableName}'", [], true);
 
-        if (!$modelTableInfo) {
+        if (! $modelTableInfo) {
             $modelTableType = 'name';
             $modelTableName = $prefix.$modelName;
             $modelTableInfo = $dbconnect->query("SHOW TABLE STATUS LIKE '{$modelTableName}'", [], true);
-            if (!$modelTableInfo) {
+            if (! $modelTableInfo) {
                 throw new Exception('table not found');
             }
         }
@@ -346,18 +346,18 @@ class Crud extends Command
                 $relationTableType = 'table';
                 $relationTableTypeName = $relationTableName = $relationName;
                 $relationTableInfo = $dbconnect->query("SHOW TABLE STATUS LIKE '{$relationTableName}'", [], true);
-                if (!$relationTableInfo) {
+                if (! $relationTableInfo) {
                     $relationTableType = 'name';
                     $relationTableName = $prefix.$relationName;
                     $relationTableInfo = $dbconnect->query("SHOW TABLE STATUS LIKE '{$relationTableName}'", [], true);
-                    if (!$relationTableInfo) {
+                    if (! $relationTableInfo) {
                         throw new Exception('relation table not found');
                     }
                 }
                 $relationTableInfo = $relationTableInfo[0];
                 $relationModel = isset($relationModel[$index]) ? $relationModel[$index] : '';
 
-                list($relationNamespace, $relationName, $relationFile) = $this->getModelData($modelModuleName, $relationModel, $relationName);
+                [$relationNamespace, $relationName, $relationFile] = $this->getModelData($modelModuleName, $relationModel, $relationName);
 
                 $relations[] = [
                     //关联表基础名
@@ -393,11 +393,11 @@ class Crud extends Command
         $iconName = is_file($iconPath) && stripos(file_get_contents($iconPath), '@fa-var-'.$table.':') ? 'fa fa-'.$table : 'fa fa-circle-o';
 
         //控制器
-        list($controllerNamespace, $controllerName, $controllerFile, $controllerArr) = $this->getControllerData($moduleName, $controller, $table);
+        [$controllerNamespace, $controllerName, $controllerFile, $controllerArr] = $this->getControllerData($moduleName, $controller, $table);
         //模型
-        list($modelNamespace, $modelName, $modelFile, $modelArr) = $this->getModelData($modelModuleName, $model, $table);
+        [$modelNamespace, $modelName, $modelFile, $modelArr] = $this->getModelData($modelModuleName, $model, $table);
         //验证器
-        list($validateNamespace, $validateName, $validateFile, $validateArr) = $this->getValidateData($validateModuleName, $validate, $table);
+        [$validateNamespace, $validateName, $validateFile, $validateArr] = $this->getValidateData($validateModuleName, $validate, $table);
 
         //处理基础文件名，取消所有下划线并转换为小写
         $baseNameArr = $controllerArr;
@@ -428,7 +428,7 @@ class Crud extends Command
             foreach ($readyFiles as $k => $v) {
                 $output->warning($v);
             }
-            if (!$force) {
+            if (! $force) {
                 $output->info("Are you sure you want to delete all those files?  Type 'yes' to continue: ");
                 $line = fgets(defined('STDIN') ? STDIN : fopen('php://stdin', 'r'));
                 if (trim($line) != 'yes') {
@@ -464,17 +464,17 @@ class Crud extends Command
         }
 
         //非覆盖模式时如果存在控制器文件则报错
-        if (is_file($controllerFile) && !$force) {
+        if (is_file($controllerFile) && ! $force) {
             throw new Exception("controller already exists!\nIf you need to rebuild again, use the parameter --force=true ");
         }
 
         //非覆盖模式时如果存在模型文件则报错
-        if (is_file($modelFile) && !$force) {
+        if (is_file($modelFile) && ! $force) {
             throw new Exception("model already exists!\nIf you need to rebuild again, use the parameter --force=true ");
         }
 
         //非覆盖模式时如果存在验证文件则报错
-        if (is_file($validateFile) && !$force) {
+        if (is_file($validateFile) && ! $force) {
             throw new Exception("validate already exists!\nIf you need to rebuild again, use the parameter --force=true ");
         }
 
@@ -499,7 +499,7 @@ class Crud extends Command
             foreach ($relationColumnList as $k => $v) {
                 $relationFieldList[] = $v['COLUMN_NAME'];
             }
-            if (!$relation['relationPrimaryKey']) {
+            if (! $relation['relationPrimaryKey']) {
                 foreach ($relationColumnList as $k => $v) {
                     if ($v['COLUMN_KEY'] == 'PRI') {
                         $relation['relationPrimaryKey'] = $v['COLUMN_NAME'];
@@ -508,11 +508,11 @@ class Crud extends Command
                 }
             }
             // 如果主键为空
-            if (!$relation['relationPrimaryKey']) {
+            if (! $relation['relationPrimaryKey']) {
                 throw new Exception('Relation Primary key not found!');
             }
             // 如果主键不在表字段中
-            if (!in_array($relation['relationPrimaryKey'], $relationFieldList)) {
+            if (! in_array($relation['relationPrimaryKey'], $relationFieldList)) {
                 throw new Exception('Relation Primary key not found in table!');
             }
             $relation['relationColumnList'] = $relationColumnList;
@@ -535,7 +535,7 @@ class Crud extends Command
                 break;
             }
         }
-        if (!$priKey) {
+        if (! $priKey) {
             throw new Exception('Primary key not found!');
         }
 
@@ -547,19 +547,19 @@ class Crud extends Command
                 $relationForeignKey = $relation['relationForeignKey'] ? $relation['relationForeignKey'] : $table.'_id';
                 $relationPrimaryKey = $relation['relationPrimaryKey'] ? $relation['relationPrimaryKey'] : $priKey;
 
-                if (!in_array($relationForeignKey, $relation['relationFieldList'])) {
+                if (! in_array($relationForeignKey, $relation['relationFieldList'])) {
                     throw new Exception('relation table ['.$relation['relationTableName'].'] must be contain field ['.$relationForeignKey.']');
                 }
-                if (!in_array($relationPrimaryKey, $fieldArr)) {
+                if (! in_array($relationPrimaryKey, $fieldArr)) {
                     throw new Exception('table ['.$modelTableName.'] must be contain field ['.$relationPrimaryKey.']');
                 }
             } else {
                 $relationForeignKey = $relation['relationForeignKey'] ? $relation['relationForeignKey'] : parseName($relation['relationName']).'_id';
                 $relationPrimaryKey = $relation['relationPrimaryKey'] ? $relation['relationPrimaryKey'] : $relation['relationPriKey'];
-                if (!in_array($relationForeignKey, $fieldArr)) {
+                if (! in_array($relationForeignKey, $fieldArr)) {
                     throw new Exception('table ['.$modelTableName.'] must be contain field ['.$relationForeignKey.']');
                 }
-                if (!in_array($relationPrimaryKey, $relation['relationFieldList'])) {
+                if (! in_array($relationPrimaryKey, $relation['relationFieldList'])) {
                     throw new Exception('relation table ['.$relation['relationTableName'].'] must be contain field ['.$relationPrimaryKey.']');
                 }
             }
@@ -601,7 +601,7 @@ class Crud extends Command
                 }
                 $inputType = '';
                 //保留字段不能修改和添加
-                if ($v['COLUMN_KEY'] != 'PRI' && !in_array($field, $this->reservedField) && !in_array($field, $this->ignoreFields)) {
+                if ($v['COLUMN_KEY'] != 'PRI' && ! in_array($field, $this->reservedField) && ! in_array($field, $this->ignoreFields)) {
                     $inputType = $this->getFieldType($v);
 
                     // 如果是number类型时增加一个步长
@@ -688,7 +688,7 @@ class Crud extends Command
                             $this->setAttr($setAttrArr, $field, $inputType);
                         }
                         $this->appendAttr($appendAttrList, $field);
-                        $defaultValue = $inputType == 'radio' && !$defaultValue ? key($itemArr) : $defaultValue;
+                        $defaultValue = $inputType == 'radio' && ! $defaultValue ? key($itemArr) : $defaultValue;
 
                         $formAddElement = $this->getReplacedStub('html/'.$inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => $defaultValue]);
                         $formEditElement = $this->getReplacedStub('html/'.$inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => "\$row.{$field}"]);
@@ -707,7 +707,7 @@ class Crud extends Command
                             $no = $defaultValue;
                             $yes = $defaultValue === '0' ? '1' : 'Y';
                         }
-                        if (!$itemArr) {
+                        if (! $itemArr) {
                             $itemArr = [$yes => 'Yes', $no => 'No'];
                         }
                         $stateNoClass = 'fa-flip-horizontal text-gray';
@@ -791,7 +791,7 @@ class Crud extends Command
                 //过滤text类型字段
                 if ($v['DATA_TYPE'] != 'text' && $inputType != 'fieldlist') {
                     //主键
-                    if ($v['COLUMN_KEY'] == 'PRI' && !$priDefined) {
+                    if ($v['COLUMN_KEY'] == 'PRI' && ! $priDefined) {
                         $priDefined = true;
                         $javascriptList[] = '{checkbox: true}';
                     }
@@ -799,7 +799,7 @@ class Crud extends Command
                         $recyclebinHtml = $this->getReplacedStub('html/recyclebin-html', ['controllerUrl' => $_controllerUrl]);
                         continue;
                     }
-                    if (!$fields || in_array($field, explode(',', $fields))) {
+                    if (! $fields || in_array($field, explode(',', $fields))) {
                         //构造JS列信息
                         $javascriptList[] = $this->getJsColumn($field, $v['DATA_TYPE'], $inputType && in_array($inputType, ['select', 'checkbox', 'radio']) ? '_text' : '', $itemArr);
                     }
@@ -815,7 +815,7 @@ class Crud extends Command
             foreach ($relations as $index => $relation) {
                 foreach ($relation['relationColumnList'] as $k => $v) {
                     // 不显示的字段直接过滤掉
-                    if ($relation['relationFields'] && !in_array($v['COLUMN_NAME'], $relation['relationFields'])) {
+                    if ($relation['relationFields'] && ! in_array($v['COLUMN_NAME'], $relation['relationFields'])) {
                         continue;
                     }
 
@@ -954,7 +954,7 @@ class Crud extends Command
             if ($relations) {
                 foreach ($relations as $i => $relation) {
                     $relation['modelNamespace'] = $data['modelNamespace'];
-                    if (!is_file($relation['relationFile'])) {
+                    if (! is_file($relation['relationFile'])) {
                         // 生成关联模型文件
                         $this->writeToFile('relationmodel', $relation, $relation['relationFile']);
                     }
@@ -990,7 +990,7 @@ class Crud extends Command
 
     protected function getEnum(&$getEnum, &$controllerAssignList, $field, $itemArr = '', $inputType = '')
     {
-        if (!in_array($inputType, ['datetime', 'select', 'multiple', 'checkbox', 'radio'])) {
+        if (! in_array($inputType, ['datetime', 'select', 'multiple', 'checkbox', 'radio'])) {
             return;
         }
         $fieldList = $this->getFieldListName($field);
@@ -1013,7 +1013,7 @@ EOD;
 
     protected function getAttr(&$getAttr, $field, $inputType = '')
     {
-        if (!in_array($inputType, ['datetime', 'select', 'multiple', 'checkbox', 'radio'])) {
+        if (! in_array($inputType, ['datetime', 'select', 'multiple', 'checkbox', 'radio'])) {
             return;
         }
         $attrField = ucfirst($this->getCamelizeName($field));
@@ -1022,7 +1022,7 @@ EOD;
 
     protected function setAttr(&$setAttr, $field, $inputType = '')
     {
-        if (!in_array($inputType, ['datetime', 'checkbox', 'select'])) {
+        if (! in_array($inputType, ['datetime', 'checkbox', 'select'])) {
             return;
         }
         $attrField = ucfirst($this->getCamelizeName($field));
@@ -1065,7 +1065,7 @@ EOD;
             for ($i = 0; $i < count($parseArr); $i++) {
                 try {
                     $iterator = new \FilesystemIterator($parentDir);
-                    $isDirEmpty = !$iterator->valid();
+                    $isDirEmpty = ! $iterator->valid();
                     if ($isDirEmpty) {
                         rmdir($parentDir);
                         $parentDir = dirname($parentDir);
@@ -1136,7 +1136,7 @@ EOD;
     protected function getParseNameData($module, $name, $table, $type)
     {
         $arr = [];
-        if (!$name) {
+        if (! $name) {
             $parseName = parseName($table, 1);
             $parseArr = [$table];
         } else {
@@ -1175,7 +1175,7 @@ EOD;
         unset($datum);
         $content = $this->getReplacedStub($name, $data);
 
-        if (!is_dir(dirname($pathname))) {
+        if (! is_dir(dirname($pathname))) {
             mkdir(dirname($pathname), 0755, true);
         }
 
@@ -1226,16 +1226,16 @@ EOD;
 
     protected function getLangItem($field, $content)
     {
-        if ($content || !Lang::has($field)) {
+        if ($content || ! Lang::has($field)) {
             $this->fieldMaxLen = strlen($field) > $this->fieldMaxLen ? strlen($field) : $this->fieldMaxLen;
             $content = str_replace('，', ',', $content);
             if (stripos($content, ':') !== false && stripos($content, ',') && stripos($content, '=') !== false) {
-                list($fieldLang, $item) = explode(':', $content);
+                [$fieldLang, $item] = explode(':', $content);
                 $itemArr = [$field => $fieldLang];
                 foreach (explode(',', $item) as $k => $v) {
                     $valArr = explode('=', $v);
                     if (count($valArr) == 2) {
-                        list($key, $value) = $valArr;
+                        [$key, $value] = $valArr;
                         $itemArr[$field.' '.$key] = $value;
                         $this->fieldMaxLen = strlen($field.' '.$key) > $this->fieldMaxLen ? strlen($field.' '.$key) : $this->fieldMaxLen;
                     }
@@ -1281,13 +1281,13 @@ EOD;
      */
     protected function getArrayString($arr)
     {
-        if (!is_array($arr)) {
+        if (! is_array($arr)) {
             return $arr;
         }
         $stringArr = [];
         foreach ($arr as $k => $v) {
             $is_var = in_array(substr($v, 0, 1), ['$', '_']);
-            if (!$is_var) {
+            if (! $is_var) {
                 $v = str_replace("'", "\'", $v);
                 $k = str_replace("'", "\'", $k);
             }
@@ -1302,12 +1302,12 @@ EOD;
         $itemArr = [];
         $comment = str_replace('，', ',', $comment);
         if (stripos($comment, ':') !== false && stripos($comment, ',') && stripos($comment, '=') !== false) {
-            list($fieldLang, $item) = explode(':', $comment);
+            [$fieldLang, $item] = explode(':', $comment);
             $itemArr = [];
             foreach (explode(',', $item) as $k => $v) {
                 $valArr = explode('=', $v);
                 if (count($valArr) == 2) {
-                    list($key, $value) = $valArr;
+                    [$key, $value] = $valArr;
                     $itemArr[$key] = $field.' '.$key;
                 }
             }
@@ -1514,7 +1514,7 @@ EOD;
         if (in_array($formatter, ['image', 'images'])) {
             $html .= ', events: Table.api.events.image';
         }
-        if ($itemArr && !$formatter) {
+        if ($itemArr && ! $formatter) {
             $formatter = 'normal';
         }
         if ($formatter) {

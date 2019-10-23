@@ -36,7 +36,7 @@ class User extends Backend
             if ($this->request->request('keyField')) {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             $total = $this->model
                 ->with('group')
                 ->where($where)
@@ -65,7 +65,7 @@ class User extends Backend
     public function edit($ids = null)
     {
         $row = $this->model->get($ids);
-        if (!$row) {
+        if (! $row) {
             $this->error(__('No Results were found'));
         }
         $this->view->assign('groupList',

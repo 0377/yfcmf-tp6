@@ -12,11 +12,11 @@
 
 namespace app\admin\command;
 
-use think\console\Command;
-use think\console\Input;
-use think\console\input\Option;
-use think\console\Output;
 use think\Exception;
+use think\console\Input;
+use think\console\Output;
+use think\console\Command;
+use think\console\input\Option;
 
 class Min extends Command
 {
@@ -46,10 +46,10 @@ class Min extends Command
         $resource = $input->getOption('resource') ?: '';
         $optimize = $input->getOption('optimize') ?: 'none';
 
-        if (!$module || !in_array($module, ['frontend', 'backend', 'all'])) {
+        if (! $module || ! in_array($module, ['frontend', 'backend', 'all'])) {
             throw new Exception('Please input correct module name');
         }
-        if (!$resource || !in_array($resource, ['js', 'css', 'all'])) {
+        if (! $resource || ! in_array($resource, ['js', 'css', 'all'])) {
             throw new Exception('Please input correct resource name');
         }
 
@@ -62,7 +62,7 @@ class Min extends Command
 
         $nodeExec = '';
 
-        if (!$nodeExec) {
+        if (! $nodeExec) {
             if (IS_WIN) {
                 // Winsows下请手动配置配置该值,一般将该值配置为 '"C:\Program Files\nodejs\node.exe"'，除非你的Node安装路径有变更
                 $nodeExec = 'C:\Program Files\nodejs\node.exe';
@@ -76,7 +76,7 @@ class Min extends Command
             } else {
                 try {
                     $nodeExec = exec('which node');
-                    if (!$nodeExec) {
+                    if (! $nodeExec) {
                         throw new Exception('node environment not found!please install node first!');
                     }
                 } catch (Exception $e) {
@@ -101,14 +101,14 @@ class Min extends Command
 
                 //源文件
                 $from = $data["{$res}BasePath"].$data["{$res}BaseName"].'.'.$res;
-                if (!is_file($from)) {
+                if (! is_file($from)) {
                     $output->error("{$res} source file not found!file:{$from}");
                     continue;
                 }
                 if ($res == 'js') {
                     $content = file_get_contents($from);
                     preg_match("/require\.config\(\{[\r\n]?[\n]?+(.*?)[\r\n]?[\n]?}\);/is", $content, $matches);
-                    if (!isset($matches[1])) {
+                    if (! isset($matches[1])) {
                         $output->error('js config not found!');
                         continue;
                     }
@@ -129,7 +129,7 @@ class Min extends Command
             }
         }
 
-        if (!$output->isDebug()) {
+        if (! $output->isDebug()) {
             @unlink($tempFile);
         }
 
@@ -155,7 +155,7 @@ class Min extends Command
         $stub = file_get_contents($this->getStub($name));
         $content = str_replace($search, $replace, $stub);
 
-        if (!is_dir(dirname($pathname))) {
+        if (! is_dir(dirname($pathname))) {
             mkdir(strtolower(dirname($pathname)), 0755, true);
         }
 

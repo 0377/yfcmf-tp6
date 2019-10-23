@@ -2,10 +2,10 @@
 
 namespace app\common\library;
 
-use app\common\library\token\Driver;
 use think\App;
-use think\facade\Config;
 use think\facade\Log;
+use think\facade\Config;
+use app\common\library\token\Driver;
 
 /**
  * Token操作类.
@@ -32,13 +32,13 @@ class Token
      */
     public static function connect(array $options = [], $name = false)
     {
-        $type = !empty($options['type']) ? $options['type'] : 'File';
+        $type = ! empty($options['type']) ? $options['type'] : 'File';
 
         if (false === $name) {
             $name = md5(serialize($options));
         }
 
-        if (true === $name || !isset(self::$instance[$name])) {
+        if (true === $name || ! isset(self::$instance[$name])) {
             $class = false === strpos($type, '\\') ?
                 '\\app\\common\\library\\token\\driver\\'.ucwords($type) :
                 $type;

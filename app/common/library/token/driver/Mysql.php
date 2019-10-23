@@ -27,7 +27,7 @@ class Mysql extends Driver
      */
     public function __construct($options = [])
     {
-        if (!empty($options)) {
+        if (! empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
         if ($this->options['connection']) {
@@ -48,7 +48,7 @@ class Mysql extends Driver
      */
     public function set($token, $user_id, $expire = null)
     {
-        $expiretime = !is_null($expire) && $expire !== 0 ? time() + $expire : 0;
+        $expiretime = ! is_null($expire) && $expire !== 0 ? time() + $expire : 0;
         $token = $this->getEncryptedToken($token);
         $this->handler->insert(['token' => $token, 'user_id' => $user_id, 'createtime' => time(), 'expiretime' => $expiretime]);
 
@@ -66,7 +66,7 @@ class Mysql extends Driver
     {
         $data = $this->handler->where('token', $this->getEncryptedToken($token))->find();
         if ($data) {
-            if (!$data['expiretime'] || $data['expiretime'] > time()) {
+            if (! $data['expiretime'] || $data['expiretime'] > time()) {
                 //返回未加密的token给客户端使用
                 $data['token'] = $token;
                 //返回剩余有效时间

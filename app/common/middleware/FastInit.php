@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace app\common\middleware;
 
 use Closure;
-use think\facade\Config;
-use think\facade\Env;
-use think\facade\View;
 use think\Request;
 use think\Response;
+use think\facade\Env;
+use think\facade\View;
+use think\facade\Config;
 
 /**
  * Fast初始化.
@@ -46,11 +46,11 @@ class FastInit
                 [$url, $url.'/', preg_replace("/\/public\/$/", '', $url.'/')], $content);
         });
         // 如果未设置cdnurl则自动匹配得出
-        if (!Config::get('site.cdnurl')) {
+        if (! Config::get('site.cdnurl')) {
             Config::set(['cdnurl' => $url], 'site');
         }
         // 如果未设置cdnurl则自动匹配得出
-        if (!Config::get('upload.cdnurl')) {
+        if (! Config::get('upload.cdnurl')) {
             Config::set(['cdnurl' => $url], 'upload');
         }
         if (Env::get('APP_DEBUG')) {
@@ -66,7 +66,7 @@ class FastInit
             \think\facade\Cookie::set('think_var', $request->get('lang'));
         }
         // Form别名
-        if (!class_exists('Form')) {
+        if (! class_exists('Form')) {
             class_alias('fast\\Form', 'Form');
         }
 

@@ -12,13 +12,13 @@
 
 namespace app\admin\controller;
 
-use app\common\controller\Backend;
-use app\common\model\Attachment;
+use think\facade\Db;
+use think\facade\Lang;
 use think\AddonService;
 use think\facade\Cache;
 use think\facade\Config;
-use think\facade\Db;
-use think\facade\Lang;
+use app\common\model\Attachment;
+use app\common\controller\Backend;
 
 /**
  * Ajax异步请求接口.
@@ -99,9 +99,9 @@ class Ajax extends Backend
         //验证文件后缀
         if ($upload['mimetype'] !== '*' &&
             (
-                !in_array($suffix, $mimetypeArr)
-                || (stripos($typeArr[0].'/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'],
-                            $mimetypeArr) && !in_array($typeArr[0].'/*', $mimetypeArr)))
+                ! in_array($suffix, $mimetypeArr)
+                || (stripos($typeArr[0].'/', $upload['mimetype']) !== false && (! in_array($fileInfo['type'],
+                            $mimetypeArr) && ! in_array($typeArr[0].'/*', $mimetypeArr)))
             )
         ) {
             $this->error(__('Uploaded file format is limited'));
@@ -112,7 +112,7 @@ class Ajax extends Backend
                 ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']) || in_array($suffix,
                 ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp'])) {
             $imgInfo = getimagesize($fileInfo['tmp_name']);
-            if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
+            if (! $imgInfo || ! isset($imgInfo[0]) || ! isset($imgInfo[1])) {
                 $this->error(__('Uploaded file is not a valid image'));
             }
             $imagewidth = isset($imgInfo[0]) ? $imgInfo[0] : $imagewidth;
@@ -129,7 +129,7 @@ class Ajax extends Backend
             $this->error($e->getMessage());
         }
 
-        if (!$savename) {
+        if (! $savename) {
             $this->error('上传失败');
         }
         $params = [
@@ -278,7 +278,7 @@ class Ajax extends Backend
     public function area()
     {
         $params = $this->request->get('row/a');
-        if (!empty($params)) {
+        if (! empty($params)) {
             $province = isset($params['province']) ? $params['province'] : '';
             $city = isset($params['city']) ? $params['city'] : null;
         } else {
