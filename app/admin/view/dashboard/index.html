@@ -476,7 +476,7 @@
                                     </tr>
                                     <tr>
                                         <td>{:__('Debug mode')}</td>
-                                        <td>{$Think.config.app_debug?__('Yes'):__('No')}</td>
+                                        <td>{$Request.env.app_debug?__('Yes'):__('No')}</td>
                                     </tr>
                                     <tr>
                                         <td>{:__('Software')}</td>
