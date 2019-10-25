@@ -15,13 +15,13 @@ return [
     'with_route'            => true,
     // 是否启用事件
     'with_event'            => true,
-    // 自动多应用模式
-    'auto_multi_app'        => false,
+    // 开启应用快速访问
+    'app_express'           => true,
     // 应用映射（自动多应用模式有效）
-    'app_map'               => ['fast'=>'admin'],
+    'app_map'               => ['fast' => 'admin'],
     // 域名绑定（自动多应用模式有效）
     'domain_bind'           => [],
-    // 禁止URL访问的应用列表（自动多应用模式有效）
+    // 禁止URL访问的应用列表（多应用模式有效）
     'deny_app_list'         => ['common', 'addons'],
     // 默认应用
     'default_app'           => 'index',
