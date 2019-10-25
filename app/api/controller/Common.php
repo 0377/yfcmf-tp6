@@ -12,7 +12,6 @@
 
 namespace app\api\controller;
 
-use fast\Random;
 use think\facade\Config;
 use app\common\model\Area;
 use app\common\model\Version;
