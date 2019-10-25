@@ -20,7 +20,7 @@ if (! function_exists('tp5ControllerToTp6Controller')) {
     /**
      * TP5二级目录转TP6二级目录.
      *
-     * @param string $class
+     * @param  string  $class
      *
      * @return string
      */
@@ -46,9 +46,9 @@ if (! function_exists('model')) {
     /**
      * 实例化Model.
      *
-     * @param string $name
-     * @param string $layer
-     * @param bool   $appendSuffix
+     * @param  string  $name
+     * @param  string  $layer
+     * @param  bool  $appendSuffix
      *
      * @throws \think\Exception
      * @return Model
@@ -74,9 +74,9 @@ if (! function_exists('model')) {
 /**
  * 处理插件钩子.
  *
- * @param string     $event  钩子名称
- * @param array|null $params 传入参数
- * @param bool       $once
+ * @param  string  $event  钩子名称
+ * @param  array|null  $params  传入参数
+ * @param  bool  $once
  *
  * @return mixed
  */
@@ -131,7 +131,7 @@ function get_addon_list()
 /**
  * 获得插件自动加载的配置.
  *
- * @param bool $truncate 是否清除手动配置的钩子
+ * @param  bool  $truncate  是否清除手动配置的钩子
  *
  * @return array
  */
@@ -200,9 +200,9 @@ function get_addon_autoload_config($truncate = false)
 /**
  * 获取插件类的类名.
  *
- * @param string $name  插件名
- * @param string $type  返回命名空间类型
- * @param string $class 当前类名
+ * @param  string  $name  插件名
+ * @param  string  $type  返回命名空间类型
+ * @param  string  $class  当前类名
  *
  * @return string
  */
@@ -232,7 +232,7 @@ function get_addon_class($name, $type = 'hook', $class = null)
 /**
  * 读取插件的基础信息.
  *
- * @param string $name 插件名
+ * @param  string  $name  插件名
  *
  * @return array
  */
@@ -249,7 +249,7 @@ function get_addon_info($name)
 /**
  * 获取插件类的配置数组.
  *
- * @param string $name 插件名
+ * @param  string  $name  插件名
  *
  * @return array
  */
@@ -266,7 +266,7 @@ function get_addon_fullconfig($name)
 /**
  * 获取插件类的配置值值
  *
- * @param string $name 插件名
+ * @param  string  $name  插件名
  *
  * @return array
  */
@@ -283,7 +283,7 @@ function get_addon_config($name)
 /**
  * 获取插件的单例.
  *
- * @param string $name 插件名
+ * @param  string  $name  插件名
  *
  * @return mixed|null
  */
@@ -306,10 +306,10 @@ function get_addon_instance($name)
 /**
  * 插件显示内容里生成访问插件的url.
  *
- * @param string      $url    地址 格式：插件名/控制器/方法
- * @param array       $vars   变量参数
- * @param bool|string $suffix 生成的URL后缀
- * @param bool|string $domain 域名
+ * @param  string  $url  地址 格式：插件名/控制器/方法
+ * @param  array  $vars  变量参数
+ * @param  bool|string  $suffix  生成的URL后缀
+ * @param  bool|string  $domain  域名
  *
  * @return bool|string
  */
@@ -370,8 +370,8 @@ function addon_url($url, $vars = [], $suffix = true, $domain = false)
 /**
  * 设置基础配置信息.
  *
- * @param string $name  插件名
- * @param array  $array 配置数据
+ * @param  string  $name  插件名
+ * @param  array  $array  配置数据
  *
  * @throws Exception
  * @return bool
@@ -410,9 +410,9 @@ function set_addon_info($name, $array)
 /**
  * 写入配置文件.
  *
- * @param string $name      插件名
- * @param array  $config    配置数据
- * @param bool   $writefile 是否写入配置文件
+ * @param  string  $name  插件名
+ * @param  array  $config  配置数据
+ * @param  bool  $writefile  是否写入配置文件
  *
  * @throws Exception
  * @return bool
@@ -440,8 +440,8 @@ function set_addon_config($name, $config, $writefile = true)
 /**
  * 写入配置文件.
  *
- * @param string $name  插件名
- * @param array  $array 配置数据
+ * @param  string  $name  插件名
+ * @param  array  $array  配置数据
  *
  * @throws Exception
  * @return bool
@@ -466,7 +466,7 @@ if (! function_exists('input_token')) {
     /**
      * 生成表单令牌.
      *
-     * @param string $name 令牌名称
+     * @param  string  $name  令牌名称
      *
      * @return string
      */
@@ -494,9 +494,9 @@ if (! function_exists('__')) {
     /**
      * 获取语言变量值
      *
-     * @param string $name 语言变量名
-     * @param array  $vars 动态变量值
-     * @param string $lang 语言
+     * @param  string  $name  语言变量名
+     * @param  array  $vars  动态变量值
+     * @param  string  $lang  语言
      *
      * @return mixed
      */
@@ -520,8 +520,8 @@ if (! function_exists('format_bytes')) {
     /**
      * 将字节转换为可读文本.
      *
-     * @param int    $size      大小
-     * @param string $delimiter 分隔符
+     * @param  int  $size  大小
+     * @param  string  $delimiter  分隔符
      *
      * @return string
      */
@@ -541,8 +541,8 @@ if (! function_exists('datetime')) {
     /**
      * 将时间戳转换为日期时间.
      *
-     * @param int    $time   时间戳
-     * @param string $format 日期时间格式
+     * @param  int  $time  时间戳
+     * @param  string  $format  日期时间格式
      *
      * @return string
      */
@@ -559,8 +559,8 @@ if (! function_exists('human_date')) {
     /**
      * 获取语义化时间.
      *
-     * @param int $time  时间
-     * @param int $local 本地时间
+     * @param  int  $time  时间
+     * @param  int  $local  本地时间
      *
      * @return string
      */
@@ -575,8 +575,8 @@ if (! function_exists('cdnurl')) {
     /**
      * 获取上传资源的CDN的地址
      *
-     * @param string $url    资源相对地址
-     * @param bool   $domain 是否显示域名 或者直接传入域名
+     * @param  string  $url  资源相对地址
+     * @param  bool  $domain  是否显示域名 或者直接传入域名
      *
      * @return string
      */
@@ -598,7 +598,7 @@ if (! function_exists('is_really_writable')) {
     /**
      * 判断文件或文件夹是否可写.
      *
-     * @param string $file 文件或目录
+     * @param  string  $file  文件或目录
      *
      * @return bool
      */
@@ -631,8 +631,8 @@ if (! function_exists('rmdirs')) {
     /**
      * 删除文件夹.
      *
-     * @param string $dirname  目录
-     * @param bool   $withself 是否删除自身
+     * @param  string  $dirname  目录
+     * @param  bool  $withself  是否删除自身
      *
      * @return bool
      */
@@ -663,8 +663,8 @@ if (! function_exists('copydirs')) {
     /**
      * 复制文件夹.
      *
-     * @param string $source 源文件夹
-     * @param string $dest   目标文件夹
+     * @param  string  $source  源文件夹
+     * @param  string  $dest  目标文件夹
      */
     function copydirs($source, $dest)
     {
@@ -701,8 +701,8 @@ if (! function_exists('addtion')) {
     /**
      * 附加关联字段数据.
      *
-     * @param array $items  数据列表
-     * @param mixed $fields 渲染的来源字段
+     * @param  array  $items  数据列表
+     * @param  mixed  $fields  渲染的来源字段
      *
      * @return array
      */
@@ -778,8 +778,8 @@ if (! function_exists('var_export_short')) {
     /**
      * 返回打印数组结构.
      *
-     * @param string $var    数组
-     * @param string $indent 缩进字符
+     * @param  string  $var  数组
+     * @param  string  $indent  缩进字符
      *
      * @return string
      */
@@ -886,35 +886,36 @@ if (! function_exists('list_to_tree')) {
     /**
      * 把返回的数据集转换成Tree.
      *
-     * @param array  $list  要转换的数据集
-     * @param string $pid   parent标记字段
-     * @param string $level level标记字段
+     * @param  array  $list  要转换的数据集
+     * @param  string  $pid  parent标记字段
+     * @param  string  $level  level标记字段
      *
      * @return array
      */
     function list_to_tree($list, $pk = 'id', $pid = 'pid', $child = '_child', $root = 0)
     {
         // 创建Tree
-        $tree = array();
+        $tree = [];
         if (is_array($list)) {
             // 创建基于主键的数组引用
-            $refer = array();
+            $refer = [];
             foreach ($list as $key => $data) {
-                $refer[$data[$pk]] =& $list[$key];
+                $refer[$data[$pk]] = &$list[$key];
             }
             foreach ($list as $key => $data) {
                 // 判断是否存在parent
                 $parentId = $data[$pid];
                 if ($root == $parentId) {
-                    $tree[] =& $list[$key];
+                    $tree[] = &$list[$key];
                 } else {
                     if (isset($refer[$parentId])) {
-                        $parent =& $refer[$parentId];
-                        $parent[$child][] =& $list[$key];
+                        $parent = &$refer[$parentId];
+                        $parent[$child][] = &$list[$key];
                     }
                 }
             }
         }
+
         return $tree;
     }
 }
@@ -923,10 +924,10 @@ if (! function_exists('tree_to_list')) {
     /**
      * 将list_to_tree的树还原成列表.
      *
-     * @param array  $tree  原来的树
-     * @param string $child 孩子节点的键
-     * @param string $order 排序显示的键，一般是主键 升序排列
-     * @param array  $list  过渡用的中间数组，
+     * @param  array  $tree  原来的树
+     * @param  string  $child  孩子节点的键
+     * @param  string  $order  排序显示的键，一般是主键 升序排列
+     * @param  array  $list  过渡用的中间数组，
      *
      * @return array        返回排过序的列表数组
      */
@@ -943,16 +944,18 @@ if (! function_exists('tree_to_list')) {
             }
             $list = list_sort_by($list, $order, $sortby = 'asc');
         }
+
         return $list;
     }
 }
+
 if (! function_exists('list_sort_by')) {
     /**
      * 对查询结果集进行排序.
      *
-     * @param array  $list   查询结果
-     * @param string $field  排序的字段名
-     * @param string $sortby 排序类型 asc正向排序 desc逆向排序 nat自然排序
+     * @param  array  $list  查询结果
+     * @param  string  $field  排序的字段名
+     * @param  string  $sortby  排序类型 asc正向排序 desc逆向排序 nat自然排序
      *
      * @return array|bool
      */
@@ -977,8 +980,11 @@ if (! function_exists('list_sort_by')) {
             foreach ($refer as $key => $val) {
                 $resultSet[] = &$list[$key];
             }
+
             return $resultSet;
         }
+
         return false;
     }
+
 }
