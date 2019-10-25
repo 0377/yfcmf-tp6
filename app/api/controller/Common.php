@@ -30,9 +30,9 @@ class Common extends Api
     /**
      * 加载初始化.
      *
-     * @param string $version 版本号
-     * @param string $lng     经度
-     * @param string $lat     纬度
+     * @param  string  $version  版本号
+     * @param  string  $lng  经度
+     * @param  string  $lat  纬度
      */
     public function init()
     {
@@ -53,10 +53,9 @@ class Common extends Api
 
     /**
      * 上传文件.
-     *
      * @ApiMethod (POST)
      *
-     * @param File $file 文件流
+     * @param  File  $file  文件流
      */
     public function upload()
     {
@@ -74,7 +73,10 @@ class Common extends Api
         $type = strtolower($matches[2]);
         $typeDict = ['b' => 0, 'k' => 1, 'kb' => 1, 'm' => 2, 'mb' => 2, 'gb' => 3, 'g' => 3];
         $size = (int) $upload['maxsize'] * pow(1024, isset($typeDict[$type]) ? $typeDict[$type] : 0);
-        $fileInfo = $file->getInfo();
+        $fileInfo['name'] = $file->getOriginalName(); //上传文件名
+        $fileInfo['type'] = $file->getOriginalMime(); //上传文件类型信息
+        $fileInfo['tmp_name'] = $file->getPathname();
+        $fileInfo['size'] = $file->getSize();
         $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
         $suffix = $suffix && preg_match('/^[a-zA-Z0-9]+$/', $suffix) ? $suffix : 'file';
 
@@ -107,53 +109,43 @@ class Common extends Api
             $imagewidth = isset($imgInfo[0]) ? $imgInfo[0] : $imagewidth;
             $imageheight = isset($imgInfo[1]) ? $imgInfo[1] : $imageheight;
         }
-        $replaceArr = [
-            '{year}'     => date('Y'),
-            '{mon}'      => date('m'),
-            '{day}'      => date('d'),
-            '{hour}'     => date('H'),
-            '{min}'      => date('i'),
-            '{sec}'      => date('s'),
-            '{random}'   => Random::alnum(16),
-            '{random32}' => Random::alnum(32),
-            '{filename}' => $suffix ? substr($fileInfo['name'], 0,
-                strripos($fileInfo['name'], '.')) : $fileInfo['name'],
-            '{suffix}'   => $suffix,
-            '{.suffix}'  => $suffix ? '.'.$suffix : '',
-            '{filemd5}'  => md5_file($fileInfo['tmp_name']),
-        ];
-        $savekey = $upload['savekey'];
-        $savekey = str_replace(array_keys($replaceArr), array_values($replaceArr), $savekey);
 
-        $uploadDir = substr($savekey, 0, strripos($savekey, '/') + 1);
-        $fileName = substr($savekey, strripos($savekey, '/') + 1);
-        //
-        $splInfo = $file->validate(['size' => $size])->move(app()->getRootPath().'/public'.$uploadDir, $fileName);
-        if ($splInfo) {
-            $params = [
-                'admin_id'    => 0,
-                'user_id'     => (int) $this->auth->id,
-                'filesize'    => $fileInfo['size'],
-                'imagewidth'  => $imagewidth,
-                'imageheight' => $imageheight,
-                'imagetype'   => $suffix,
-                'imageframes' => 0,
-                'mimetype'    => $fileInfo['type'],
-                'url'         => $uploadDir.$splInfo->getSaveName(),
-                'uploadtime'  => time(),
-                'storage'     => 'local',
-                'sha1'        => $sha1,
-            ];
-            $attachment = new Attachment();
-            $attachment->data(array_filter($params));
-            $attachment->save();
-            \think\facade\Event::trigger('upload_after', $attachment);
-            $this->success(__('Upload successful'), [
-                'url' => $uploadDir.$splInfo->getSaveName(),
-            ]);
+        $_validate[] = 'filesize:'.$size;
+        if ($upload['mimetype']) {
+            $_validate[] = 'fileExt:'.$upload['mimetype'];
         } else {
-            // 上传失败获取错误信息
-            $this->error($file->getError());
+            $_validate[] = 'fileExt:jpg,png,gif,jpeg,bmp,webp';
         }
+        $validate = implode('|', $_validate);
+        try {
+            $savename = upload_file($file, 'public', $upload['uploaddir'], $validate);
+        } catch (\Exception $e) {
+            $savename = false;
+            $this->error($e->getMessage().$validate);
+        }
+        if (! $savename) {
+            $this->error('上传失败');
+        }
+        $params = [
+            'admin_id'    => 0,
+            'user_id'     => (int) $this->auth->id,
+            'filesize'    => $fileInfo['size'],
+            'imagewidth'  => $imagewidth,
+            'imageheight' => $imageheight,
+            'imagetype'   => $suffix,
+            'imageframes' => 0,
+            'mimetype'    => $fileInfo['type'],
+            'url'         => $savename,
+            'uploadtime'  => time(),
+            'storage'     => 'local',
+            'sha1'        => $sha1,
+        ];
+        $attachment = new Attachment();
+        $attachment->data(array_filter($params));
+        $attachment->save();
+        \think\facade\Event::trigger('upload_after', $attachment);
+        $this->success(__('Upload successful'), [
+            'url' => $savename,
+        ]);
     }
 }

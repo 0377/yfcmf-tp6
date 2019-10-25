@@ -2,8 +2,9 @@
 
 namespace app\index\controller;
 
-use app\common\controller\Frontend;
 use think\facade\Lang;
+use app\api\controller\Common;
+use app\common\controller\Frontend;
 
 /**
  * Ajax异步请求接口.
@@ -35,6 +36,6 @@ class Ajax extends Frontend
      */
     public function upload()
     {
-        return action('api/common/upload');
+        return (new Common(app()))->upload();
     }
 }

@@ -10,10 +10,10 @@ if (! function_exists('build_select')) {
     /**
      * 生成下拉列表.
      *
-     * @param string $name
-     * @param mixed  $options
-     * @param mixed  $selected
-     * @param mixed  $attr
+     * @param  string  $name
+     * @param  mixed  $options
+     * @param  mixed  $selected
+     * @param  mixed  $attr
      *
      * @return string
      */
@@ -31,9 +31,9 @@ if (! function_exists('build_radios')) {
     /**
      * 生成单选按钮组.
      *
-     * @param string $name
-     * @param array  $list
-     * @param mixed  $selected
+     * @param  string  $name
+     * @param  array  $list
+     * @param  mixed  $selected
      *
      * @return string
      */
@@ -56,9 +56,9 @@ if (! function_exists('build_checkboxs')) {
     /**
      * 生成复选按钮组.
      *
-     * @param string $name
-     * @param array  $list
-     * @param mixed  $selected
+     * @param  string  $name
+     * @param  array  $list
+     * @param  mixed  $selected
      *
      * @return string
      */
@@ -81,11 +81,11 @@ if (! function_exists('build_category_select')) {
     /**
      * 生成分类下拉列表框.
      *
-     * @param string $name
-     * @param string $type
-     * @param mixed  $selected
-     * @param array  $attr
-     * @param array  $header
+     * @param  string  $name
+     * @param  string  $type
+     * @param  mixed  $selected
+     * @param  array  $attr
+     * @param  array  $header
      *
      * @return string
      */
@@ -109,8 +109,8 @@ if (! function_exists('build_toolbar')) {
     /**
      * 生成表格操作按钮栏.
      *
-     * @param array $btns 按钮组
-     * @param array $attr 按钮属性值
+     * @param  array  $btns  按钮组
+     * @param  array  $attr  按钮属性值
      *
      * @return string
      */
@@ -195,7 +195,7 @@ if (! function_exists('build_heading')) {
     /**
      * 生成页面Heading.
      *
-     * @param string $path 指定的path
+     * @param  string  $path  指定的path
      *
      * @return string
      */
@@ -225,43 +225,3 @@ if (! function_exists('build_heading')) {
     }
 }
 
-if (! function_exists('upload_file')) {
-    /**
-     * 上传文件.
-     *
-     * @param string $file     上传的文件
-     * @param string $name     上传的位置
-     * @param string $path     上传的文件夹
-     * @param string $validate 规则验证
-     *
-     * @return string|bool
-     *
-     * @author niu
-     */
-    function upload_file($file = null, $name = 'local', $path = '', $validate = '')
-    {
-        //文件
-        if (! $file) {
-            return false;
-        }
-        //上传配置
-        $config_name = 'filesystem.disks.'.$name;
-        $filesystem = config($config_name);
-        if (! $filesystem) {
-            return false;
-        }
-        //上传文件
-        if ($validate) {
-            validate(['file'=>$validate])->check(['file'=>$file]);
-        }
-        $savename = \think\facade\Filesystem::disk($name)->putFile($path, $file, function ($file) {
-            //重命名
-            return date('Ymd').'/'.md5((string) microtime(true));
-        });
-        if (isset($filesystem['url'])) {
-            $savename = $filesystem['url'].$savename;
-        }
-
-        return $savename;
-    }
-}
