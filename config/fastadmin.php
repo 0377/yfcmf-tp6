@@ -25,6 +25,8 @@ return [
     'multiplenav'         => false,
     //自动检测更新
     'checkupdate'         => false,
+    //API是否允许跨域
+    'api_cross'           => false,
     //版本号
     'version'             => '2.0.0',
     //API接口地址

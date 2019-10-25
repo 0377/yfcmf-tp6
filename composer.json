@@ -1,26 +1,26 @@
 {
-    "name": "topthink/think",
-    "description": "the new thinkphp framework",
+    "name": "0377/fastadmin-tp6",
+    "description": "the fastest admin framework",
     "type": "project",
     "keywords": [
-        "framework",
+        "thinkphp6",
         "thinkphp",
-        "ORM"
+        "fastadmin"
     ],
-    "homepage": "http://thinkphp.cn/",
+    "homepage": "http://demo.sbing.vip/",
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "liu21st",
-            "email": "liu21st@gmail.com"
+            "name": "ice",
+            "email": "ice@sbing.vip"
         }
     ],
     "require": {
         "php": ">=7.1.0",
-        "topthink/framework": "6.0.*-dev",
-        "topthink/think-orm": "2.0.*-dev",
+        "topthink/framework": "^6.0",
+        "topthink/think-orm": "^2.0",
         "topthink/think-view": "^1.0",
-        "topthink/think-captcha": "3.0.x-dev",
+        "topthink/think-captcha": "^3.0",
         "overtrue/pinyin": "^4.0",
         "mtdowling/cron-expression": "^1.2",
         "topthink/think-multi-app": "^1.0",
