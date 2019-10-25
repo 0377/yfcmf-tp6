@@ -986,5 +986,4 @@ if (! function_exists('list_sort_by')) {
 
         return false;
     }
-
 }
