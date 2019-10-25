@@ -23,7 +23,7 @@ return [
     /*
      * 文件保存格式
      */
-    'savekey'   => '/uploads/{year}{mon}{day}/{filemd5}{.suffix}',
+    'uploaddir' => 'uploads',
     /*
      * 最大可上传大小
      */
@@ -31,7 +31,7 @@ return [
     /*
      * 可上传的文件类型
      */
-    'mimetype'  => 'jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx',
+    'mimetype'  => 'jpg,png,gif,jpeg,bmp,webp',
     /*
      * 是否支持批量上传
      */
