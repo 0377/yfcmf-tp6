@@ -103,21 +103,19 @@ class Api
      */
     protected function _initialize()
     {
-        if (Config::get('site.url_domain_deploy')) {
-            $domain = app()->route->domain('domain');
-            if (isset($domain['api'])) {
-                if (isset($_SERVER['HTTP_ORIGIN'])) {
-                    header('Access-Control-Allow-Origin: '.$this->request->server('HTTP_ORIGIN'));
-                    header('Access-Control-Allow-Credentials: true');
-                    header('Access-Control-Max-Age: 86400');
+        if (Config::get('fastadmin.api_cross')) {
+            //是否开启跨域
+            if (isset($_SERVER['HTTP_ORIGIN'])) {
+                header('Access-Control-Allow-Origin: '.$this->request->server('HTTP_ORIGIN'));
+                header('Access-Control-Allow-Credentials: true');
+                header('Access-Control-Max-Age: 86400');
+            }
+            if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+                if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
+                    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
                 }
-                if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-                    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
-                        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-                    }
-                    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-                        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-                    }
+                if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+                    header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
                 }
             }
         }
@@ -219,7 +217,6 @@ class Api
      * @param array  $header 发送的 Header 信息
      *
      * @throws HttpResponseException
-     *
      * @return void
      */
     protected function result($msg, $data = null, $code = 0, $type = null, array $header = [])
@@ -301,7 +298,6 @@ class Api
      * @param mixed        $callback 回调方法（闭包）
      *
      * @throws ValidateException
-     *
      * @return array|string|true
      */
     protected function validate($data, $validate, $message = [], $batch = false, $callback = null)
