@@ -2,7 +2,6 @@
 
 namespace app\common\library;
 
-use think\App;
 use think\facade\Log;
 use think\facade\Config;
 use app\common\library\token\Driver;
@@ -25,8 +24,8 @@ class Token
     /**
      * 连接Token驱动.
      *
-     * @param array       $options 配置数组
-     * @param bool|string $name    Token连接标识 true 强制重新连接
+     * @param  array  $options  配置数组
+     * @param  bool|string  $name  Token连接标识 true 强制重新连接
      *
      * @return Driver
      */
@@ -59,7 +58,7 @@ class Token
     /**
      * 自动初始化Token.
      *
-     * @param array $options 配置数组
+     * @param  array  $options  配置数组
      *
      * @return Driver
      */
@@ -83,7 +82,7 @@ class Token
     /**
      * 判断Token是否可用(check别名).
      *
-     * @param string $token Token标识
+     * @param  string  $token  Token标识
      *
      * @return bool
      */
@@ -95,7 +94,7 @@ class Token
     /**
      * 判断Token是否可用.
      *
-     * @param string $token Token标识
+     * @param  string  $token  Token标识
      *
      * @return bool
      */
@@ -107,8 +106,8 @@ class Token
     /**
      * 读取Token.
      *
-     * @param string $token   Token标识
-     * @param mixed  $default 默认值
+     * @param  string  $token  Token标识
+     * @param  mixed  $default  默认值
      *
      * @return mixed
      */
@@ -120,9 +119,9 @@ class Token
     /**
      * 写入Token.
      *
-     * @param string   $token   Token标识
-     * @param mixed    $user_id 存储数据
-     * @param int|null $expire  有效时间 0为永久
+     * @param  string  $token  Token标识
+     * @param  mixed  $user_id  存储数据
+     * @param  int|null  $expire  有效时间 0为永久
      *
      * @return bool
      */
@@ -134,7 +133,7 @@ class Token
     /**
      * 删除Token(delete别名).
      *
-     * @param string $token Token标识
+     * @param  string  $token  Token标识
      *
      * @return bool
      */
@@ -146,7 +145,7 @@ class Token
     /**
      * 删除Token.
      *
-     * @param string $token 标签名
+     * @param  string  $token  标签名
      *
      * @return bool
      */
@@ -158,7 +157,7 @@ class Token
     /**
      * 清除Token.
      *
-     * @param string $token Token标记
+     * @param  string  $token  Token标记
      *
      * @return bool
      */
