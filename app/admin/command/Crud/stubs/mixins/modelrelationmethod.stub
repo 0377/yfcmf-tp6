@@ -1,5 +1,5 @@
 
     public function {%relationMethod%}()
     {
-        return $this->{%relationMode%}('{%relationClassName%}', '{%relationForeignKey%}', '{%relationPrimaryKey%}', [], 'LEFT');
+        return $this->{%relationMode%}('{%relationClassName%}', '{%relationForeignKey%}', '{%relationPrimaryKey%}')->joinType('LEFT');
     }

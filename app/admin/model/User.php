@@ -121,6 +121,6 @@ class User extends BaseModel
 
     public function group()
     {
-        return $this->belongsTo('UserGroup', 'group_id', 'id', [], 'LEFT');
+        return $this->belongsTo('UserGroup', 'group_id', 'id')->joinType('LEFT');
     }
 }

@@ -73,7 +73,7 @@ class BaseModel extends Model
      */
     protected static function parseQuery(&$data, $with, $cache)
     {
-        $result = self::with($with)->cache($cache);
+        $result = self::withJoin($with)->cache($cache);
         if (is_array($data) && key($data) !== 0) {
             $result = $result->where($data);
             $data = null;
@@ -81,7 +81,7 @@ class BaseModel extends Model
             call_user_func_array($data, [&$result]);
             $data = null;
         } elseif ($data instanceof Query) {
-            $result = $data->with($with)->cache($cache);
+            $result = $data->withJoin($with)->cache($cache);
             $data = null;
         }
 

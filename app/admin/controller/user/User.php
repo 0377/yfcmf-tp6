@@ -38,12 +38,12 @@ class User extends Backend
             }
             [$where, $sort, $order, $offset, $limit] = $this->buildparams();
             $total = $this->model
-                ->with('group')
+                ->withJoin('group')
                 ->where($where)
                 ->order($sort, $order)
                 ->count();
             $list = $this->model
-                ->with('group')
+                ->withJoin('group')
                 ->where($where)
                 ->order($sort, $order)
                 ->limit($offset, $limit)
