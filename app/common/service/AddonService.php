@@ -12,9 +12,9 @@
 
 namespace app\common\service;
 
-use think\helper\Str;
 use think\Service;
 use think\facade\Env;
+use think\helper\Str;
 use think\facade\Cache;
 use think\facade\Event;
 use think\facade\Route;
@@ -58,8 +58,8 @@ class AddonService extends Service
                 } else {
                     $values = (array) $values;
                 }
-                $hooks[$key] = array_filter(array_map(function ($v)use($key){
-                    return [get_addon_class($v),Str::camel($key)];
+                $hooks[$key] = array_filter(array_map(function ($v) use ($key) {
+                    return [get_addon_class($v), Str::camel($key)];
                 }, $values));
             }
             Cache::set('hooks', $hooks);
@@ -90,7 +90,10 @@ class AddonService extends Service
                 $drules = [];
                 foreach ($v['rule'] as $m => $n) {
                     [$addon, $controller, $action] = explode('/', $n);
-                    $drules[$m] = ['addon' => $addon, 'controller' => $controller, 'action' => $action, 'indomain' => 1];
+                    $drules[$m] = [
+                        'addon'    => $addon, 'controller' => $controller, 'action' => $action,
+                        'indomain' => 1
+                    ];
                 }
                 Route::domain($domain, function () use ($drules, $execute) {
                     // 动态注册域名的路由规则
