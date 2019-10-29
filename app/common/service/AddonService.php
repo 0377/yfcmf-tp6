@@ -92,7 +92,7 @@ class AddonService extends Service
                     [$addon, $controller, $action] = explode('/', $n);
                     $drules[$m] = [
                         'addon'    => $addon, 'controller' => $controller, 'action' => $action,
-                        'indomain' => 1
+                        'indomain' => 1,
                     ];
                 }
                 Route::domain($domain, function () use ($drules, $execute) {
