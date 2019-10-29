@@ -26,7 +26,6 @@ class User extends BaseModel
         return $this->origin;
     }
 
-
     public static function onBeforeUpdate($row)
     {
         $changed = $row->getChangedData();
