@@ -38,8 +38,6 @@ class Dashboard extends Backend
         $hooks = config('addons.hooks');
         $uploadmode = isset($hooks['upload_config_init']) && $hooks['upload_config_init'] ? implode(',',
             $hooks['upload_config_init']) : 'local';
-        $addonComposerCfg = app()->getRootPath().'/vendor/karsonzhang/fastadmin-addons/composer.json';
-        Config::load($addonComposerCfg, 'composer');
         $config = Config::get('composer');
         $addonVersion = isset($config['version']) ? $config['version'] : __('Unknown');
         $this->view->assign([

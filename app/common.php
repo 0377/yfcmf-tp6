@@ -147,7 +147,6 @@ function get_addon_autoload_config($truncate = false)
     // 读取插件目录及钩子列表
     $base = get_class_methods('\\think\\Addons');
     $base = array_merge($base, ['install', 'uninstall', 'enable', 'disable']);
-
     $url_domain_deploy = false;
     $addons = get_addon_list();
     $domain = [];
@@ -157,7 +156,7 @@ function get_addon_autoload_config($truncate = false)
         }
 
         // 读取出所有公共方法
-        $methods = (array) get_class_methods('\\app\\addons\\'.$name.'\\'.ucfirst($name));
+        $methods = (array) get_class_methods('\\addons\\'.$name.'\\'.ucfirst($name));
         // 跟插件基类方法做比对，得到差异结果
         $hooks = array_diff($methods, $base);
         // 循环将钩子方法写入配置中

@@ -12,6 +12,7 @@
 
 namespace app\common\service;
 
+use think\helper\Str;
 use think\Service;
 use think\facade\Env;
 use think\facade\Cache;
@@ -57,7 +58,9 @@ class AddonService extends Service
                 } else {
                     $values = (array) $values;
                 }
-                $hooks[$key] = array_filter(array_map('get_addon_class', $values));
+                $hooks[$key] = array_filter(array_map(function ($v)use($key){
+                    return [get_addon_class($v),Str::camel($key)];
+                }, $values));
             }
             Cache::set('hooks', $hooks);
         }
