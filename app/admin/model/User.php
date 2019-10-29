@@ -46,7 +46,7 @@ class User extends BaseModel
             $origin = $row->getOrigin();
             MoneyLog::create([
                 'user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'],
-                'before'  => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额'
+                'before'  => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额',
             ]);
         }
     }
