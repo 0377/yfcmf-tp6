@@ -40,9 +40,9 @@ class Mysql extends Driver
     /**
      * 存储Token.
      *
-     * @param string $token   Token
-     * @param int    $user_id 会员ID
-     * @param int    $expire  过期时长,0表示无限,单位秒
+     * @param string $token Token
+     * @param int $user_id 会员ID
+     * @param int $expire 过期时长,0表示无限,单位秒
      *
      * @return bool
      */
@@ -50,7 +50,10 @@ class Mysql extends Driver
     {
         $expiretime = ! is_null($expire) && $expire !== 0 ? time() + $expire : 0;
         $token = $this->getEncryptedToken($token);
-        $this->handler->insert(['token' => $token, 'user_id' => $user_id, 'createtime' => time(), 'expiretime' => $expiretime]);
+        $this->handler->insert([
+            'token'      => $token, 'user_id' => $user_id, 'createtime' => time(),
+            'expiretime' => $expiretime,
+        ]);
 
         return true;
     }
@@ -64,6 +67,7 @@ class Mysql extends Driver
      */
     public function get($token)
     {
+        $this->handler = \think\facade\Db::name($this->options['table']);
         $data = $this->handler->where('token', $this->getEncryptedToken($token))->find();
         if ($data) {
             if (! $data['expiretime'] || $data['expiretime'] > time()) {
@@ -84,8 +88,8 @@ class Mysql extends Driver
     /**
      * 判断Token是否可用.
      *
-     * @param string $token   Token
-     * @param int    $user_id 会员ID
+     * @param string $token Token
+     * @param int $user_id 会员ID
      *
      * @return bool
      */
