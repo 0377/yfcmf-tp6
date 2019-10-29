@@ -44,7 +44,10 @@ class User extends BaseModel
         $changedata = $row->getChangedData();
         if (isset($changedata['money'])) {
             $origin = $row->getOrigin();
-            MoneyLog::create(['user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'], 'before' => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额']);
+            MoneyLog::create([
+                'user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'],
+                'before'  => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额'
+            ]);
         }
     }
 
@@ -81,17 +84,17 @@ class User extends BaseModel
 
     protected function setPrevtimeAttr($value)
     {
-        return $value && !is_numeric($value) ? strtotime($value) : $value;
+        return $value && ! is_numeric($value) ? strtotime($value) : $value;
     }
 
     protected function setLogintimeAttr($value)
     {
-        return $value && !is_numeric($value) ? strtotime($value) : $value;
+        return $value && ! is_numeric($value) ? strtotime($value) : $value;
     }
 
     protected function setJointimeAttr($value)
     {
-        return $value && !is_numeric($value) ? strtotime($value) : $value;
+        return $value && ! is_numeric($value) ? strtotime($value) : $value;
     }
 
     public function group()
