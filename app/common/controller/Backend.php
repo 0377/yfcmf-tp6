@@ -135,21 +135,21 @@ class Backend extends BaseController
         $path = str_replace('.', '/', $controllername).'/'.$actionname;
 
         // 定义是否Addtabs请求
-        ! defined('IS_ADDTABS') && define('IS_ADDTABS', input('addtabs') ? true : false);
+        !defined('IS_ADDTABS') && define('IS_ADDTABS', input('addtabs') ? true : false);
 
         // 定义是否Dialog请求
-        ! defined('IS_DIALOG') && define('IS_DIALOG', input('dialog') ? true : false);
+        !defined('IS_DIALOG') && define('IS_DIALOG', input('dialog') ? true : false);
 
         // 定义是否AJAX请求
-        ! defined('IS_AJAX') && define('IS_AJAX', $this->request->isAjax());
+        !defined('IS_AJAX') && define('IS_AJAX', $this->request->isAjax());
 
         $this->auth = Auth::instance();
         // 设置当前请求的URI
         $this->auth->setRequestUri($path);
         // 检测是否需要验证登录
-        if (! $this->auth->match($this->noNeedLogin)) {
+        if (!$this->auth->match($this->noNeedLogin)) {
             //检测是否登录
-            if (! $this->auth->isLogin()) {
+            if (!$this->auth->isLogin()) {
                 Event::trigger('admin_nologin', $this);
                 $url = Session::get('referer');
                 $url = $url ? $url : $this->request->url();
@@ -160,9 +160,9 @@ class Backend extends BaseController
                 $this->error(__('Please login first'), url('index/login', ['url' => $url]));
             }
             // 判断是否需要验证权限
-            if (! $this->auth->match($this->noNeedRight)) {
+            if (!$this->auth->match($this->noNeedRight)) {
                 // 判断控制器和方法判断是否有对应权限
-                if (! $this->auth->check($path)) {
+                if (!$this->auth->check($path)) {
                     Event::trigger('admin_nopermission', $this);
                     $this->error(__('You have no permission'), '');
                 }
@@ -170,7 +170,7 @@ class Backend extends BaseController
         }
 
         // 非选项卡时重定向
-        if (! $this->request->isPost() && ! IS_AJAX && ! IS_ADDTABS && ! IS_DIALOG && input('ref') == 'addtabs') {
+        if (!$this->request->isPost() && !IS_AJAX && !IS_ADDTABS && !IS_DIALOG && input('ref') == 'addtabs') {
             $url = preg_replace_callback("/([\?|&]+)ref=addtabs(&?)/i", function ($matches) {
                 return $matches[2] == '&' ? $matches[1] : '';
             }, $this->request->url());
@@ -204,18 +204,18 @@ class Backend extends BaseController
         Event::trigger('upload_config_init', $upload);
         // 配置信息
         $config = [
-            'app_debug'      => Env::get('APP_DEBUG'),
-            'site'           => array_intersect_key($site,
+            'app_debug' => Env::get('APP_DEBUG'),
+            'site' => array_intersect_key($site,
                 array_flip(['name', 'indexurl', 'cdnurl', 'version', 'timezone', 'languages'])),
-            'upload'         => $upload,
-            'modulename'     => $modulename,
+            'upload' => $upload,
+            'modulename' => $modulename,
             'controllername' => $controllername,
-            'actionname'     => $actionname,
-            'jsname'         => 'backend/'.str_replace('.', '/', $controllername),
-            'moduleurl'      => rtrim(request()->root(), '/'),
-            'language'       => $lang,
-            'fastadmin'      => Config::get('fastadmin'),
-            'referer'        => Session::get('referer'),
+            'actionname' => $actionname,
+            'jsname' => 'backend/'.str_replace('.', '/', $controllername),
+            'moduleurl' => rtrim(request()->root(), '/'),
+            'language' => $lang,
+            'fastadmin' => Config::get('fastadmin'),
+            'referer' => Session::get('referer'),
         ];
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
         // 配置信息后
@@ -271,19 +271,19 @@ class Backend extends BaseController
         $filter = $this->request->get('filter', '');
         $op = $this->request->get('op', '', 'trim');
         $sort = $this->request->get('sort',
-            ! empty($this->model) && $this->model->getPk() ? $this->model->getPk() : 'id');
+            !empty($this->model) && $this->model->getPk() ? $this->model->getPk() : 'id');
         $order = $this->request->get('order', 'DESC');
         $offset = $this->request->get('offset', 0);
         $limit = $this->request->get('limit', 0);
-        $filter = (array) json_decode($filter, true);
-        $op = (array) json_decode($op, true);
+        $filter = (array)json_decode($filter, true);
+        $op = (array)json_decode($op, true);
         $filter = $filter ? $filter : [];
         $where = [];
         $tableName = '';
         if ($relationSearch) {
-            if (! empty($this->model)) {
+            if (!empty($this->model)) {
                 $name = parseName(trim(basename(str_replace('\\', ' / ', get_class($this->model)))));
-                $tableName = Env::get('database.prefix').trim($name).'.';
+                $tableName = trim($name).'.';
             }
             $sortArr = explode(',', $sort);
             foreach ($sortArr as $index => &$item) {
@@ -309,12 +309,14 @@ class Backend extends BaseController
             if (stripos($k, '.') === false) {
                 $k = $tableName.$k;
             }
-            $v = ! is_array($v) ? trim($v) : $v;
+            $v = !is_array($v) ? trim($v) : $v;
             $sym = strtoupper(isset($op[$k]) ? $op[$k] : $sym);
             switch ($sym) {
-                case ' = ':case '=':
-                case ' <> ':case '<>':
-                    $where[] = [$k, $sym, (string) $v];
+                case ' = ':
+                case '=':
+                case ' <> ':
+                case '<>':
+                    $where[] = [$k, $sym, (string)$v];
                     break;
                 case 'LIKE':
                 case 'NOT LIKE':
@@ -322,9 +324,11 @@ class Backend extends BaseController
                 case 'NOT LIKE %...%':
                     $where[] = [$k, trim(str_replace(' %...%', '', $sym)), "%{$v}%"];
                     break;
-                case ' > ':case '>':
+                case ' > ':
+                case '>':
                 case '>=':
-                case ' < ':case '<':
+                case ' < ':
+                case '<':
                 case '<=':
                     $where[] = [$k, $sym, intval($v)];
                     break;
@@ -342,7 +346,7 @@ class Backend extends BaseController
                 case 'BETWEEN':
                 case 'NOT BETWEEN':
                     $arr = array_slice(explode(',', $v), 0, 2);
-                    if (stripos($v, ',') === false || ! array_filter($arr)) {
+                    if (stripos($v, ',') === false || !array_filter($arr)) {
                         continue 2;
                     }
                     //当出现一边为空时改变操作符
@@ -359,7 +363,7 @@ class Backend extends BaseController
                 case 'NOT RANGE':
                     $v = str_replace(' - ', ',', $v);
                     $arr = array_slice(explode(',', $v), 0, 2);
-                    if (stripos($v, ',') === false || ! array_filter($arr)) {
+                    if (stripos($v, ',') === false || !array_filter($arr)) {
                         continue 2;
                     }
                     //当出现一边为空时改变操作符
@@ -382,7 +386,7 @@ class Backend extends BaseController
                     break;
             }
         }
-        if (! empty($where)) {
+        if (!empty($where)) {
             $where = function ($query) use ($where) {
                 foreach ($where as $k => $v) {
                     if (is_array($v)) {
@@ -405,7 +409,7 @@ class Backend extends BaseController
      */
     protected function getDataLimitAdminIds()
     {
-        if (! $this->dataLimit) {
+        if (!$this->dataLimit) {
             return;
         }
         if ($this->auth->isSuperAdmin()) {
@@ -431,7 +435,7 @@ class Backend extends BaseController
         $this->request->filter(['strip_tags', 'htmlspecialchars']);
 
         //搜索关键词,客户端输入以空格分开,这里接收为数组
-        $word = (array) $this->request->request('q_word/a');
+        $word = (array)$this->request->request('q_word/a');
         //当前页
         $page = $this->request->request('pageNumber', 1, 'int');
         //分页大小
@@ -439,7 +443,7 @@ class Backend extends BaseController
         //搜索条件
         $andor = $this->request->request('andOr', 'and', 'strtoupper');
         //排序方式
-        $orderby = (array) $this->request->request('orderBy/a');
+        $orderby = (array)$this->request->request('orderBy/a');
         //显示的字段
         $field = $this->request->request('showField');
         //主键
@@ -447,9 +451,9 @@ class Backend extends BaseController
         //主键值
         $primaryvalue = $this->request->request('keyValue');
         //搜索字段
-        $searchfield = (array) $this->request->request('searchField/a');
+        $searchfield = (array)$this->request->request('searchField/a');
         //自定义搜索条件
-        $custom = (array) $this->request->request('custom/a');
+        $custom = (array)$this->request->request('custom/a');
         //是否返回树形结构
         $istree = $this->request->request('isTree', 0);
         $ishtml = $this->request->request('isHtml', 0);
@@ -465,7 +469,7 @@ class Backend extends BaseController
 
         //如果有primaryvalue,说明当前是初始化传值
         if ($primaryvalue !== null) {
-            $where = [$primarykey =>  explode(',', $primaryvalue)];
+            $where = [$primarykey => explode(',', $primaryvalue)];
         } else {
             $where = function ($query) use ($word, $andor, $field, $searchfield, $custom) {
                 $logic = $andor == ' AND ' ? ' & ' : ' | ';
@@ -503,15 +507,15 @@ class Backend extends BaseController
                 unset($item['password'], $item['salt']);
                 $list[] = [
                     $primarykey => isset($item[$primarykey]) ? $item[$primarykey] : '',
-                    $field      => isset($item[$field]) ? $item[$field] : '',
-                    'pid'       => isset($item['pid']) ? $item['pid'] : 0,
+                    $field => isset($item[$field]) ? $item[$field] : '',
+                    'pid' => isset($item['pid']) ? $item['pid'] : 0,
                 ];
             }
             if ($istree) {
                 $tree = Tree::instance();
                 $tree->init($list, 'pid');
                 $list = $tree->getTreeList($tree->getTreeArray(0), $field);
-                if (! $ishtml) {
+                if (!$ishtml) {
                     foreach ($list as &$item) {
                         $item = str_replace(' & nbsp;', ' ', $item);
                     }

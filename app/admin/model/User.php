@@ -26,31 +26,6 @@ class User extends BaseModel
         return $this->origin;
     }
 
-    /*protected static function init()
-    {
-        self::beforeUpdate(function ($row) {
-            $changed = $row->getChangedData();
-            //如果有修改密码
-            if (isset($changed['password'])) {
-                if ($changed['password']) {
-                    $salt = \fast\Random::alnum();
-                    $row->password = \app\common\library\Auth::instance()->getEncryptPassword($changed['password'], $salt);
-                    $row->salt = $salt;
-                } else {
-                    unset($row->password);
-                }
-            }
-        });
-
-
-        self::beforeUpdate(function ($row) {
-            $changedata = $row->getChangedData();
-            if (isset($changedata['money'])) {
-                $origin = $row->getOriginData();
-                MoneyLog::create(['user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'], 'before' => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额']);
-            }
-        });
-    }*/
 
     public static function onBeforeUpdate($row)
     {
@@ -106,17 +81,17 @@ class User extends BaseModel
 
     protected function setPrevtimeAttr($value)
     {
-        return $value && ! is_numeric($value) ? strtotime($value) : $value;
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
     }
 
     protected function setLogintimeAttr($value)
     {
-        return $value && ! is_numeric($value) ? strtotime($value) : $value;
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
     }
 
     protected function setJointimeAttr($value)
     {
-        return $value && ! is_numeric($value) ? strtotime($value) : $value;
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
     }
 
     public function group()
