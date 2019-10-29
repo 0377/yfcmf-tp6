@@ -246,7 +246,7 @@ class Backend extends BaseController
     /**
      * 渲染配置信息.
      *
-     * @param mixed $name  键名或数组
+     * @param mixed $name 键名或数组
      * @param mixed $value 值
      */
     protected function assignconfig($name, $value = '')
@@ -258,8 +258,8 @@ class Backend extends BaseController
     /**
      * 生成查询所需要的条件,排序方式.
      *
-     * @param mixed $searchfields   快速查询的字段
-     * @param bool  $relationSearch 是否关联查询
+     * @param mixed $searchfields 快速查询的字段
+     * @param bool $relationSearch 是否关联查询
      *
      * @return array
      */
@@ -283,7 +283,7 @@ class Backend extends BaseController
         if ($relationSearch) {
             if (! empty($this->model)) {
                 $name = parseName(trim(basename(str_replace('\\', ' / ', get_class($this->model)))));
-                $tableName = Env::get('database.prefix').trim($name).'.';
+                $tableName = trim($name).'.';
             }
             $sortArr = explode(',', $sort);
             foreach ($sortArr as $index => &$item) {
@@ -312,8 +312,10 @@ class Backend extends BaseController
             $v = ! is_array($v) ? trim($v) : $v;
             $sym = strtoupper(isset($op[$k]) ? $op[$k] : $sym);
             switch ($sym) {
-                case ' = ':case '=':
-                case ' <> ':case '<>':
+                case ' = ':
+                case '=':
+                case ' <> ':
+                case '<>':
                     $where[] = [$k, $sym, (string) $v];
                     break;
                 case 'LIKE':
@@ -322,9 +324,11 @@ class Backend extends BaseController
                 case 'NOT LIKE %...%':
                     $where[] = [$k, trim(str_replace(' %...%', '', $sym)), "%{$v}%"];
                     break;
-                case ' > ':case '>':
+                case ' > ':
+                case '>':
                 case '>=':
-                case ' < ':case '<':
+                case ' < ':
+                case '<':
                 case '<=':
                     $where[] = [$k, $sym, intval($v)];
                     break;
@@ -421,9 +425,8 @@ class Backend extends BaseController
 
     /**
      * Selectpage的实现方法.
-     *
      * 当前方法只是一个比较通用的搜索匹配,请按需重载此方法来编写自己的搜索逻辑,$where按自己的需求写即可
-     * 这里示例了所有的参数，所以比较复杂，实现上自己实现只需简单的几行即可
+     * 这里示例了所有的参数，所以比较复杂，实现上自己实现只需简单的几行即可.
      */
     protected function selectpage()
     {
@@ -465,7 +468,7 @@ class Backend extends BaseController
 
         //如果有primaryvalue,说明当前是初始化传值
         if ($primaryvalue !== null) {
-            $where = [$primarykey =>  explode(',', $primaryvalue)];
+            $where = [$primarykey => explode(',', $primaryvalue)];
         } else {
             $where = function ($query) use ($word, $andor, $field, $searchfield, $custom) {
                 $logic = $andor == ' AND ' ? ' & ' : ' | ';
