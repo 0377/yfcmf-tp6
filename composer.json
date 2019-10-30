@@ -17,14 +17,17 @@
     ],
     "require": {
         "php": ">=7.1.0",
-        "topthink/framework": "^6.0",
+        "topthink/framework": "^6.0.*",
         "topthink/think-orm": "^2.0",
         "topthink/think-view": "^1.0",
         "topthink/think-captcha": "^3.0",
         "overtrue/pinyin": "^4.0",
         "mtdowling/cron-expression": "^1.2",
         "topthink/think-multi-app": "^1.0",
-        "topthink/think-trace": "^1.1"
+        "overtrue/wechat": "~3.1",
+        "endroid/qr-code": "^1.9",
+        "phpmailer/phpmailer": "^5.2",
+        "phpoffice/phpspreadsheet": "^1.2"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2"
