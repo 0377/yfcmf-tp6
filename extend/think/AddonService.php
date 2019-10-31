@@ -274,7 +274,7 @@ EOD;
         }
 
         if ($handle = fopen($file, 'w')) {
-            fwrite($handle, "<?php\n\n".'return '.var_export($config, true).';');
+            fwrite($handle, "<?php\n\n".'return '.varexport($config, true).';');
             fclose($handle);
         } else {
             throw new Exception('文件没有写入权限');

@@ -129,6 +129,53 @@ function get_addon_list()
 }
 
 /**
+ * 获得插件内的服务类.
+ *
+ * @return array
+ */
+function get_addon_service()
+{
+    $results = scandir(ADDON_PATH);
+    $list = [];
+    foreach ($results as $name) {
+        if ($name === '.' or $name === '..') {
+            continue;
+        }
+        if (is_file(ADDON_PATH.$name)) {
+            continue;
+        }
+        $addonDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
+        if (! is_dir($addonDir)) {
+            continue;
+        }
+
+        if (! is_file($addonDir.ucfirst($name).'.php')) {
+            continue;
+        }
+        $addonServiceDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR;
+
+        if (! is_dir($addonServiceDir)) {
+            continue;
+        }
+
+        $service_files = is_dir($addonServiceDir) ? scandir($addonServiceDir) : [];
+        $namespace = 'addons\\'.$name.'\\service\\';
+        foreach ($service_files as $file) {
+            if (strpos($file, '.php')) {
+                $className = str_replace('.php', '', $file);
+                $class = $namespace.$className;
+                if (class_exists($class)) {
+                    $list[] = $class;
+                }
+
+            }
+        }
+    }
+
+    return $list;
+}
+
+/**
  * 获得插件自动加载的配置.
  *
  * @param  bool  $truncate  是否清除手动配置的钩子
@@ -190,6 +237,7 @@ function get_addon_autoload_config($truncate = false)
             }
         }
     }
+    $config['service'] = get_addon_service();
     $config['route'] = $route;
     $config['route'] = array_merge($config['route'], $domain);
 
@@ -986,6 +1034,7 @@ if (! function_exists('list_sort_by')) {
         return false;
     }
 }
+
 if (! function_exists('upload_file')) {
     /**
      * 上传文件.
@@ -1023,5 +1072,30 @@ if (! function_exists('upload_file')) {
         }
 
         return $savename;
+    }
+}
+
+if (! function_exists('varexport')) {
+    /**
+     * var_export方法array转[]
+     *
+     * @param $expression
+     * @param  bool  $return
+     *
+     * @return mixed|string|string[]|null
+     */
+    function varexport($expression, $return = false)
+    {
+        $export = var_export($expression, true);
+        $export = preg_replace("/^([ ]*)(.*)/m", '$1$1$2', $export);
+        $array = preg_split("/\r\n|\n|\r/", $export);
+        $array = preg_replace(["/\s*array\s\($/", "/\)(,)?$/", "/\s=>\s$/"], [null, ']$1', ' => ['], $array);
+        $export = join(PHP_EOL, array_filter(["["] + $array));
+        if ((bool) $return) {
+
+            return $export;
+        } else {
+            echo $export;
+        }
     }
 }
