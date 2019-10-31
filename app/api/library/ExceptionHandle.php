@@ -3,14 +3,14 @@
 namespace app\api\library;
 
 use Throwable;
+use think\Response;
 use think\facade\Env;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\ModelNotFoundException;
 use think\exception\Handle;
 use think\exception\HttpException;
-use think\exception\HttpResponseException;
 use think\exception\ValidateException;
-use think\Response;
+use think\exception\HttpResponseException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 
 /**
  * 自定义API模块的错误显示.
