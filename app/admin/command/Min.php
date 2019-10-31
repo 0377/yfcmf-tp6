@@ -39,7 +39,7 @@ class Min extends Command
             ->addOption('resource', 'r', Option::VALUE_REQUIRED,
                 'resource name(js or css),use \'all\' when build all resources', null)
             ->addOption('optimize', 'o', Option::VALUE_OPTIONAL, 'optimize type(uglify|closure|none)', 'none')
-            ->addOption('is_debug', 'd', Option::VALUE_OPTIONAL, "is open debug", '0')
+            ->addOption('is_debug', 'd', Option::VALUE_OPTIONAL, 'is open debug', '0')
             ->setDescription('Compress js and css file');
     }
 
