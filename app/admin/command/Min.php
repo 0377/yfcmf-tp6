@@ -33,11 +33,14 @@ class Min extends Command
     protected function configure()
     {
         $this
-                ->setName('min')
-                ->addOption('module', 'm', Option::VALUE_REQUIRED, 'module name(frontend or backend),use \'all\' when build all modules', null)
-                ->addOption('resource', 'r', Option::VALUE_REQUIRED, 'resource name(js or css),use \'all\' when build all resources', null)
-                ->addOption('optimize', 'o', Option::VALUE_OPTIONAL, 'optimize type(uglify|closure|none)', 'none')
-                ->setDescription('Compress js and css file');
+            ->setName('min')
+            ->addOption('module', 'm', Option::VALUE_REQUIRED,
+                'module name(frontend or backend),use \'all\' when build all modules', null)
+            ->addOption('resource', 'r', Option::VALUE_REQUIRED,
+                'resource name(js or css),use \'all\' when build all resources', null)
+            ->addOption('optimize', 'o', Option::VALUE_OPTIONAL, 'optimize type(uglify|closure|none)', 'none')
+            ->addOption('is_debug', 'd', Option::VALUE_OPTIONAL, "is open debug", '0')
+            ->setDescription('Compress js and css file');
     }
 
     protected function execute(Input $input, Output $output)
@@ -45,7 +48,10 @@ class Min extends Command
         $module = $input->getOption('module') ?: '';
         $resource = $input->getOption('resource') ?: '';
         $optimize = $input->getOption('optimize') ?: 'none';
-
+        $is_debug = $input->getOption('is_debug') ?: '0';
+        if ($is_debug == 1) {
+            $output->setVerbosity(Output::VERBOSITY_DEBUG);
+        }
         if (! $module || ! in_array($module, ['frontend', 'backend', 'all'])) {
             throw new Exception('Please input correct module name');
         }
@@ -63,7 +69,7 @@ class Min extends Command
         $nodeExec = '';
 
         if (! $nodeExec) {
-            if (IS_WIN) {
+            if (strpos(PHP_OS, 'WIN') !== false) {
                 // Winsows下请手动配置配置该值,一般将该值配置为 '"C:\Program Files\nodejs\node.exe"'，除非你的Node安装路径有变更
                 $nodeExec = 'C:\Program Files\nodejs\node.exe';
                 if (file_exists($nodeExec)) {
@@ -75,8 +81,9 @@ class Min extends Command
                 }
             } else {
                 try {
-                    $nodeExec = exec('which node');
-                    if (! $nodeExec) {
+                    $node_version = exec('node -v');
+                    $nodeExec = 'node';
+                    if (! $node_version) {
                         throw new Exception('node environment not found!please install node first!');
                     }
                 } catch (Exception $e) {
@@ -93,8 +100,10 @@ class Min extends Command
                     'jsBaseUrl'   => $this->options['jsBaseUrl'],
                     'cssBaseName' => str_replace('{module}', $mod, $this->options['cssBaseName']),
                     'cssBaseUrl'  => $this->options['cssBaseUrl'],
-                    'jsBasePath'  => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath().$this->options['jsBaseUrl']),
-                    'cssBasePath' => str_replace(DIRECTORY_SEPARATOR, '/', app()->getRootPath().$this->options['cssBaseUrl']),
+                    'jsBasePath'  => str_replace(DIRECTORY_SEPARATOR, '/',
+                        app()->getRootPath().$this->options['jsBaseUrl']),
+                    'cssBasePath' => str_replace(DIRECTORY_SEPARATOR, '/',
+                        app()->getRootPath().$this->options['cssBaseUrl']),
                     'optimize'    => $optimize,
                     'ds'          => DIRECTORY_SEPARATOR,
                 ];
@@ -139,9 +148,9 @@ class Min extends Command
     /**
      * 写入到文件.
      *
-     * @param string $name
-     * @param array  $data
-     * @param string $pathname
+     * @param  string  $name
+     * @param  array  $data
+     * @param  string  $pathname
      *
      * @return mixed
      */
@@ -165,7 +174,7 @@ class Min extends Command
     /**
      * 获取基础模板
      *
-     * @param string $name
+     * @param  string  $name
      *
      * @return string
      */
