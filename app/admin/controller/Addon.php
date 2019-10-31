@@ -24,7 +24,7 @@ use app\common\controller\Backend;
  * 插件管理.
  *
  * @icon   fa fa-cube
- * @remark 可在线安装、卸载、禁用、启用插件，同时支持添加本地插件。FastAdmin已上线插件商店 ，你可以发布你的免费或付费插件：<a href="https://www.fastadmin.net/store.html" target="_blank">https://www.fastadmin.net/store.html</a>
+ * @remark 可在线安装、卸载、禁用、启用插件，同时支持添加本地插件。FastAdmin已上线插件商店 ，你可以发布你的免费或付费插件：<a href="https://www.iuok.cn/store.html" target="_blank">https://www.iuok.cn/store.html</a>
  */
 class Addon extends Backend
 {

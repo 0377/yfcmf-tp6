@@ -12,7 +12,7 @@ FastAdmin-TP6是一款基于ThinkPHP6+Bootstrap的极速后台开发框架。
 
 ## **在线演示**
 
-http://demo.sbing.vip/
+https://demo.iuok.cn/
 
 用户名：admin
 
@@ -38,7 +38,7 @@ Github: https://github.com/0377/fastadmin-tp6
 
 感谢以下的项目,排名不分先后
 
-Fastadmin：http://www.fastadmin.net
+Fastadmin：http://www.iuok.cn
 
 ThinkPHP：http://www.thinkphp.cn
 

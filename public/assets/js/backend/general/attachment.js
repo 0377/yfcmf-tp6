@@ -158,7 +158,7 @@ define(['jquery', 'bootstrap', 'backend', 'form', 'table'], function ($, undefin
                         var style = row.storage == 'upyun' ? '!/fwfh/120x90' : '';
                         return '<a href="' + row.fullurl + '" target="_blank"><img src="' + row.fullurl + style + '" alt="" style="max-height:90px;max-width:120px"></a>';
                     } else {
-                        return '<a href="' + row.fullurl + '" target="_blank"><img src="https://tool.fastadmin.net/icon/' + row.imagetype + '.png" alt=""></a>';
+                        return '<a href="' + row.fullurl + '" target="_blank"><img src="https://tool.iuok.cn/icon/' + row.imagetype + '.png" alt=""></a>';
                     }
                 },
                 url: function (value, row, index) {

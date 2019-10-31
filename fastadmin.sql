@@ -600,5 +600,5 @@ CREATE TABLE `fa_version` (
 -- ----------------------------
 -- Records of fa_version
 -- ----------------------------
-INSERT INTO `fa_version` VALUES ('1', '1.1.1,2', '1.2.1', '20M', '更新内容', 'https://www.fastadmin.net/download.html', '1', '1520425318', '0', '0', 'normal');
+INSERT INTO `fa_version` VALUES ('1', '1.1.1,2', '1.2.1', '20M', '更新内容', 'https://www.iuok.cn/download.html', '1', '1520425318', '0', '0', 'normal');
 SET FOREIGN_KEY_CHECKS=1;
