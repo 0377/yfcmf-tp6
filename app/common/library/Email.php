@@ -42,7 +42,7 @@ class Email
     /**
      * 初始化.
      *
-     * @param array $options 参数
+     * @param  array  $options  参数
      *
      * @return Email
      */
@@ -58,7 +58,7 @@ class Email
     /**
      * 构造函数.
      *
-     * @param array $options
+     * @param  array  $options
      */
     public function __construct($options = [])
     {
@@ -66,7 +66,6 @@ class Email
             $this->options = array_merge($this->options, $config);
         }
         $this->options = array_merge($this->options, $options);
-        vendor('phpmailer.phpmailer.PHPMailerAutoload');
         $securArr = [1 => 'tls', 2 => 'ssl'];
 
         $this->mail = new \PHPMailer(true);
@@ -87,7 +86,7 @@ class Email
     /**
      * 设置邮件主题.
      *
-     * @param string $subject
+     * @param  string  $subject
      *
      * @return $this
      */
@@ -101,8 +100,8 @@ class Email
     /**
      * 设置发件人.
      *
-     * @param string $email
-     * @param string $name
+     * @param  string  $email
+     * @param  string  $name
      *
      * @return $this
      */
@@ -117,8 +116,8 @@ class Email
     /**
      * 设置收件人.
      *
-     * @param string $email
-     * @param string $name
+     * @param  string  $email
+     * @param  string  $name
      *
      * @return $this
      */
@@ -133,8 +132,8 @@ class Email
     /**
      * 设置邮件正文.
      *
-     * @param string $body
-     * @param bool   $ishtml
+     * @param  string  $body
+     * @param  bool  $ishtml
      *
      * @return $this
      */
@@ -159,7 +158,7 @@ class Email
     /**
      * 设置错误.
      *
-     * @param string $error 信息信息
+     * @param  string  $error  信息信息
      */
     protected function setError($error)
     {

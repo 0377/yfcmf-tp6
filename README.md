@@ -5,9 +5,9 @@ FastAdmin-TP6是一款基于ThinkPHP6+Bootstrap的极速后台开发框架。
 * auth_rule表增加route字段，创建菜单时，自动写入路由，为访问的url
 * 在线命令和插件都可以正常使用，插件和TP5.0版本不通用，需要简单调整后插件才可正常使用
 * 插件基础文件采用服务方式注入
-* 插件增加服务入口，插件根目录下的service.ini，系统会自动载入service.ini内的服务
+* 插件支持依赖注入自动绑定，插件根目录下的provider.ini，系统会自动绑定provider.ini内的类到容器内
+* 插件增加自定义服务功能，插件根目录下的service文件夹，系统会自动载入service内的服务，进行注册和启动
 * 原有认证的Auth类改为服务，可自行注入替换，调用方式app()->auth;例如即将发布的SSO单点登陆，通过服务注入替换Auth
-* TP5使用Db类是数组和数据模型是对象，TP6使用Db类和数据模型查询出来都是collection对象
 
 
 ## **在线演示**
@@ -38,7 +38,7 @@ Github: https://github.com/0377/fastadmin-tp6
 
 感谢以下的项目,排名不分先后
 
-Fastadmin：http://www.iuok.cn
+Fastadmin：https://www.fastadmin.net
 
 ThinkPHP：http://www.thinkphp.cn
 

@@ -15,7 +15,7 @@ return [
     'auto_timestamp'  => true,
 
     // 时间字段取出后的默认时间格式
-    'datetime_format' => 'Y-m-d H:i:s',
+    'datetime_format' => false,
 
     // 数据库连接配置信息
     'connections'     => [

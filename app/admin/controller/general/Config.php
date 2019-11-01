@@ -184,7 +184,7 @@ class Config extends Backend
             $config[$value['name']] = $value['value'];
         }
         file_put_contents(app()->getConfigPath().'site.php',
-            '<?php'."\n\nreturn ".var_export($config, true).';');
+            '<?php'."\n\nreturn ".varexport($config, true).';');
     }
 
     /**

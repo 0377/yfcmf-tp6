@@ -36,8 +36,8 @@ class Ems
     /**
      * 获取最后一次邮箱发送的数据.
      *
-     * @param int    $email 邮箱
-     * @param string $event 事件
+     * @param  int  $email  邮箱
+     * @param  string  $event  事件
      *
      * @return Ems
      */
@@ -47,7 +47,7 @@ class Ems
         where(['email' => $email, 'event' => $event])
             ->order('id', 'DESC')
             ->find();
-        Event::trigger('ems_get', $ems, null, true);
+        Event::trigger('ems_get', $ems, true);
 
         return $ems ? $ems : null;
     }
@@ -55,9 +55,9 @@ class Ems
     /**
      * 发送验证码
      *
-     * @param int    $email 邮箱
-     * @param int    $code  验证码,为空时将自动生成4位数字
-     * @param string $event 事件
+     * @param  int  $email  邮箱
+     * @param  int  $code  验证码,为空时将自动生成4位数字
+     * @param  string  $event  事件
      *
      * @return bool
      */
@@ -66,8 +66,11 @@ class Ems
         $code = is_null($code) ? mt_rand(1000, 9999) : $code;
         $time = time();
         $ip = request()->ip();
-        $ems = \app\common\model\Ems::create(['event' => $event, 'email' => $email, 'code' => $code, 'ip' => $ip, 'createtime' => $time]);
-        $result = Event::trigger('ems_send', $ems, null, true);
+        $ems = \app\common\model\Ems::create([
+            'event'      => $event, 'email' => $email, 'code' => $code, 'ip' => $ip,
+            'createtime' => $time,
+        ]);
+        $result = Event::trigger('ems_send', $ems, true);
         if (! $result) {
             $ems->delete();
 
@@ -80,9 +83,9 @@ class Ems
     /**
      * 发送通知.
      *
-     * @param mixed  $email    邮箱,多个以,分隔
-     * @param string $msg      消息内容
-     * @param string $template 消息模板
+     * @param  mixed  $email  邮箱,多个以,分隔
+     * @param  string  $msg  消息内容
+     * @param  string  $template  消息模板
      *
      * @return bool
      */
@@ -93,7 +96,7 @@ class Ems
             'msg'      => $msg,
             'template' => $template,
         ];
-        $result = Event::trigger('ems_notice', $params, null, true);
+        $result = Event::trigger('ems_notice', $params, true);
 
         return $result ? true : false;
     }
@@ -101,9 +104,9 @@ class Ems
     /**
      * 校验验证码
      *
-     * @param int    $email 邮箱
-     * @param int    $code  验证码
-     * @param string $event 事件
+     * @param  int  $email  邮箱
+     * @param  int  $code  验证码
+     * @param  string  $event  事件
      *
      * @return bool
      */
@@ -122,7 +125,7 @@ class Ems
 
                     return false;
                 } else {
-                    $result = Event::trigger('ems_check', $ems, null, true);
+                    $result = Event::trigger('ems_check', $ems, true);
 
                     return true;
                 }
@@ -140,8 +143,8 @@ class Ems
     /**
      * 清空指定邮箱验证码
      *
-     * @param int    $email 邮箱
-     * @param string $event 事件
+     * @param  int  $email  邮箱
+     * @param  string  $event  事件
      *
      * @return bool
      */

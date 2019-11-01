@@ -500,7 +500,7 @@ function set_addon_fullconfig($name, $array)
         throw new Exception('文件没有写入权限');
     }
     if ($handle = fopen($file, 'w')) {
-        fwrite($handle, "<?php\n\n".'return '.var_export($array, true).";\n");
+        fwrite($handle, "<?php\n\n".'return '.varexport($array, true).";\n");
         fclose($handle);
     } else {
         throw new Exception('文件没有写入权限');

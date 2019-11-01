@@ -2,9 +2,12 @@
 
 namespace app\api\controller;
 
+use think\facade\Event;
 use app\common\model\User;
+use app\common\library\Email;
 use app\common\controller\Api;
 use app\common\library\Ems as Emslib;
+
 
 /**
  * 邮箱验证码接口.
@@ -17,8 +20,8 @@ class Ems extends Api
     public function _initialize()
     {
         parent::_initialize();
-        \think\Hook::add('ems_send', function ($params) {
-            $obj = \app\common\library\Email::instance();
+        Event::listen('ems_send', function ($params) {
+            $obj = Email::instance();
             $result = $obj
                 ->to($params->email)
                 ->subject('验证码')
@@ -32,8 +35,8 @@ class Ems extends Api
     /**
      * 发送验证码
      *
-     * @param string $email 邮箱
-     * @param string $event 事件名称
+     * @param  string  $email  邮箱
+     * @param  string  $event  事件名称
      */
     public function send()
     {
@@ -69,9 +72,9 @@ class Ems extends Api
     /**
      * 检测验证码
      *
-     * @param string $email   邮箱
-     * @param string $event   事件名称
-     * @param string $captcha 验证码
+     * @param  string  $email  邮箱
+     * @param  string  $event  事件名称
+     * @param  string  $captcha  验证码
      */
     public function check()
     {

@@ -5,7 +5,6 @@ namespace app\index\controller;
 use think\facade\Event;
 use think\facade\Config;
 use think\facade\Cookie;
-use think\facade\Validate;
 use app\common\controller\Frontend;
 
 /**
@@ -116,15 +115,15 @@ class User extends Frontend
                 'captcha'   => $captcha,
                 '__token__' => $token,
             ];
-            $validate = new Validate($rule, $msg);
+            $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
             if (! $result) {
-                $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+                $this->error(__($validate->getError()), null, ['token' => $this->request->buildToken()]);
             }
             if ($this->auth->register($username, $password, $email, $mobile)) {
                 $this->success(__('Sign up successful'), $url ? $url : url('user/index'));
             } else {
-                $this->error($this->auth->getError(), null, ['token' => $this->request->token()]);
+                $this->error($this->auth->getError(), null, ['token' => $this->request->buildToken()]);
             }
         }
         //判断来源
@@ -154,8 +153,8 @@ class User extends Frontend
             $keeplogin = (int) $this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
-                'account'   => 'require|length:3,50',
-                'password'  => 'require|length:6,30',
+                'account'  => 'require|length:3,50',
+                'password' => 'require|length:6,30',
                 //'__token__' => 'require|token',
             ];
 
@@ -226,10 +225,10 @@ class User extends Frontend
             $renewpassword = $this->request->post('renewpassword');
             $token = $this->request->post('__token__');
             $rule = [
-                'oldpassword'   => 'require|length:6,30',
-                'newpassword'   => 'require|length:6,30',
-                'renewpassword' => 'require|length:6,30|confirm:newpassword',
-                '__token__'     => 'token',
+                'oldpassword|'.__('Old password')     => 'require|length:6,30',
+                'newpassword|'.__('New password')     => 'require|length:6,30',
+                'renewpassword|'.__('Renew password') => 'require|length:6,30|confirm:newpassword',
+                '__token__'                           => 'token',
             ];
 
             $msg = [
@@ -240,12 +239,7 @@ class User extends Frontend
                 'renewpassword' => $renewpassword,
                 '__token__'     => $token,
             ];
-            $field = [
-                'oldpassword'   => __('Old password'),
-                'newpassword'   => __('New password'),
-                'renewpassword' => __('Renew password'),
-            ];
-            $validate = new Validate($rule, $msg, $field);
+            $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
             if (! $result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
