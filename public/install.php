@@ -31,12 +31,12 @@ if (is_file('../config/install.lock') && $_GET['step'] != 5) {
 
 $site_name = 'FastAdmin-TP6';
 $site_url = 'https://www.iuok.cn';
-$version='V2.0.1';
+$version = 'V2.0.1';
 $_date = date('Y');
-$sql_url='http://demo.iuok.cn/fastadmin.sql';
+$sql_url = 'http://demo.iuok.cn/fastadmin.sql';
 
 $html_title = '程序安装向导';
-$install_css=<<<EOF
+$install_css = <<<EOF
 <style>
 @charset "utf-8";
 
@@ -307,13 +307,13 @@ switch ($_GET['step']) {
             array('type' => 'dir', 'path' => 'config')
         );
         $func_items = array(
-            array('name' => 'PDO','type'=>'class'),
-            array('name' => 'fsockopen','type'=>'func'),
-            array('name' => 'gethostbyname','type'=>'func'),
-            array('name' => 'file_get_contents','type'=>'func'),
-            array('name' => 'mb_convert_encoding','type'=>'func'),
-            array('name' => 'json_encode','type'=>'func'),
-            array('name' => 'curl_init','type'=>'func'),
+            array('name' => 'PDO', 'type' => 'class'),
+            array('name' => 'fsockopen', 'type' => 'func'),
+            array('name' => 'gethostbyname', 'type' => 'func'),
+            array('name' => 'file_get_contents', 'type' => 'func'),
+            array('name' => 'mb_convert_encoding', 'type' => 'func'),
+            array('name' => 'json_encode', 'type' => 'func'),
+            array('name' => 'curl_init', 'type' => 'func'),
         );
         env_check($env_items);
         dirfile_check($dirfile_items);
@@ -344,7 +344,7 @@ switch ($_GET['step']) {
                 <td><span class='{$_status}'><i></i>{$_status2}</span></td>
              </tr>";
         }
-$step = <<<EOF
+        $step = <<<EOF
 $html_header
 <div class="main">
   <div class="step-box" id="step1">
@@ -417,7 +417,7 @@ EOF;
         echo $step;
         break;
     case 2:
-$step=<<<EOF
+        $step = <<<EOF
 $html_header
 <div class="main">
   <div class="step-box" id="step2">
@@ -513,21 +513,21 @@ EOF;
         step3($install_error, $install_recover);
 
 
-        $db_host=$_POST['db_host'] ? $_POST['db_host'] : '127.0.0.1';
-        $db_name=$_POST['db_name'] ? $_POST['db_name'] : 'fastadmin_tp6';
-        $db_user=$_POST['db_user'] ? $_POST['db_user'] : '';
-        $db_pwd=$_POST['db_pwd'] ? $_POST['db_pwd'] : '';
-        $db_prefix=$_POST['db_prefix'] ? $_POST['db_prefix'] : 'fa_';
-        $db_port=$_POST['db_port'] ? $_POST['db_port'] : '3306';
+        $db_host = $_POST['db_host'] ? $_POST['db_host'] : '127.0.0.1';
+        $db_name = $_POST['db_name'] ? $_POST['db_name'] : 'fastadmin_tp6';
+        $db_user = $_POST['db_user'] ? $_POST['db_user'] : '';
+        $db_pwd = $_POST['db_pwd'] ? $_POST['db_pwd'] : '';
+        $db_prefix = $_POST['db_prefix'] ? $_POST['db_prefix'] : 'fa_';
+        $db_port = $_POST['db_port'] ? $_POST['db_port'] : '3306';
 
-        $install_error_html='';
-        if ($install_error != ''){
-            $install_error_html="<div>
+        $install_error_html = '';
+        if ($install_error != '') {
+            $install_error_html = "<div>
           <label></label>
           <font class='error'>{$install_error}</font></div>";
         }
 
-$step=<<<EOF
+        $step = <<<EOF
  $html_header
 <div class="main">
   <div class="step-box" id="step3">
@@ -659,7 +659,7 @@ EOF;
         $sitepath = str_replace('install', "", $sitepath);
         $auto_site_url = strtolower('http://'.$_SERVER['HTTP_HOST'].$sitepath);
 
-$step=<<<EOF
+        $step = <<<EOF
 $html_header
 <div class="main">
   <div class="final-succeed"> <span class="ico"></span>
@@ -700,7 +700,7 @@ EOF;
         break;
     default:
         # code...
-$step = <<<EOF
+        $step = <<<EOF
 $html_header
 <div class="main">
   <div class="text-box" id="text-box">
@@ -761,7 +761,7 @@ EOF;
 
 function step3(&$install_error, &$install_recover)
 {
-    global $html_title, $html_header, $html_footer,$sql_url;
+    global $html_title, $html_header, $html_footer, $sql_url;
     if ($_POST['submitform'] != 'submit') {
         return;
     }
@@ -785,14 +785,14 @@ function step3(&$install_error, &$install_recover)
         //$install_error .= '非法用户名，用户名长度不应当超过 15 个英文字符，且不能包含特殊字符，一般是中文，字母或者数字';
     }
 
-    if (!preg_match("/^\w{3,12}$/", $admin)) {
-        $install_error.= "用户名只能由3-12位数字、字母、下划线组合";
+    if (! preg_match("/^\w{3,12}$/", $admin)) {
+        $install_error .= "用户名只能由3-12位数字、字母、下划线组合";
     }
-    if (!preg_match("/^[\S]{6,16}$/", $password)) {
-        $install_error.= "密码长度必须在6-16位之间，不能包含空格";
+    if (! preg_match("/^[\S]{6,16}$/", $password)) {
+        $install_error .= "密码长度必须在6-16位之间，不能包含空格";
     }
     if ($password !== $rpassword) {
-        $install_error.= "两次输入的密码不一致";
+        $install_error .= "两次输入的密码不一致";
     }
     if ($install_error != '') {
         return;
@@ -800,17 +800,17 @@ function step3(&$install_error, &$install_recover)
 
     //检测能否读取安装文件
     $sql = file_get_contents($sql_url);
-    if (!$sql) {
-        $install_error= "数据库文件无法打开";
+    if (! $sql) {
+        $install_error = "数据库文件无法打开";
         return;
     }
     $sql = str_replace("`fa_", "`{$db_prefix}", $sql);
-    try{
+    try {
         $pdo = new PDO("mysql:host={$db_host};port={$db_port}", $db_user, $db_pwd, array(
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
         ));
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
         $install_error = '数据库连接失败';
         return;
     }
@@ -818,19 +818,19 @@ function step3(&$install_error, &$install_recover)
     //检测是否支持innodb存储引擎
     $pdoStatement = $pdo->query("SHOW VARIABLES LIKE 'innodb_version'");
     $result = $pdoStatement->fetch();
-    if (!$result) {
-        $install_error= "当前数据库不支持innodb存储引擎，请开启后再重新尝试安装";
+    if (! $result) {
+        $install_error = "当前数据库不支持innodb存储引擎，请开启后再重新尝试安装";
         return;
     }
 
-    try{
+    try {
         $pdo->query("USE `{$db_name}`");
         if ($_POST['install_recover'] != 'yes') {
             $install_error = '数据表已存在，继续安装将会覆盖已有数据';
             $install_recover = 'yes';
             return;
         }
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
 
     }
 
@@ -841,8 +841,7 @@ function step3(&$install_error, &$install_recover)
     //$pdo->exec($sql);
 
 
-
-$step=<<<EOF
+    $step = <<<EOF
 $html_header
 <div class="main">
   <div class="step-box" id="step4">
@@ -893,7 +892,7 @@ EOF;
 
     //管理员账号密码
     $newSalt = substr(md5(uniqid(true)), 0, 6);
-    $newPassword = md5(md5($password) . $newSalt);
+    $newPassword = md5(md5($password).$newSalt);
     $pdo->query("UPDATE {$db_prefix}admin SET username = '{$admin}', email = 'admin@admin.com',password = '{$newPassword}', salt = '{$newSalt}' WHERE username = 'admin'");
 
 
@@ -958,8 +957,8 @@ function write_config($url)
     $db_name = $_POST['db_name'];
     $db_prefix = $_POST['db_prefix'];
 
-$_env=
-"APP_DEBUG = true
+    $_env =
+        "APP_DEBUG = true
 [APP]
 DEFAULT_TIMEZONE = Asia/Shanghai
 
@@ -1085,10 +1084,10 @@ function function_check(&$func_items)
     $func = array();
     foreach ($func_items as $key => $item) {
 
-        if ($item['type']=='class'){
+        if ($item['type'] == 'class') {
 
             $func_items[$key]['status'] = class_exists($item['name']) ? 1 : 0;
-        }else{
+        } else {
 
             $func_items[$key]['status'] = function_exists($item['name']) ? 1 : 0;
         }
