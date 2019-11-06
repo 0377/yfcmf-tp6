@@ -65,12 +65,12 @@ class AddonService extends Service
             Cache::set('hooks', $hooks);
         }
         //如果在插件中有定义app_init，则直接执行
+        Event::listenEvents($hooks);
         if (isset($hooks['app_init'])) {
             foreach ($hooks['app_init'] as $k => $v) {
                 Event::trigger('app_init', $v);
             }
         }
-        Event::listenEvents($hooks);
     }
 
     /**
