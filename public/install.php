@@ -949,7 +949,7 @@ function showjsmessage($message)
 //写入config文件
 function write_config($url)
 {
-    $charset = 'UTF-8';
+    $charset = 'utf8';
     $db_host = $_POST['db_host'];
     $db_port = $_POST['db_port'];
     $db_user = $_POST['db_user'];
