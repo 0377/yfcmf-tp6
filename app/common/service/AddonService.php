@@ -38,8 +38,6 @@ class AddonService extends Service
         if (! is_dir(ADDON_PATH)) {
             @mkdir(ADDON_PATH, 0755, true);
         }
-        //挂载插件服务
-        $this->addon_service();
         //注册插件路由
         $this->addon_route();
         //注册插件事件
@@ -82,7 +80,7 @@ class AddonService extends Service
     private function addon_route()
     {
         Route::rule('addons/:addon/[:controller]/[:action]', '\\think\\addons\\Route::execute')
-            ->middleware(Addon::class);
+            ->middleware([FastInit::class,Addon::class]);
 
         //注册路由
         $routeArr = (array) Config::get('addons.route');
@@ -120,38 +118,5 @@ class AddonService extends Service
                     ->append(['addon' => $addon, 'controller' => $controller, 'action' => $action]);
             }
         }
-    }
-
-    /**
-     * 挂载插件内服务
-     */
-    private function addon_service()
-    {
-        $results = scandir(ADDON_PATH);
-        $bind = [];
-        foreach ($results as $name) {
-            if ($name === '.' or $name === '..') {
-                continue;
-            }
-            if (is_file(ADDON_PATH.$name)) {
-                continue;
-            }
-            $addonDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
-            if (! is_dir($addonDir)) {
-                continue;
-            }
-
-            if (! is_file($addonDir.ucfirst($name).'.php')) {
-                continue;
-            }
-
-            $service_file = $addonDir.'service.ini';
-            if (! is_file($service_file)) {
-                continue;
-            }
-            $service = parse_ini_file($service_file, true, INI_SCANNER_TYPED) ?: [];
-            $bind = array_merge($bind, $service);
-        }
-        $this->app->bind($bind);
     }
 }

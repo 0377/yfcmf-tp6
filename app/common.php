@@ -135,21 +135,10 @@ function get_addon_list()
  */
 function get_addon_service()
 {
-    $results = scandir(ADDON_PATH);
+    $addons = get_addon_list();
     $list = [];
-    foreach ($results as $name) {
-        if ($name === '.' or $name === '..') {
-            continue;
-        }
-        if (is_file(ADDON_PATH.$name)) {
-            continue;
-        }
-        $addonDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR;
-        if (! is_dir($addonDir)) {
-            continue;
-        }
-
-        if (! is_file($addonDir.ucfirst($name).'.php')) {
+    foreach ($addons as $name => $addon) {
+        if (! $addon['state']) {
             continue;
         }
         $addonServiceDir = ADDON_PATH.$name.DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR;
