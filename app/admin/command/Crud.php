@@ -923,7 +923,7 @@ class Crud extends Command
                     if ($fields) {
                         //$relationVisibleFieldList[] = "\$row->visible(['{$relation['relationMethod']}']);";
                     }
-                    
+
                     //显示的字段
                     if ($relation['relationFields']) {
                         $relationVisibleFieldList[] = "\$row->getRelation('".$relation['relationMethod']."')->visible(['".implode("','", $relation['relationFields'])."']);";
