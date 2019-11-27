@@ -1,4 +1,14 @@
 <?php
+/**
+ *  ============================================================================
+ *  Created by PhpStorm.
+ *  User: Ice
+ *  邮箱: ice@sbing.vip
+ *  网址: https://sbing.vip
+ *  Date: 2019/11/27 下午6:12
+ *  ============================================================================
+ */
+
 set_time_limit(0);   //设置运行时间
 error_reporting(E_ALL & ~E_NOTICE);  //显示全部错误
 define('ROOT_PATH', dirname(dirname(__FILE__)));  //定义根目录
@@ -308,6 +318,9 @@ switch ($_GET['step']) {
         );
         $func_items = array(
             array('name' => 'PDO', 'type' => 'class'),
+            array('name' => 'putenv', 'type' => 'func'),
+            array('name' => 'proc_open', 'type' => 'func'),
+            array('name' => 'proc_get_status', 'type' => 'func'),
             array('name' => 'fsockopen', 'type' => 'func'),
             array('name' => 'gethostbyname', 'type' => 'func'),
             array('name' => 'file_get_contents', 'type' => 'func'),

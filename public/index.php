@@ -1,18 +1,23 @@
 <?php
-
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2019 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
+/**
+ *  ============================================================================
+ *  Created by PhpStorm.
+ *  User: Ice
+ *  邮箱: ice@sbing.vip
+ *  网址: https://sbing.vip
+ *  Date: 2019/11/27 下午6:09
+ *  ============================================================================
+ */
 
 // [ 应用入口文件 ]
 
 namespace think;
+
+// 判断是否安装fastadmin-tp6
+if (! is_file('../config/install.lock')) {
+    header("location:./install.php");
+    exit;
+}
 
 //是否composer
 if (! file_exists('../vendor')) {
@@ -20,12 +25,6 @@ if (! file_exists('../vendor')) {
 }
 
 require __DIR__.'/../vendor/autoload.php';
-
-// 判断是否安装fastadmin-tp6
-if (! is_file('../config/install.lock')) {
-    header("location:./install.php");
-    exit;
-}
 
 // 执行HTTP应用并响应
 $http = (new App())->http;
