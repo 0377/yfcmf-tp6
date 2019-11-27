@@ -10,6 +10,8 @@
  *  * ============================================================================.
  */
 
+declare(strict_types=1);
+
 namespace app\common\service;
 
 use think\Service;
@@ -20,6 +22,7 @@ use think\facade\Event;
 use think\facade\Route;
 use think\facade\Config;
 use app\common\middleware\Addon;
+use app\common\middleware\FastInit;
 
 /**
  * 插件服务
@@ -99,6 +102,7 @@ class AddonService extends Service
                     // 动态注册域名的路由规则
                     foreach ($drules as $k => $rule) {
                         Route::rule($k, $execute)
+                            ->middleware([FastInit::class,Addon::class])
                             ->name($k)
                             ->completeMatch(true)
                             ->append($rule);
@@ -110,6 +114,7 @@ class AddonService extends Service
                 }
                 [$addon, $controller, $action] = explode('/', $v);
                 Route::rule($k, $execute)
+                    ->middleware([FastInit::class,Addon::class])
                     ->name($k)
                     ->completeMatch(true)
                     ->append(['addon' => $addon, 'controller' => $controller, 'action' => $action]);

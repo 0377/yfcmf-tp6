@@ -99,12 +99,6 @@ class Controller extends BaseController
             ADDON_PATH.$this->addon.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.Lang::getLangset().'.php',
         ]);
 
-        // 设置替换字符串
-        $cdnurl = Config::get('site.cdnurl');
-        View::filter(function ($content) use ($cdnurl) {
-            return str_replace('__ADDON__', $cdnurl.'/assets/addons/'.$this->addon, $content);
-        });
-
         $this->auth = Auth::instance();
         // token
         $token = $this->request->server('HTTP_TOKEN',
