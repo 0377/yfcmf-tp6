@@ -3,3 +3,5 @@
 /vendor
 *.log
 runtime
+.env
+composer.lock
