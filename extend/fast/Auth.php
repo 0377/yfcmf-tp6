@@ -48,12 +48,12 @@ class Auth
     protected $request;
     //默认配置
     protected $config = [
-        'auth_on'           => 1, // 权限开关
-        'auth_type'         => 1, // 认证方式，1为实时认证；2为登录认证。
-        'auth_group'        => 'auth_group', // 用户组数据表名
+        'auth_on' => 1, // 权限开关
+        'auth_type' => 1, // 认证方式，1为实时认证；2为登录认证。
+        'auth_group' => 'auth_group', // 用户组数据表名
         'auth_group_access' => 'auth_group_access', // 用户-用户组关系表
-        'auth_rule'         => 'auth_rule', // 权限规则表
-        'auth_user'         => 'user', // 用户信息表
+        'auth_rule' => 'auth_rule', // 权限规则表
+        'auth_user' => 'user', // 用户信息表
     ];
 
     public function __construct()
@@ -68,7 +68,7 @@ class Auth
     /**
      * 初始化.
      *
-     * @param array $options 参数
+     * @param  array  $options  参数
      *
      * @return Auth
      */
@@ -84,16 +84,16 @@ class Auth
     /**
      * 检查权限.
      *
-     * @param string|array $name     需要验证的规则列表,支持逗号分隔的权限规则或索引数组
-     * @param int          $uid      认证用户的id
-     * @param string       $relation 如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
-     * @param string       $mode     执行验证的模式,可分为url,normal
+     * @param  string|array  $name  需要验证的规则列表,支持逗号分隔的权限规则或索引数组
+     * @param  int  $uid  认证用户的id
+     * @param  string  $relation  如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
+     * @param  string  $mode  执行验证的模式,可分为url,normal
      *
      * @return bool 通过验证返回true;失败返回false
      */
     public function check($name, $uid, $relation = 'or', $mode = 'url')
     {
-        if (! $this->config['auth_on']) {
+        if (!$this->config['auth_on']) {
             return true;
         }
         // 获取用户需要验证的所有有效规则列表
@@ -130,7 +130,7 @@ class Auth
                 }
             }
         }
-        if ('or' == $relation && ! empty($list)) {
+        if ('or' == $relation && !empty($list)) {
             return true;
         }
         $diff = array_diff($name, $list);
@@ -144,7 +144,7 @@ class Auth
     /**
      * 根据用户id获取用户组,返回值为数组.
      *
-     * @param int $uid 用户id
+     * @param  int  $uid  用户id
      *
      * @return array 用户所属的用户组 array(
      *               array('uid'=>'用户id','group_id'=>'用户组id','name'=>'用户组名称','rules'=>'用户组拥有的规则id,多个,号隔开'),
@@ -172,7 +172,7 @@ class Auth
     /**
      * 获得权限规则列表.
      *
-     * @param int $uid 用户id
+     * @param  int  $uid  用户id
      *
      * @return array
      */
@@ -195,11 +195,9 @@ class Auth
         }
 
         // 筛选条件
-        $where = [
-            'status' => 'normal',
-        ];
-        if (! in_array('*', $ids)) {
-            $where['id'] = ['in', $ids];
+        $where[] = ['status', '=', 'normal'];
+        if (!in_array('*', $ids)) {
+            $where[] = ['id', 'in', $ids];
         }
         //读取用户组所有权限规则
         $this->rules = Db::name($this->config['auth_rule'])->where($where)->field('id,pid,condition,icon,name,title,ismenu')->select();
@@ -211,7 +209,7 @@ class Auth
         }
         foreach ($this->rules as $rule) {
             //超级管理员无需验证condition
-            if (! empty($rule['condition']) && ! in_array('*', $ids)) {
+            if (!empty($rule['condition']) && !in_array('*', $ids)) {
                 //根据condition进行验证
                 $user = $this->getUserInfo($uid); //获取用户信息,一维数组
                 $command = preg_replace('/\{(\w*?)\}/', '$user[\'\\1\']', $rule['condition']);
@@ -250,7 +248,7 @@ class Auth
     /**
      * 获得用户资料.
      *
-     * @param int $uid 用户id
+     * @param  int  $uid  用户id
      *
      * @return mixed
      */
@@ -261,7 +259,7 @@ class Auth
         $user = Db::name($this->config['auth_user']);
         // 获取用户表主键
         $_pk = is_string($user->getPk()) ? $user->getPk() : 'uid';
-        if (! isset($user_info[$uid])) {
+        if (!isset($user_info[$uid])) {
             $user_info[$uid] = $user->where($_pk, $uid)->find();
         }
 
