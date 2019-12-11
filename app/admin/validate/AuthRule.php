@@ -9,7 +9,7 @@ class AuthRule extends Validate
     /**
      * 正则.
      */
-    protected $regex = ['format' => '[a-z0-9_\/]+'];
+    protected $regex = ['format' => '[a-z0-9_\.\/]+'];
 
     /**
      * 验证规则.
