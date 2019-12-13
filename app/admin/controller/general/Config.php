@@ -215,7 +215,7 @@ class Config extends Backend
     public function emailtest()
     {
         $row = $this->request->post('row/a');
-        \think\facade\Config::set('site', array_merge(\think\facade\Config::get('site'), $row));
+        \think\facade\Config::set(array_merge(\think\facade\Config::get('site'), $row), 'site');
         $receiver = $this->request->request('receiver');
         $email = new Email();
         $result = $email
