@@ -3,6 +3,7 @@
 namespace app\api\controller;
 
 use app\common\model\User;
+use \think\facade\Validate;
 use app\common\controller\Api;
 use app\common\library\Sms as Smslib;
 
@@ -26,7 +27,7 @@ class Sms extends Api
         $event = $this->request->request('event');
         $event = $event ? $event : 'register';
 
-        if (! $mobile || ! \think\Validate::regex($mobile, "^1\d{10}$")) {
+        if (! $mobile || ! Validate::regex($mobile, "^1\d{10}$")) {
             $this->error(__('手机号不正确'));
         }
         $last = Smslib::get($mobile, $event);
@@ -72,7 +73,7 @@ class Sms extends Api
         $event = $event ? $event : 'register';
         $captcha = $this->request->request('captcha');
 
-        if (! $mobile || ! \think\Validate::regex($mobile, "^1\d{10}$")) {
+        if (! $mobile || ! Validate::regex($mobile, "^1\d{10}$")) {
             $this->error(__('手机号不正确'));
         }
         if ($event) {

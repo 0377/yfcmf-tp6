@@ -47,7 +47,7 @@ class Sms
         where(['mobile' => $mobile, 'event' => $event])
             ->order('id', 'DESC')
             ->find();
-        Event::trigger('sms_get', $sms, null, true);
+        Event::trigger('sms_get', $sms, true);
 
         return $sms ? $sms : null;
     }
@@ -67,7 +67,7 @@ class Sms
         $time = time();
         $ip = request()->ip();
         $sms = \app\common\model\Sms::create(['event' => $event, 'mobile' => $mobile, 'code' => $code, 'ip' => $ip, 'createtime' => $time]);
-        $result = Event::trigger('sms_send', $sms, null, true);
+        $result = Event::trigger('sms_send', $sms,true);
         if (! $result) {
             $sms->delete();
 
@@ -93,7 +93,7 @@ class Sms
             'msg'      => $msg,
             'template' => $template,
         ];
-        $result = Event::trigger('sms_notice', $params, null, true);
+        $result = Event::trigger('sms_notice', $params, true);
 
         return $result ? true : false;
     }
@@ -122,7 +122,7 @@ class Sms
 
                     return false;
                 } else {
-                    $result = Event::trigger('sms_check', $sms, null, true);
+                    $result = Event::trigger('sms_check', $sms, true);
 
                     return $result;
                 }
