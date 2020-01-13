@@ -89,7 +89,7 @@ class Auth extends \fast\Auth
     public function logout()
     {
         $admin = Admin::find(intval($this->id));
-        if (! $admin) {
+        if ($admin) {
             $admin->token = '';
             $admin->save();
         }
