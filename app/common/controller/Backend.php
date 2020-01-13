@@ -285,7 +285,8 @@ class Backend extends BaseController
         $tableName = '';
         if ($relationSearch) {
             if (! empty($this->model)) {
-                $name = parseName(trim(basename(str_replace('\\', ' / ', get_class($this->model)))));
+                //$name = parseName(trim(basename(str_replace('\\', ' / ', get_class($this->model)))));
+                $name = $this->model->getTable();
                 $tableName = trim($name).'.';
             }
             $sortArr = explode(',', $sort);
