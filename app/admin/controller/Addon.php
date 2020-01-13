@@ -290,13 +290,16 @@ class Addon extends Backend
     public function upgrade()
     {
         $name = $this->request->post('name');
+        $addonTmpDir = app()->getRuntimePath() . 'addons' . DS;
         if (! $name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
         if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             $this->error(__('Addon name incorrect'));
         }
-
+        if (!is_dir($addonTmpDir)) {
+            @mkdir($addonTmpDir, 0755, true);
+        }
         try {
             $uid = $this->request->post('uid');
             $token = $this->request->post('token');
