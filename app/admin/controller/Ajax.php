@@ -19,6 +19,7 @@ use think\facade\Cache;
 use think\facade\Config;
 use app\common\model\Attachment;
 use app\common\controller\Backend;
+use think\facade\Validate;
 
 /**
  * Ajax异步请求接口.
@@ -170,6 +171,9 @@ class Ajax extends Backend
         $field = $this->request->post('field');
         //操作的数据表
         $table = $this->request->post('table');
+        if (!Validate::is($table, "alphaDash")) {
+            $this->error();
+        }
         //主键
         $pk = $this->request->post('pk');
         //排序的方式
