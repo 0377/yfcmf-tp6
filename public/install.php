@@ -12,7 +12,7 @@
 set_time_limit(0);   //设置运行时间
 error_reporting(E_ALL & ~E_NOTICE);  //显示全部错误
 define('ROOT_PATH', dirname(dirname(__FILE__)));  //定义根目录
-define('DBCHARSET', 'UTF8');   //设置数据库默认编码
+define('DBCHARSET', 'utf8mb4');   //设置数据库默认编码
 if (function_exists('date_default_timezone_set')) {
     date_default_timezone_set('Asia/Shanghai');
 }
@@ -821,7 +821,7 @@ function step3(&$install_error, &$install_recover)
     try {
         $pdo = new PDO("mysql:host={$db_host};port={$db_port}", $db_user, $db_pwd, array(
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
         ));
     } catch (PDOException $e) {
         $install_error = '数据库连接失败';
@@ -848,7 +848,7 @@ function step3(&$install_error, &$install_recover)
     }
 
 
-    $pdo->query("CREATE DATABASE IF NOT EXISTS `{$db_name}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
+    $pdo->query("CREATE DATABASE IF NOT EXISTS `{$db_name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
     $pdo->query("USE `{$db_name}`");
 
     //$pdo->exec($sql);
@@ -962,7 +962,7 @@ function showjsmessage($message)
 //写入config文件
 function write_config($url)
 {
-    $charset = 'utf8';
+    $charset = 'utf8mb4';
     $db_host = $_POST['db_host'];
     $db_port = $_POST['db_port'];
     $db_user = $_POST['db_user'];
