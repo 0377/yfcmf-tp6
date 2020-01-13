@@ -7,6 +7,8 @@ use app\admin\model\AuthRule;
 use app\admin\model\AuthGroup;
 use app\common\controller\Backend;
 use app\admin\model\AuthGroupAccess;
+use think\Exception;
+use think\facade\Db;
 
 /**
  * 角色组.
@@ -155,8 +157,23 @@ class Group extends Backend
             $rules = in_array('*', $currentrules) ? $rules : array_intersect($currentrules, $rules);
             $params['rules'] = implode(',', $rules);
             if ($params) {
-                $row->save($params);
-                $this->success();
+                Db::startTrans();
+                try {
+                    $row->save($params);
+                    $children_auth_groups = AuthGroup::whereIn('id',implode(',',(Tree::instance()->getChildrenIds($row->id))));
+                    $childparams = [];
+                    foreach ($children_auth_groups as $key=>$children_auth_group) {
+                        $childparams[$key]['id'] = $children_auth_group->id;
+                        $childparams[$key]['rules'] = implode(',', array_intersect(explode(',', $children_auth_group->rules), $rules));
+                    }
+                    AuthGroup::saveAll($childparams);
+                    Db::commit();
+                    $this->success();
+                }catch (Exception $e){
+                    Db::rollback();
+                    $this->error($e->getMessage());
+                }
+
             }
             $this->error();
 
