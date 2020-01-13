@@ -72,6 +72,16 @@ class Config extends BaseModel
         return $regexList;
     }
 
+    public function getExtendAttr($value, $data)
+    {
+        $result = preg_replace_callback("/\{([a-zA-Z]+)\}/", function ($matches) use ($data) {
+            if (isset($data[$matches[1]])) {
+                return $data[$matches[1]];
+            }
+        }, $data['extend']);
+        return $result;
+    }
+
     /**
      * 读取分类分组列表.
      *
