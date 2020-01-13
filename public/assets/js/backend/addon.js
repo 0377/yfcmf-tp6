@@ -216,7 +216,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
                                     _method: 'POST'
                                 }
                             }, function (data, ret) {
-                                Controller.api.userinfo.set(data);
+                                Controller.api.userinfo.set(data.userinfo);
                                 Layer.closeAll();
                                 Layer.alert(ret.msg);
                             }, function (data, ret) {
@@ -226,7 +226,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
                             return false;
                         },
                         success: function (layero, index) {
-                            $(".layui-layer-btn1", layero).prop("href", "http://www.fastadmin.net/user/register.html").prop("target", "_blank");
+                            $(".layui-layer-btn1", layero).prop("href", "http://www.iuok.cn/user/register.html").prop("target", "_blank");
                         }
                     });
                 } else {
