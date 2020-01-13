@@ -119,6 +119,7 @@ class Admin extends Backend
     public function add()
     {
         if ($this->request->isPost()) {
+            $this->token();
             $params = $this->request->post('row/a');
             if ($params) {
                 $params['salt'] = Random::alnum();
@@ -162,6 +163,7 @@ class Admin extends Backend
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
+            $this->token();
             $params = $this->request->post('row/a');
             if ($params) {
                 if ($params['password']) {

@@ -92,6 +92,7 @@ class Group extends Backend
     public function add()
     {
         if ($this->request->isPost()) {
+            $this->token();
             $params = $this->request->post('row/a', [], 'strip_tags');
             $params['rules'] = explode(',', $params['rules']);
             if (! in_array($params['pid'], $this->childrenGroupIds)) {
@@ -131,6 +132,7 @@ class Group extends Backend
             $this->error(__('No Results were found'));
         }
         if ($this->request->isPost()) {
+            $this->token();
             $params = $this->request->post('row/a', [], 'strip_tags');
             // 父节点不能是它自身的子节点
             if (! in_array($params['pid'], $this->childrenGroupIds)) {

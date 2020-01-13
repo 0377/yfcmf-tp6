@@ -13,6 +13,7 @@
 namespace app\common\controller;
 
 use think\facade\Lang;
+use think\facade\Validate;
 use think\facade\View;
 use think\facade\Event;
 use think\facade\Config;
@@ -150,5 +151,21 @@ class Frontend extends BaseController
     {
         $this->view->config = array_merge($this->view->config ? $this->view->config : [],
             is_array($name) ? $name : [$name => $value]);
+    }
+
+    /**
+     * 刷新Token
+     */
+    protected function token()
+    {
+        $token = $this->request->post('__token__');
+
+        //验证Token
+        if (!Validate::is($token, "token", ['__token__' => $token])) {
+            $this->error(__('Token verification error'), '', ['__token__' => $this->request->buildToken()]);
+        }
+
+        //刷新Token
+        $this->request->buildToken();
     }
 }
