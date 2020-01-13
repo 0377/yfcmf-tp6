@@ -22,7 +22,7 @@ return [
     // 域名绑定（自动多应用模式有效）
     'domain_bind'           => [],
     // 禁止URL访问的应用列表（多应用模式有效）
-    'deny_app_list'         => ['common'],
+    'deny_app_list'         => ['common','admin'],
     // 默认应用
     'default_app'           => 'index',
     // 默认时区

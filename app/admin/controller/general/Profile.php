@@ -7,6 +7,7 @@ use think\facade\Session;
 use app\admin\model\Admin;
 use app\admin\model\AdminLog;
 use app\common\controller\Backend;
+use think\facade\Validate;
 
 /**
  * 个人配置.
@@ -58,9 +59,19 @@ class Profile extends Backend
             $params = array_filter(array_intersect_key($params,
                 array_flip(['email', 'nickname', 'password', 'avatar'])));
             unset($v);
+            if (!Validate::is($params['email'], "email")) {
+                $this->error(__("Please input correct email"));
+            }
             if (isset($params['password'])) {
+                if (!Validate::is($params['password'], "/^[\S]{6,16}$/")) {
+                    $this->error(__("Please input correct password"));
+                }
                 $params['salt'] = Random::alnum();
                 $params['password'] = md5(md5($params['password']).$params['salt']);
+            }
+            $exist = Admin::where('email', $params['email'])->where('id', '<>', $this->auth->id)->find();
+            if ($exist) {
+                $this->error(__("Email already exists"));
             }
             if ($params) {
                 $admin = Admin::find($this->auth->id);
