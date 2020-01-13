@@ -167,7 +167,9 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                             showClose: true
                         };
                         $('.datetimepicker', form).parent().css('position', 'relative');
-                        $('.datetimepicker', form).datetimepicker(options);
+                        $('.datetimepicker', form).datetimepicker(options).on('dp.change', function (e) {
+                            $(this, document).trigger("changed");
+                        });
                     });
                 }
             },
@@ -208,7 +210,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                             $(this).on('cancel.daterangepicker', function (ev, picker) {
                                 $(this).val('').trigger('blur');
                             });
-                            $(this).daterangepicker($.extend({}, options, $(this).data()), callback);
+                            $(this).daterangepicker($.extend(true, options, $(this).data()), callback);
                         });
                     });
                 }
@@ -270,7 +272,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                         var refresh = function (name) {
                             var data = {};
                             var textarea = $("textarea[name='" + name + "']", form);
-                            var container = textarea.closest("dl");
+                            var container = $(".fieldlist[data-name='" + name + "']");
                             var template = container.data("template");
                             $.each($("input,select,textarea", container).serializeArray(), function (i, j) {
                                 var reg = /\[(\w+)\]\[(\w+)\]$/g;
@@ -298,42 +300,44 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                             textarea.val(JSON.stringify(result));
                         };
                         //监听文本框改变事件
-                        $(document).on('change keyup', ".fieldlist input,.fieldlist textarea,.fieldlist select", function () {
-                            refresh($(this).closest("dl").data("name"));
+                        $(document).on('change keyup changed', ".fieldlist input,.fieldlist textarea,.fieldlist select", function () {
+                            refresh($(this).closest(".fieldlist").data("name"));
                         });
                         //追加控制
                         $(".fieldlist", form).on("click", ".btn-append,.append", function (e, row) {
-                            var container = $(this).closest("dl");
+                            var container = $(this).closest(".fieldlist");
+                            var tagName = container.data("tag") || "dd";
                             var index = container.data("index");
                             var name = container.data("name");
                             var template = container.data("template");
                             var data = container.data();
                             index = index ? parseInt(index) : 0;
                             container.data("index", index + 1);
-                            var row = row ? row : {};
+                            row = row ? row : {};
                             var vars = {index: index, name: name, data: data, row: row};
                             var html = template ? Template(template, vars) : Template.render(Form.config.fieldlisttpl, vars);
-                            $(html).insertBefore($(this).closest("dd"));
-                            $(this).trigger("fa.event.appendfieldlist", $(this).closest("dd").prev());
+                            $(html).insertBefore($(tagName + ":last", container));
+                            $(this).trigger("fa.event.appendfieldlist", $(this).closest(tagName).prev());
                         });
                         //移除控制
-                        $(".fieldlist", form).on("click", "dd .btn-remove", function () {
-                            var container = $(this).closest("dl");
-                            $(this).closest("dd").remove();
+                        $(".fieldlist", form).on("click", ".btn-remove", function () {
+                            var container = $(this).closest(".fieldlist");
+                            var tagName = container.data("tag") || "dd";
+                            $(this).closest(tagName).remove();
                             refresh(container.data("name"));
                         });
-                        //拖拽排序
-                        $("dl.fieldlist", form).dragsort({
-                            itemSelector: 'dd',
-                            dragSelector: ".btn-dragsort",
-                            dragEnd: function () {
-                                refresh($(this).closest("dl").data("name"));
-                            },
-                            placeHolderTemplate: "<dd></dd>"
-                        });
-                        //渲染数据
+                        //渲染数据&拖拽排序
                         $(".fieldlist", form).each(function () {
                             var container = this;
+                            var tagName = $(this).data("tag") || "dd";
+                            $(this).dragsort({
+                                itemSelector: tagName,
+                                dragSelector: ".btn-dragsort",
+                                dragEnd: function () {
+                                    refresh($(this).closest(".fieldlist").data("name"));
+                                },
+                                placeHolderTemplate: $("<" + tagName + "/>")
+                            });
                             var textarea = $("textarea[name='" + $(this).data("name") + "']", form);
                             if (textarea.val() == '') {
                                 return true;
@@ -431,7 +435,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                     complete: function (xhr) {
                         var token = xhr.getResponseHeader('__token__');
                         if (token) {
-                            $("input[name='__token__']", form).val(token);
+                            $("input[name='__token__']").val(token);
                         }
                     }
                 }, function (data, ret) {
@@ -439,7 +443,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                     if (data && typeof data === 'object') {
                         //刷新客户端token
                         if (typeof data.token !== 'undefined') {
-                            $("input[name='__token__']", form).val(data.token);
+                            $("input[name='__token__']").val(data.token);
                         }
                         //调用客户端事件
                         if (typeof data.callback !== 'undefined' && typeof data.callback === 'function') {
@@ -453,7 +457,7 @@ define(['jquery', 'bootstrap', 'upload', 'validator'], function ($, undefined, U
                     }
                 }, function (data, ret) {
                     if (data && typeof data === 'object' && typeof data.token !== 'undefined') {
-                        $("input[name='__token__']", form).val(data.token);
+                        $("input[name='__token__']").val(data.token);
                     }
                     if (typeof error === 'function') {
                         if (false === error.call(form, data, ret)) {

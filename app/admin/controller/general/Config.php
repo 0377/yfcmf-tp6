@@ -13,6 +13,7 @@
 namespace app\admin\controller\general;
 
 use think\Exception;
+use think\facade\Validate;
 use app\common\library\Email;
 use app\common\controller\Backend;
 use app\common\model\Config as ConfigModel;
@@ -152,9 +153,9 @@ class Config extends Backend
 
     public function del($ids = '')
     {
-        $name = $this->request->request('name');
+        $name = $this->request->post('name');
         $config = ConfigModel::getByName($name);
-        if ($config) {
+        if ($name && $config) {
             try {
                 $config->delete();
                 $this->refreshFile();
@@ -215,18 +216,25 @@ class Config extends Backend
     public function emailtest()
     {
         $row = $this->request->post('row/a');
-        \think\facade\Config::set(array_merge(\think\facade\Config::get('site'), $row), 'site');
-        $receiver = $this->request->request('receiver');
-        $email = new Email();
-        $result = $email
-            ->to($receiver)
-            ->subject(__('This is a test mail'))
-            ->message('<div style="min-height:550px; padding: 100px 55px 200px;">'.__('This is a test mail content').'</div>')
-            ->send();
-        if ($result) {
-            $this->success();
+        $receiver = $this->request->post("receiver");
+        if ($receiver) {
+            if (!Validate::is($receiver, "email")) {
+                $this->error(__('Please input correct email'));
+            }
+            \think\facade\Config::set(array_merge(\think\facade\Config::get('site'), $row), 'site');
+            $email = new Email;
+            $result = $email
+                ->to($receiver)
+                ->subject(__("This is a test mail"))
+                ->message('<div style="min-height:550px; padding: 100px 55px 200px;">' . __('This is a test mail content') . '</div>')
+                ->send();
+            if ($result) {
+                $this->success();
+            } else {
+                $this->error($email->getError());
+            }
         } else {
-            $this->error($email->getError());
+            $this->error(__('Invalid parameters'));
         }
     }
 }

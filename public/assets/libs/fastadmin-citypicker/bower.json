@@ -2,7 +2,6 @@
   "name": "fastadmin-citypicker",
   "description": "A simple jQuery plugin for picking provinces, cities and districts of China.",
   "main": [
-    "dist/js/city-picker.data.js",
     "dist/js/city-picker.js"
   ],
   "keywords": [

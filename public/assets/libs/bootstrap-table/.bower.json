@@ -24,14 +24,14 @@
     "docs",
     "assets"
   ],
-  "version": "1.11.1",
-  "_release": "1.11.1",
+  "version": "1.11.3",
+  "_release": "1.11.3",
   "_resolution": {
     "type": "version",
-    "tag": "1.11.1",
-    "commit": "d5ccd48950a03a3f7d684358bebf1899bec4d3b0"
+    "tag": "1.11.3",
+    "commit": "8aa6944b83b1267a9ef4c84bd4f9982a2975ddc9"
   },
-  "_source": "https://github.com/wenzhixin/bootstrap-table.git",
-  "_target": "~1.11.0",
-  "_originalSource": "bootstrap-table"
+  "_source": "https://github.com/karsonzhang/fastadmin-bootstraptable.git",
+  "_target": "~1.11.3",
+  "_originalSource": "fastadmin-bootstraptable"
 }

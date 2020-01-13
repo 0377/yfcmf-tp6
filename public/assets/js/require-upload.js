@@ -4,13 +4,13 @@ define(['jquery', 'bootstrap', 'plupload', 'template'], function ($, undefined, 
             config: {
                 container: document.body,
                 classname: '.plupload:not([initialized])',
-                previewtpl: '<li class="col-xs-3"><a href="<%=fullurl%>" data-url="<%=url%>" target="_blank" class="thumbnail"><img src="<%=fullurl%>" onerror="this.src=\'https://tool.iuok.cn/icon/\'+\'<%=fullurl%>\'.split(\'.\').pop()+\'.png\';this.onerror=null;" class="img-responsive"></a><a href="javascript:;" class="btn btn-danger btn-xs btn-trash"><i class="fa fa-trash"></i></a></li>',
+                previewtpl: '<li class="col-xs-3"><a href="<%=fullurl%>" data-url="<%=url%>" target="_blank" class="thumbnail"><img src="<%=fullurl%>" onerror="this.src=\'https://tool.fastadmin.net/icon/\'+\'<%=fullurl%>\'.split(\'.\').pop()+\'.png\';this.onerror=null;" class="img-responsive"></a><a href="javascript:;" class="btn btn-danger btn-xs btn-trash"><i class="fa fa-trash"></i></a></li>',
             },
             events: {
                 onInit: function (up) {
                     //修复少数安卓浏览器无法上传图片的Bug
-                    var input = $("input[type=file]", $(up.settings.button).next());
-                    if (input && input.prop("accept") && input.prop("accept").match(/image\/jpeg/)) {
+                    var input = $("input[type=file]", up.settings.container);
+                    if (input && input.prop("accept") && input.prop("accept").match(/image\//)) {
                         input.prop("accept", "image/jpg," + input.prop("accept"));
                     }
                 },
@@ -214,6 +214,7 @@ define(['jquery', 'bootstrap', 'plupload', 'template'], function ($, undefined, 
                             url: url,
                             multipart_params: $.isArray(multipart) ? {} : multipart,
                             init: {
+                                Init: Upload.events.onInit,
                                 PostInit: Upload.events.onPostInit,
                                 FilesAdded: Upload.events.onFileAdded,
                                 BeforeUpload: Upload.events.onBeforeUpload,

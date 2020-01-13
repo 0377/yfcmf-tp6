@@ -1,6 +1,6 @@
 {
   "name": "tableexport.jquery.plugin",
-  "version": "1.10.3",
+  "version": "1.10.11",
   "description": "html table export",
   "main": "tableExport.js",
   "authors": [
@@ -35,11 +35,11 @@
     "test",
     "tests"
   ],
-  "_release": "1.10.3",
+  "_release": "1.10.11",
   "_resolution": {
     "type": "version",
-    "tag": "v1.10.3",
-    "commit": "0157755b15a6698fca62e3b9f0b7644d6addab2f"
+    "tag": "v1.10.11",
+    "commit": "466c1eb922a4d7dabfe3bc02122a056a4de91283"
   },
   "_source": "https://github.com/hhurz/tableExport.jquery.plugin.git",
   "_target": "~1.10.3",

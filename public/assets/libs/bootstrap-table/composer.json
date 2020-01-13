@@ -1,12 +1,12 @@
 {
-    "name": "wenzhixin/bootstrap-table",
+    "name": "karsonzhang/fastadmin-bootstraptable",
     "description": "An extended Bootstrap table with radio, checkbox, sort, pagination and other features.",
     "keywords": ["bootstrap","table","tablesort","pagination"],
     "type": "component",
-    "homepage": "https://github.com/wenzhixin/bootstrap-table",
+    "homepage": "https://github.com/karsonzhang/fastadmin-bootstraptable",
     "license": "MIT",
     "require": {
-        "twitter/bootstrap": ">=2.3.0"
+        "twitter/bootstrap": ">=3.3.0"
     },
     "authors": [
         {

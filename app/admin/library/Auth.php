@@ -73,6 +73,7 @@ class Auth extends \fast\Auth
         }
         $admin->loginfailure = 0;
         $admin->logintime = time();
+        $admin->loginip = request()->ip();
         $admin->token = Random::uuid();
         $admin->save();
         Session::set('admin', $admin->toArray());
@@ -117,6 +118,11 @@ class Auth extends \fast\Auth
             }
             //token有变更
             if ($key != md5(md5($id).md5($keeptime).md5($expiretime).$admin->token)) {
+                return false;
+            }
+            $ip = request()->ip();
+            //IP有变动
+            if ($admin->loginip != $ip) {
                 return false;
             }
             Session::set('admin', $admin->toArray());
@@ -201,8 +207,10 @@ class Auth extends \fast\Auth
                 return false;
             }
         }
+        if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
+            return false;
+        }
         $this->logined = true;
-
         return true;
     }
 
@@ -292,10 +300,17 @@ class Auth extends \fast\Auth
         foreach ($groups as $k => $v) {
             $groupIds[] = $v['id'];
         }
+        $originGroupIds = $groupIds;
+        foreach ($groups as $k => $v) {
+            if (in_array($v['pid'], $originGroupIds)) {
+                $groupIds = array_diff($groupIds, [$v['id']]);
+                unset($groups[$k]);
+            }
+        }
         // 取出所有分组
         $groupList = \app\admin\model\AuthGroup::where(['status' => 'normal'])->select();
         $objList = [];
-        foreach ($groups as $K => $v) {
+        foreach ($groups as $k => $v) {
             if ($v['rules'] === '*') {
                 $objList = $groupList;
                 break;

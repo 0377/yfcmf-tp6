@@ -43,7 +43,7 @@ $site_name = 'FastAdmin-TP6';
 $site_url = 'https://www.iuok.cn';
 $version = 'V2.0.1';
 $_date = date('Y');
-$sql_url = 'http://demo.iuok.cn/fastadmin.sql';
+$sql_url = '../fastadmin.sql';
 
 $html_title = '程序安装向导';
 $install_css = <<<EOF

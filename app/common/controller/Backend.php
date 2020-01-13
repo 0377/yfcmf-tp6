@@ -129,7 +129,9 @@ class Backend extends BaseController
     public function _initialize()
     {
         $modulename = app()->http->getName();
-        $controllername = strtolower($this->request->controller());
+        $controller = preg_replace_callback('/\.[A-Z]/', function ($d){ return strtolower($d[0]);}, $this->request->controller(),1);
+
+        $controllername = parseName($controller);
         $actionname = strtolower($this->request->action());
 
         $path = str_replace('.', '/', $controllername).'/'.$actionname;
@@ -510,7 +512,7 @@ class Backend extends BaseController
                     'pid'       => isset($item['pid']) ? $item['pid'] : 0,
                 ];
             }
-            if ($istree) {
+            if ($istree && !$primaryvalue) {
                 $tree = Tree::instance();
                 $tree->init($list, 'pid');
                 $list = $tree->getTreeList($tree->getTreeArray(0), $field);

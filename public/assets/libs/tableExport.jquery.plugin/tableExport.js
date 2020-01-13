@@ -1,7 +1,7 @@
 /**
  * @preserve tableExport.jquery.plugin
  *
- * Version 1.10.3
+ * Version 1.10.11
  *
  * Copyright (c) 2015-2019 hhurz, https://github.com/hhurz
  *
@@ -15,47 +15,51 @@
 (function ($) {
   $.fn.tableExport = function (options) {
     var defaults = {
-      csvEnclosure:        '"',
-      csvSeparator:        ',',
-      csvUseBOM:           true,
-      displayTableName:    false,
-      escape:              false,
-      exportHiddenCells:   false,       // true = speed up export of large tables with hidden cells (hidden cells will be exported !)
-      fileName:            'tableExport',
-      htmlContent:         false,
-      ignoreColumn:        [],
-      ignoreRow:           [],
-      jsonScope:           'all',       // head, data, all
+      csvEnclosure:       '"',
+      csvSeparator:       ',',
+      csvUseBOM:          true,
+      date: {
+        html:             'dd/mm/yyyy'  // Date format in html source. Supported placeholders: dd, mm, yy, yyyy and a arbitrary single separator character
+      },
+      displayTableName:   false,        // Deprecated
+      escape:             false,        // Deprecated
+      exportHiddenCells:  false,        // true = speed up export of large tables with hidden cells (hidden cells will be exported !)
+      fileName:           'tableExport',
+      htmlContent:        false,
+      htmlHyperlink:      'content',    // Export the cell 'content' or the 'href' link of an <a> tag. Will be ignored if onCellHtmlHyperlink is defined
+      ignoreColumn:       [],
+      ignoreRow:          [],
+      jsonScope:          'all',        // One of 'head', 'data', 'all'
       jspdf: {                          // jsPDF / jsPDF-AutoTable related options
-        orientation:       'p',
-        unit:              'pt',
-        format:            'a4',        // One of jsPDF page formats or 'bestfit' for autmatic paper format selection
-        margins:           {left: 20, right: 10, top: 10, bottom: 10},
-        onDocCreated:      null,
+        orientation:      'p',
+        unit:             'pt',
+        format:           'a4',         // One of jsPDF page formats or 'bestfit' for automatic paper format selection
+        margins:          {left: 20, right: 10, top: 10, bottom: 10},
+        onDocCreated:     null,
         autotable: {
           styles: {
-            cellPadding:   2,
-            rowHeight:     12,
-            fontSize:      8,
-            fillColor:     255,         // Color value or 'inherit' to use css background-color from html table
-            textColor:     50,          // Color value or 'inherit' to use css color from html table
-            fontStyle:     'normal',    // normal, bold, italic, bolditalic or 'inherit' to use css font-weight and fonst-style from html table
-            overflow:      'ellipsize', // visible, hidden, ellipsize or linebreak
-            halign:        'inherit',   // left, center, right or 'inherit' to use css horizontal cell alignment from html table
-            valign:        'middle'     // top, middle, bottom
+            cellPadding:  2,
+            rowHeight:    12,
+            fontSize:     8,
+            fillColor:    255,          // Color value or 'inherit' to use css background-color from html table
+            textColor:    50,           // Color value or 'inherit' to use css color from html table
+            fontStyle:    'normal',     // 'normal', 'bold', 'italic', 'bolditalic' or 'inherit' to use css font-weight and font-style from html table
+            overflow:     'ellipsize',  // 'visible', 'hidden', 'ellipsize' or 'linebreak'
+            halign:       'inherit',    // 'left', 'center', 'right' or 'inherit' to use css horizontal cell alignment from html table
+            valign:       'middle'      // 'top', 'middle', or 'bottom'
           },
           headerStyles: {
-            fillColor:     [52, 73, 94],
-            textColor:     255,
-            fontStyle:     'bold',
-            halign:        'inherit',   // left, center, right or 'inherit' to use css horizontal header cell alignment from html table
-            valign:        'middle'     // top, middle, bottom
+            fillColor:    [52, 73, 94],
+            textColor:    255,
+            fontStyle:    'bold',
+            halign:       'inherit',    // 'left', 'center', 'right' or 'inherit' to use css horizontal header cell alignment from html table
+            valign:       'middle'      // 'top', 'middle', or 'bottom'
           },
           alternateRowStyles: {
             fillColor:     245
           },
           tableExport: {
-            doc:               null,    // jsPDF doc object. If set, an already created doc will be used to export to
+            doc:               null,    // jsPDF doc object. If set, an already created doc object will be used to export to
             onAfterAutotable:  null,
             onBeforeAutotable: null,
             onAutotableText:   null,
@@ -65,38 +69,45 @@
         }
       },
       mso: {                            // MS Excel and MS Word related options
-        fileFormat:        'xlshtml',   // xlshtml = Excel 2000 html format
-                                        // xmlss = XML Spreadsheet 2003 file format (XMLSS)
-                                        // xlsx = Excel 2007 Office Open XML format
+        fileFormat:        'xlshtml',   // 'xlshtml' = Excel 2000 html format
+                                        // 'xmlss' = XML Spreadsheet 2003 file format (XMLSS)
+                                        // 'xlsx' = Excel 2007 Office Open XML format
         onMsoNumberFormat: null,        // Excel 2000 html format only. See readme.md for more information about msonumberformat
         pageFormat:        'a4',        // Page format used for page orientation
         pageOrientation:   'portrait',  // portrait, landscape (xlshtml format only)
         rtl:               false,       // true = Set worksheet option 'DisplayRightToLeft'
         styles:            [],          // E.g. ['border-bottom', 'border-top', 'border-left', 'border-right']
-        worksheetName:     ''
+        worksheetName:     '',
+        xslx: {                         // Specific Excel 2007 XML format settings:
+          formatId: {                   // XLSX format (id) used to format excel cells. See readme.md: data-tableexport-xlsxformatid
+            date:          14,          // formatId or format string (e.g. 'm/d/yy') or function(cell, row, col) {return formatId}
+            numbers:       2            // formatId or format string (e.g. '\"T\"\ #0.00') or function(cell, row, col) {return formatId}
+          }
+        }
       },
       numbers: {
         html: {
-          decimalMark:        '.',
-          thousandsSeparator: ','
+          decimalMark:        '.',      // Decimal mark in html source
+          thousandsSeparator: ','       // Thousands separator in html source
         },
-        output: {                       // Use 'output: false' to keep number format in exported output
-          decimalMark:        '.',
-          thousandsSeparator: ','
+        output: {                       // Set 'output: false' to keep number format of html source in resulting output
+          decimalMark:        '.',      // Decimal mark in resulting output
+          thousandsSeparator: ','       // Thousands separator in resulting output
         }
       },
-      onAfterSaveToFile:   null,
-      onBeforeSaveToFile:  null,        // Return false as result to abort save process
-      onCellData:          null,
-      onCellHtmlData:      null,
-      onIgnoreRow:         null,        // onIgnoreRow($tr, rowIndex): function should return true to not export a row
+      onAfterSaveToFile:   null,        // function(data, fileName)
+      onBeforeSaveToFile:  null,        // saveIt = function(data, fileName, type, charset, encoding): Return false to abort save process
+      onCellData:          null,        // cellText = function($cell, row, col, href, cellText, cellType)
+      onCellHtmlData:      null,        // cellText = function($cell, row, col, htmlContent)
+      onCellHtmlHyperlink: null,        // cellText = function($cell, row, col, href, cellText)
+      onIgnoreRow:         null,        // ignoreRow = function($tr, row): Return true to prevent export of the row
       outputMode:          'file',      // 'file', 'string', 'base64' or 'window' (experimental)
       pdfmake: {
         enabled:           false,       // true: use pdfmake instead of jspdf and jspdf-autotable (experimental)
         docDefinition: {
           pageOrientation: 'portrait',  // 'portrait' or 'landscape'
           defaultStyle: {
-            font:          'Roboto'     // Default is 'Roboto', for arabic font set this option to 'Mirza' and include mirza_fonts.js
+            font:          'Roboto'     // Default is 'Roboto', for an arabic font set this option to 'Mirza' and include mirza_fonts.js
           }
         },
         fonts: {}
@@ -106,11 +117,15 @@
         trailingWS:        false        // preserve trailing white spaces
       },
       preventInjection:    true,        // Prepend a single quote to cell strings that start with =,+,- or @ to prevent formula injection
+      sql: {
+        tableEnclosure:     '`',        // If table or column names contain any characters except letters, numbers, and
+        columnEnclosure:    '`'         // underscores usually the name must be delimited by enclosing it in back quotes (`)
+      },
       tbodySelector:       'tr',
       tfootSelector:       'tr',        // Set empty ('') to prevent export of tfoot rows
       theadSelector:       'tr',
       tableName:           'Table',
-      type:                'csv'        // 'csv', 'tsv', 'txt', 'sql', 'json', 'xml', 'excel', 'doc', 'png' or 'pdf'
+      type:                'csv'        // Export format: 'csv', 'tsv', 'txt', 'sql', 'json', 'xml', 'excel', 'doc', 'png' or 'pdf'
     };
 
     var pageFormats = { // Size in pt of various paper formats. Adopted from jsPDF.
@@ -169,6 +184,34 @@
 
     // Check values of some options
     defaults.mso.pageOrientation = (defaults.mso.pageOrientation.substr(0, 1) === 'l') ? 'landscape' : 'portrait';
+    defaults.date.html = defaults.date.html || '';
+
+    if ( defaults.date.html.length ) {
+      var patt = [];
+      patt['dd'] = '(3[01]|[12][0-9]|0?[1-9])';
+      patt['mm'] = '(1[012]|0?[1-9])';
+      patt['yyyy'] = '((?:1[6-9]|2[0-2])\\d{2})';
+      patt['yy'] = '(\\d{2})';
+
+      var separator = defaults.date.html.match(/[^a-zA-Z0-9]/)[0];
+      var formatItems = defaults.date.html.toLowerCase().split(separator);
+      defaults.date.regex = '^\\s*';
+      defaults.date.regex += patt[formatItems[0]];
+      defaults.date.regex += '(.)'; // separator group
+      defaults.date.regex += patt[formatItems[1]];
+      defaults.date.regex += '\\2'; // identical separator group
+      defaults.date.regex += patt[formatItems[2]];
+      defaults.date.regex += '\\s*$';
+      // e.g. '^\\s*(3[01]|[12][0-9]|0?[1-9])(.)(1[012]|0?[1-9])\\2((?:1[6-9]|2[0-2])\\d{2})\\s*$'
+
+      defaults.date.pattern = new RegExp(defaults.date.regex, 'g');
+      var f = formatItems.indexOf("dd")+1;
+      defaults.date.match_d = f + (f > 1 ? 1 : 0);
+      f = formatItems.indexOf("mm")+1;
+      defaults.date.match_m = f + (f > 1 ? 1 : 0);
+      f = (formatItems.indexOf("yyyy") >= 0 ? formatItems.indexOf("yyyy") : formatItems.indexOf("yy"))+1;
+      defaults.date.match_y = f + (f > 1 ? 1 : 0);
+    }
 
     colNames = GetColumnNames(el);
 
@@ -268,12 +311,12 @@
       // Header
       rowIndex = 0;
       ranges   = [];
-      var tdData = "INSERT INTO `" + defaults.tableName + "` (";
+      var tdData = "INSERT INTO " + defaults.sql.tableEnclosure + defaults.tableName + defaults.sql.tableEnclosure + " (";
       $hrows     = collectHeadRows ($(el));
       $($hrows).each(function () {
         ForEachVisibleCell(this, 'th,td', rowIndex, $hrows.length,
                            function (cell, row, col) {
-                             tdData += "'" + parseString(cell, row, col) + "',";
+                             tdData += defaults.sql.columnEnclosure + parseString(cell, row, col) + defaults.sql.columnEnclosure + ",";
                            });
         rowIndex++;
         tdData = $.trim(tdData).substring(0, tdData.length - 1);
@@ -524,7 +567,7 @@
           return $rows.length;
         }
 
-        var rowLength = CollectXmlssData (collectHeadRows ($table), 'th,td', rowLength);
+        var rowLength = CollectXmlssData (collectHeadRows ($table), 'th,td', 0);
         CollectXmlssData (collectRows ($table), 'td,th', rowLength);
 
         docData += '</Table>\r';
@@ -612,7 +655,7 @@
     }
     else if ( defaults.type === 'excel' && defaults.mso.fileFormat === 'xlsx' ) {
 
-      var docNames = [];
+      var sheetNames = [];
       var workbook = XLSX.utils.book_new();
 
       // Multiple worksheets and .xlsx file extension #202
@@ -621,27 +664,27 @@
         return isVisible($(this));
       }).each(function () {
         var $table = $(this);
-        var ws = XLSX.utils.table_to_sheet(this);
+        var ws = xlsxTableToSheet(this);
 
         var sheetName = '';
         if ( typeof defaults.mso.worksheetName === 'string' && defaults.mso.worksheetName.length )
-          sheetName = defaults.mso.worksheetName + ' ' + (docNames.length + 1);
-        else if ( typeof defaults.mso.worksheetName[docNames.length] !== 'undefined' )
-          sheetName = defaults.mso.worksheetName[docNames.length];
+          sheetName = defaults.mso.worksheetName + ' ' + (sheetNames.length + 1);
+        else if ( typeof defaults.mso.worksheetName[sheetNames.length] !== 'undefined' )
+          sheetName = defaults.mso.worksheetName[sheetNames.length];
         if ( ! sheetName.length )
           sheetName = $table.find('caption').text() || '';
         if ( ! sheetName.length )
-          sheetName = 'Table ' + (docNames.length + 1);
+          sheetName = 'Table ' + (sheetNames.length + 1);
         sheetName = $.trim(sheetName.replace(/[\\\/[\]*:?'"]/g,'').substring(0,31));
 
-        docNames.push(sheetName);
+        sheetNames.push(sheetName);
         XLSX.utils.book_append_sheet(workbook, ws, sheetName);
       });
 
       // add worksheet to workbook
       var wbout = XLSX.write(workbook, {type: 'binary', bookType: defaults.mso.fileFormat, bookSST: false});
 
-      saveToFile ( jx_s2ab(wbout), 
+      saveToFile ( xlsxWorkbookToArrayBuffer(wbout),
                    defaults.fileName + '.' + defaults.mso.fileFormat, 
                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                    "UTF-8", "", false );
@@ -683,17 +726,20 @@
                              function (cell, row, col) {
                                if ( cell !== null ) {
                                  var thstyle = '';
-                                 var cellstyles = document.defaultView.getComputedStyle(cell, null);
-                                 var rowstyles = document.defaultView.getComputedStyle($row[0], null);
 
                                  trData += '<th';
-                                 for ( var cssStyle in defaults.mso.styles ) {
-                                   var thcss = cellstyles[defaults.mso.styles[cssStyle]];
-                                   if ( thcss === '' )
-                                     thcss = rowstyles[defaults.mso.styles[cssStyle]];
-                                   if ( thcss !== '' && thcss !== '0px none rgb(0, 0, 0)' && thcss !== 'rgba(0, 0, 0, 0)' ) {
-                                     thstyle += (thstyle === '') ? 'style="' : ';';
-                                     thstyle += defaults.mso.styles[cssStyle] + ':' + thcss;
+                                 if ( defaults.mso.styles.length ) {
+                                   var cellstyles = document.defaultView.getComputedStyle(cell, null);
+                                   var rowstyles = document.defaultView.getComputedStyle($row[0], null);
+
+                                   for ( var cssStyle in defaults.mso.styles ) {
+                                     var thcss = cellstyles[defaults.mso.styles[cssStyle]];
+                                     if ( thcss === '' )
+                                       thcss = rowstyles[defaults.mso.styles[cssStyle]];
+                                     if ( thcss !== '' && thcss !== '0px none rgb(0, 0, 0)' && thcss !== 'rgba(0, 0, 0, 0)' ) {
+                                       thstyle += (thstyle === '') ? 'style="' : ';';
+                                       thstyle += defaults.mso.styles[cssStyle] + ':' + thcss;
+                                     }
                                    }
                                  }
                                  if ( thstyle !== '' )
@@ -726,9 +772,7 @@
                                if ( cell !== null ) {
                                  var tdvalue = parseString(cell, row, col);
                                  var tdstyle = '';
-                                 var tdcss   = $(cell).data("tableexport-msonumberformat");
-                                 var cellstyles = document.defaultView.getComputedStyle(cell, null);
-                                 var rowstyles = document.defaultView.getComputedStyle($row[0], null);
+                                 var tdcss   = $(cell).attr("data-tableexport-msonumberformat");
 
                                  if ( typeof tdcss === 'undefined' && typeof defaults.mso.onMsoNumberFormat === 'function' )
                                    tdcss = defaults.mso.onMsoNumberFormat(cell, row, col);
@@ -736,16 +780,22 @@
                                  if ( typeof tdcss !== 'undefined' && tdcss !== '' )
                                    tdstyle = 'style="mso-number-format:\'' + tdcss + '\'';
 
-                                 for ( var cssStyle in defaults.mso.styles ) {
-                                   tdcss = cellstyles[defaults.mso.styles[cssStyle]];
-                                   if ( tdcss === '' )
-                                     tdcss = rowstyles[defaults.mso.styles[cssStyle]];
+                                 if ( defaults.mso.styles.length ) {
+                                   var cellstyles = document.defaultView.getComputedStyle(cell, null);
+                                   var rowstyles = document.defaultView.getComputedStyle($row[0], null);
 
-                                   if ( tdcss !== '' && tdcss !== '0px none rgb(0, 0, 0)' && tdcss !== 'rgba(0, 0, 0, 0)' ) {
-                                     tdstyle += (tdstyle === '') ? 'style="' : ';';
-                                     tdstyle += defaults.mso.styles[cssStyle] + ':' + tdcss;
+                                   for ( var cssStyle in defaults.mso.styles ) {
+                                     tdcss = cellstyles[defaults.mso.styles[cssStyle]];
+                                     if ( tdcss === '' )
+                                       tdcss = rowstyles[defaults.mso.styles[cssStyle]];
+
+                                     if ( tdcss !== '' && tdcss !== '0px none rgb(0, 0, 0)' && tdcss !== 'rgba(0, 0, 0, 0)' ) {
+                                       tdstyle += (tdstyle === '') ? 'style="' : ';';
+                                       tdstyle += defaults.mso.styles[cssStyle] + ':' + tdcss;
+                                     }
                                    }
                                  }
+
                                  trData += '<td';
                                  if ( tdstyle !== '' )
                                    trData += ' ' + tdstyle + '"';
@@ -1378,18 +1428,18 @@
     }
 
     function isVisible ($element) {
-      var isCell = typeof $element[0].cellIndex !== 'undefined';
       var isRow = typeof $element[0].rowIndex !== 'undefined';
+      var isCell = isRow === false && typeof $element[0].cellIndex !== 'undefined';
       var isElementVisible = (isCell || isRow) ? isTableElementVisible($element) : $element.is(':visible');
-      var tableexportDisplay = $element.data("tableexport-display");
+      var tableexportDisplay = $element.attr("data-tableexport-display");
 
       if (isCell && tableexportDisplay !== 'none' && tableexportDisplay !== 'always') {
         $element = $($element[0].parentNode);
         isRow = typeof $element[0].rowIndex !== 'undefined';
-        tableexportDisplay = $element.data("tableexport-display");
+        tableexportDisplay = $element.attr("data-tableexport-display");
       }
       if (isRow && tableexportDisplay !== 'none' && tableexportDisplay !== 'always') {
-        tableexportDisplay = $element.closest('table').data("tableexport-display");
+        tableexportDisplay = $element.closest('table').attr("data-tableexport-display");
       }
 
       return tableexportDisplay !== 'none' && (isElementVisible === true || tableexportDisplay === 'always');
@@ -1443,9 +1493,10 @@
           ignoreRow = defaults.onIgnoreRow($(tableRow), rowIndex);
 
         if (ignoreRow === false &&
-          $.inArray(rowIndex, defaults.ignoreRow) === -1 &&
-          $.inArray(rowIndex - rowCount, defaults.ignoreRow) === -1 &&
-          isVisible($(tableRow))) {
+            (defaults.ignoreRow.length === 0 ||
+             ($.inArray(rowIndex, defaults.ignoreRow) === -1 &&
+              $.inArray(rowIndex - rowCount, defaults.ignoreRow) === -1)) &&
+            isVisible($(tableRow))) {
 
           var $cells = findTableElements($(tableRow), selector);
           var cellCount = 0;
@@ -1824,10 +1875,32 @@
       return string == null ? "" : string.toString().replace(/\s+$/, "");
     }
 
+    function parseDate(s) {
+      defaults.date.pattern.lastIndex = 0;
+
+      var match = defaults.date.pattern.exec(s);
+      if (match == null)
+        return false;
+
+      var y = +match[defaults.date.match_y];
+      if(y < 0 || y > 8099) return false;
+      var m = match[defaults.date.match_m]*1;
+      var d = match[defaults.date.match_d]*1;
+      if(isNaN(d)) return false;
+
+      var o = new Date(y, m - 1, d);
+      if (o.getFullYear() === y && o.getMonth() === (m - 1) && o.getDate() === d)
+        return o;
+      else
+        return false;
+    }
+
     function parseNumber (value) {
       value = value || "0";
-      value = replaceAll(value, defaults.numbers.html.thousandsSeparator, '');
-      value = replaceAll(value, defaults.numbers.html.decimalMark, '.');
+      if ('' !== defaults.numbers.html.thousandsSeparator)
+        value = replaceAll(value, defaults.numbers.html.thousandsSeparator, '');
+      if ('.' !== defaults.numbers.html.decimalMark)
+        value = replaceAll(value, defaults.numbers.html.decimalMark, '.');
 
       return typeof value === "number" || jQuery.isNumeric(value) !== false ? value : false;
     }
@@ -1843,8 +1916,9 @@
       return value;
     }
 
-    function parseString (cell, rowIndex, colIndex) {
+    function parseString (cell, rowIndex, colIndex, cellInfo) {
       var result = '';
+      var cellType = 'text';
 
       if ( cell !== null ) {
         var $cell = $(cell);
@@ -1854,7 +1928,7 @@
           htmlData = '';
         }
         else if ( $cell[0].hasAttribute("data-tableexport-value") ) {
-          htmlData = $cell.data("tableexport-value");
+          htmlData = $cell.attr("data-tableexport-value");
           htmlData = htmlData ? htmlData + '' : '';
         }
         else {
@@ -1879,19 +1953,31 @@
                 if ( typeof $(this).html() === 'undefined' )
                   htmlData += $(this).text();
                 else if ( jQuery().bootstrapTable === undefined ||
-                  ($(this).hasClass('filterControl') !== true &&
-                    $(cell).parents('.detail-view').length === 0) )
+                  ($(this).hasClass('fht-cell') === false &&  // BT 4
+                   $(this).hasClass('filterControl') === false &&
+                   $cell.parents('.detail-view').length === 0) )
                   htmlData += $(this).html();
+
+                if ( $(this).is("a") ) {
+                  var href = $cell.find('a').attr('href') || '';
+                  if ( typeof defaults.onCellHtmlHyperlink === 'function' )
+                    result = defaults.onCellHtmlHyperlink($cell, rowIndex, colIndex, href, htmlData);
+                  else if ( defaults.htmlHyperlink === 'href' )
+                    result = href;
+                  else // 'content'
+                    result = htmlData;
+                  htmlData = '';
+                }
               }
             });
           }
         }
 
-        if ( defaults.htmlContent === true ) {
+        if ( htmlData && htmlData !== '' && defaults.htmlContent === true ) {
           result = $.trim(htmlData);
         }
         else if ( htmlData && htmlData !== '' ) {
-          var cellFormat = $(cell).data("tableexport-cellformat");
+          var cellFormat = $cell.attr("data-tableexport-cellformat");
 
           if ( cellFormat !== '' ) {
             var text   = htmlData.replace(/\n/g, '\u2028').replace(/(<\s*br([^>]*)>)/gi, '\u2060');
@@ -1926,8 +2012,10 @@
               defaults.numbers.output === false ) {
               number = parseNumber(result);
 
-              if ( number !== false )
+              if ( number !== false ) {
+                cellType = 'number';
                 result = Number(number);
+              }
             }
             else if ( defaults.numbers.html.decimalMark !== defaults.numbers.output.decimalMark ||
               defaults.numbers.html.thousandsSeparator !== defaults.numbers.output.thousandsSeparator ) {
@@ -1939,6 +2027,7 @@
                   frac[1] = "";
                 var mod = frac[0].length > 3 ? frac[0].length % 3 : 0;
 
+                cellType = 'number';
                 result = (number < 0 ? "-" : "") +
                   (defaults.numbers.output.thousandsSeparator ? ((mod ? frac[0].substr(0, mod) + defaults.numbers.output.thousandsSeparator : "") + frac[0].substr(mod).replace(/(\d{3})(?=\d)/g, "$1" + defaults.numbers.output.thousandsSeparator)) : frac[0]) +
                   (frac[1].length ? defaults.numbers.output.decimalMark + frac[1] : "");
@@ -1955,20 +2044,23 @@
         }
 
         if ( typeof defaults.onCellData === 'function' ) {
-          result = defaults.onCellData($cell, rowIndex, colIndex, result);
+          result = defaults.onCellData($cell, rowIndex, colIndex, result, cellType);
         }
       }
+
+      if (cellInfo !== undefined)
+        cellInfo.type = cellType;
 
       return result;
     }
 
-    function preventInjection (string) {
-      if ( string.length > 0 && defaults.preventInjection === true ) {
+    function preventInjection (str) {
+      if ( str.length > 0 && defaults.preventInjection === true ) {
         var chars = "=+-@";
-        if ( chars.indexOf(string.charAt(0)) >= 0 )
-          return ( "'" + string );
+        if ( chars.indexOf(str.charAt(0)) >= 0 )
+          return ( "'" + str );
       }
-      return string;
+      return str;
     }
 
     //noinspection JSUnusedLocalSymbols
@@ -2022,7 +2114,7 @@
     }
 
     function getColspan (cell) {
-      var result = $(cell).data("tableexport-colspan");
+      var result = $(cell).attr("data-tableexport-colspan");
       if ( typeof result === 'undefined' && $(cell).is("[colspan]") )
         result = $(cell).attr('colspan');
 
@@ -2030,7 +2122,7 @@
     }
 
     function getRowspan (cell) {
-      var result = $(cell).data("tableexport-rowspan");
+      var result = $(cell).attr("data-tableexport-rowspan");
       if ( typeof result === 'undefined' && $(cell).is("[rowspan]") )
         result = $(cell).attr('rowspan');
 
@@ -2083,55 +2175,164 @@
       return 0;
     }
 
-    function jx_Workbook () {
-      if ( !(this instanceof jx_Workbook) ) {
-        //noinspection JSPotentiallyInvalidConstructorUsage
-        return new jx_Workbook();
-      }
-      this.SheetNames = [];
-      this.Sheets     = {};
-    }
-
-    function jx_s2ab (s) {
+    function xlsxWorkbookToArrayBuffer (s) {
       var buf  = new ArrayBuffer(s.length);
       var view = new Uint8Array(buf);
       for ( var i = 0; i !== s.length; ++i ) view[i] = s.charCodeAt(i) & 0xFF;
       return buf;
     }
 
-    function jx_datenum (v, date1904) {
-      if ( date1904 ) v += 1462;
-      var epoch = Date.parse(v);
-      return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
+    function xlsxTableToSheet(table) {
+      var ws = ({});
+      var rows = table.getElementsByTagName('tr');
+      var sheetRows = 10000000;
+      var range = {s:{r:0,c:0},e:{r:0,c:0}};
+      var merges = [], midx = 0;
+      var rowinfo = [];
+      var _R = 0, R = 0, _C, C, RS, CS;
+      var elt;
+      var ssfTable = XLSX.SSF.get_table();
+
+      for(; _R < rows.length && R < sheetRows; ++_R) {
+        var row = rows[_R];
+
+        var ignoreRow = false;
+        if (typeof defaults.onIgnoreRow === 'function')
+          ignoreRow = defaults.onIgnoreRow($(row), _R);
+
+        if (!(ignoreRow === false &&
+            $.inArray(rowIndex, defaults.ignoreRow) === -1 &&
+            $.inArray(rowIndex - rowCount, defaults.ignoreRow) === -1 &&
+            isVisible($(row)))) {
+          continue;
+        }
+
+        var elts = (row.children);
+        var _CLength = 0;
+        for(_C = 0; _C < elts.length; ++_C) {
+          elt = elts[_C];
+          CS = +getColspan(elt) || 1;
+          _CLength += CS;
+        }
+
+        var CSOffset = 0;
+        for(_C = C = 0; _C < elts.length; ++_C) {
+          elt = elts[_C];
+          CS = +getColspan(elt) || 1;
+
+          var col = _C + CSOffset;
+          if (isColumnIgnored($(elt), _CLength, col + (col < C ? C-col : 0)))
+            continue;
+          CSOffset += CS-1;
+
+          for(midx = 0; midx < merges.length; ++midx) {
+            var m = merges[midx];
+            if(m.s.c == C && m.s.r <= R && R <= m.e.r) {
+              C = m.e.c+1;
+              midx = -1;
+            }
+          }
+
+          if((RS = +getRowspan(elt))>0 || CS>1)
+            merges.push({s:{r:R,c:C},e:{r:R + (RS||1) - 1, c:C + CS - 1}});
+
+          var cellInfo = { type: '' };
+          var v = parseString(elt,_R,_C + CSOffset, cellInfo);
+          var o = {t:'s', v:v};
+          var _t = '';
+          var ssfId = parseInt($(elt).attr("data-tableexport-xlsxformatid") || 0);
+
+          if (ssfId === 0 &&
+              typeof defaults.mso.xslx.formatId.numbers === 'function')
+            ssfId = defaults.mso.xslx.formatId.numbers($(elt),_R,_C + CSOffset);
+
+          if (ssfId === 0 &&
+              typeof defaults.mso.xslx.formatId.date === 'function')
+            ssfId = defaults.mso.xslx.formatId.date($(elt),_R,_C + CSOffset);
+
+          if (ssfId === 49 || ssfId === '@')
+            _t = 's';
+          else if (cellInfo.type === 'number' ||
+                   (ssfId > 0 && ssfId < 14) || (ssfId > 36 && ssfId < 41) || ssfId === 48)
+            _t = 'n';
+          else if (cellInfo.type === 'date' ||
+                   (ssfId > 13 && ssfId < 37) || (ssfId > 44 && ssfId < 48) || ssfId === 56)
+            _t = 'd';
+
+          if(v != null) {
+            if(v.length === 0)
+              o.t = _t || 'z';
+            else if(v.trim().length === 0 || _t === 's') {
+            }
+            else if (cellInfo.type === 'function')
+              o = {f: v};
+            else if(v === 'TRUE')
+              o = {t:'b', v:true};
+            else if(v === 'FALSE')
+              o = {t:'b', v:false};
+            else if(_t === 'n' || !isNaN(xlsxToNumber(v, defaults.numbers.output))) { // yes, defaults.numbers.output is right
+              if (ssfId === 0 && typeof defaults.mso.xslx.formatId.numbers !== 'function')
+                ssfId = defaults.mso.xslx.formatId.numbers;
+              o = {t:'n',
+                   v:xlsxToNumber(v, defaults.numbers.output),
+                   z:(typeof ssfId === 'string') ? ssfId : (ssfId in ssfTable ? ssfTable[ssfId] : '0.00')
+                  };
+            }
+            else if(_t === 'd' || parseDate(v) !== false) {
+              if (ssfId === 0 && typeof defaults.mso.xslx.formatId.date !== 'function')
+                ssfId = defaults.mso.xslx.formatId.date;
+              o = {t:'d',
+                   v:parseDate(v),
+                   z:(typeof ssfId === 'string') ? ssfId : (ssfId in ssfTable ? ssfTable[ssfId] : 'm/d/yy')
+                  };
+            }
+            else if(_t === '' && $(elt).find('a').length) {
+              v = defaults.htmlHyperlink !== 'href' ? v : '';
+              o = {f: '=HYPERLINK("' + $(elt).find('a').attr('href') + (v.length ? '","' + v : '') + '")'};
+            }
+          }
+          ws[xlsxEncodeCell({c:C, r:R})] = o;
+          if(range.e.c < C)
+            range.e.c = C;
+          C += CS;
+        }
+        ++R;
+      }
+      if(merges.length) ws['!merges'] = merges;
+      if(rowinfo.length) ws['!rows'] = rowinfo;
+      range.e.r = R - 1;
+      ws['!ref'] = xlsxEncodeRange(range);
+      if(R >= sheetRows)
+        ws['!fullref'] = xlsxEncodeRange((range.e.r = rows.length-_R+R-1,range));
+      return ws;
     }
 
-    function jx_createSheet (data) {
-      var ws    = {};
-      var range = {s: {c: 10000000, r: 10000000}, e: {c: 0, r: 0}};
-      for ( var R = 0; R !== data.length; ++R ) {
-        for ( var C = 0; C !== data[R].length; ++C ) {
-          if ( range.s.r > R ) range.s.r = R;
-          if ( range.s.c > C ) range.s.c = C;
-          if ( range.e.r < R ) range.e.r = R;
-          if ( range.e.c < C ) range.e.c = C;
-          var cell = {v: data[R][C]};
-          if ( cell.v === null ) continue;
-          var cell_ref = XLSX.utils.encode_cell({c: C, r: R});
-
-          if ( typeof cell.v === 'number' ) cell.t = 'n';
-          else if ( typeof cell.v === 'boolean' ) cell.t = 'b';
-          else if ( cell.v instanceof Date ) {
-            cell.t = 'n';
-            cell.z = XLSX.SSF._table[14];
-            cell.v = jx_datenum(cell.v);
-          }
-          else cell.t = 's';
-          ws[cell_ref] = cell;
-        }
+    function xlsxEncodeRow(row) { return "" + (row + 1); }
+    function xlsxEncodeCol(col) { var s=""; for(++col; col; col=Math.floor((col-1)/26)) s = String.fromCharCode(((col-1)%26) + 65) + s; return s; }
+    function xlsxEncodeCell(cell) { return xlsxEncodeCol(cell.c) + xlsxEncodeRow(cell.r); }
+    function xlsxEncodeRange(cs,ce) {
+      if(typeof ce === 'undefined' || typeof ce === 'number') {
+        return xlsxEncodeRange(cs.s, cs.e);
       }
+      if(typeof cs !== 'string') cs = xlsxEncodeCell((cs));
+      if(typeof ce !== 'string') ce = xlsxEncodeCell((ce));
+      return cs === ce ? cs : cs + ":" + ce;
+    }
 
-      if ( range.s.c < 10000000 ) ws['!ref'] = XLSX.utils.encode_range(range);
-      return ws;
+    function xlsxToNumber(s, numbersFormat) {
+      var v = Number(s);
+      if(!isNaN(v)) return v;
+      var wt = 1;
+      var ss = s;
+      if ('' !== numbersFormat.thousandsSeparator)
+        ss = ss.replace(new RegExp('([\\d])' + numbersFormat.thousandsSeparator + '([\\d])','g'),"$1$2");
+      if ('.' !== numbersFormat.decimalMark)
+        ss = ss.replace(new RegExp('([\\d])' + numbersFormat.decimalMark + '([\\d])','g'),"$1.$2");
+      ss = ss.replace(/[$]/g,"").replace(/[%]/g, function() { wt *= 100; return "";});
+      if(!isNaN(v = Number(ss))) return v / wt;
+      ss = ss.replace(/[(](.*)[)]/,function($$, $1) { wt = -wt; return $1;});
+      if(!isNaN(v = Number(ss))) return v / wt;
+      return v;
     }
 
     function strHashCode (str) {
@@ -2165,8 +2366,8 @@
           downloadFile (fileName, 
                         'data:' + type + 
                         (charset.length ? ';charset=' + charset : '') +
-                        (encoding.length ? ';' + encoding : '') + ',' + (bom ? '\ufeff' : ''), 
-                        data);
+                        (encoding.length ? ';' + encoding : '') + ',', 
+                        (bom ? ('\ufeff' + data) : data));
         }
       }
     }
@@ -2189,7 +2390,7 @@
           frame.contentDocument.open("txt/plain", "replace");
           frame.contentDocument.write(data);
           frame.contentDocument.close();
-          frame.contentDocument.focus();
+          frame.contentWindow.focus();
 
           var extension = filename.substr((filename.lastIndexOf('.') +1));
           switch(extension) {

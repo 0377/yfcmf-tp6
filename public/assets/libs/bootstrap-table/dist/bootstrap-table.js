@@ -1,6 +1,6 @@
 /**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * version: 1.11.1
+ * version: 1.11.2
  * https://github.com/wenzhixin/bootstrap-table/
  */
 
@@ -1947,7 +1947,13 @@
                         var index = $tr.data('index'),
                             row = that.data[index],
                             value = row[field];
-
+                        var props = field.split('.');
+                        if(props.length > 1) {
+                            value = row;
+                            for (var prop_index = 0; prop_index < props.length; prop_index++) {
+                                value = value[props[prop_index]];
+                            }
+                        }
                         func.apply(this, [e, value, row, index]);
                     });
                 });

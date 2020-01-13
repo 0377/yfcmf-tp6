@@ -48,6 +48,8 @@
 
         init: function () {
 
+            this.codeRender();
+
             this.defineDems();
 
             this.render();
@@ -55,6 +57,13 @@
             this.bind();
 
             this.active = true;
+        },
+
+        codeRender: function () {
+            var code = this.$element.attr('code');
+            var value = this.$element.val();
+            if (code !== undefined && code !== '' && !isNaN(Number(code))) this.$element.val($.fn.citypicker.getAddressbyCodeId(code));
+            if (value !== undefined && value !== '' && !isNaN(Number(value))) this.$element.val($.fn.citypicker.getAddressbyCodeId(value));
         },
 
         render: function () {
@@ -370,14 +379,16 @@
 
         getVal: function () {
             var text = '';
+            var code = '';
             this.$dropdown.find('.city-select')
                 .each(function () {
                     var item = $(this).data('item');
                     if (item) {
+                        code = item.code;
                         text += ($(this).hasClass('province') ? '' : '/') + item.address;
                     }
                 });
-            return text;
+            return this.options.render == 'code' ? code : text;
         },
 
         feedVal: function (trigger) {
@@ -504,7 +515,7 @@
         simplize: function (address, type) {
             address = address || '';
             if (type === PROVINCE) {
-                return address.replace(/[省,市,自治区,壮族,回族,维吾尔]/g, '');
+                return address.replace(/[省,市,自治区,壮族,回族,维吾尔,特别行政区]/g, '');
             } else if (type === CITY) {
                 return address.replace(/[市,地区,回族,蒙古,苗族,白族,傣族,景颇族,藏族,彝族,壮族,傈僳族,布依族,侗族]/g, '')
                     .replace('哈萨克', '').replace('自治州', '').replace(/自治县/, '');
@@ -541,6 +552,7 @@
     CityPicker.DEFAULTS = {
         simple: false,
         responsive: false,
+        render: 'text',//填充为代码还是文本，可选code或text
         placeholder: '请选择省/市/区',
         level: 'district',
         province: '',
@@ -588,6 +600,61 @@
         $.fn.citypicker = CityPicker.other;
         return this;
     };
+
+    // 根据code查询地址
+    $.fn.citypicker.getAddressbyCodeId = function(code_id){
+        var city = ChineseDistricts;
+        var code = city[''+code_id];
+        var addr = '';
+        var province = '';
+        var province_code = '';
+        var city_str = '';
+        var county = '';
+        if(code_id.substring(0,2)==='44'){
+            province = '广东省';
+            province_code = '440000';
+        }else{
+            $.each(city['86'], function(i,item) {
+                $.each(item, function(j,index) {
+                    if(index['code']===code_id.substring(0,2)+'0000'){
+                        province = index['address'];
+                        province_code = index['code'];
+                        return false;
+                    }
+                });
+            });
+        }
+        if (code_id.substring(2, 4).indexOf('00') == -1) {
+            if (code_id.length > 6) {
+                var city_code = code_id.substring(0, 6);
+                if (typeof city[province_code][city_code] !== 'undefined') {
+                    city_str = city[province_code][city_code];
+                }
+            }
+            if (!city_str) {
+                var city_code = code_id.substring(0, 4) + '00';
+                if (typeof city[province_code][city_code] === 'undefined') {
+                    city_code = code_id.substring(0, 3) + '100';
+                }
+                if (typeof city[province_code][city_code] !== 'undefined') {
+                    city_str = city[province_code][city_code];
+                }
+            }
+        }
+        if (code === undefined) {
+            addr = city[city_code][code_id];
+            return addr = province + '/' + city_str + '/' + addr;
+        } else {
+            if (code_id.substring(2, 4).indexOf('00') != -1) {
+                //440000
+                return addr = province;
+            }else{
+                //440100
+                var city_city = city[code_id.substring(0,2)+'0000'];
+                return addr = province +'/'+city_city[code_id];
+            }
+        }
+    }
 
     $(function () {
         $('[data-toggle="city-picker"]').citypicker();
