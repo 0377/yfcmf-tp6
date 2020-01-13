@@ -10,9 +10,9 @@ class Admin extends Validate
      * 验证规则.
      */
     protected $rule = [
-        'username' => 'require|max:50|unique:admin',
+        'username' => 'require|regex:\w{3,12}|unique:admin',
         'nickname' => 'require',
-        'password' => 'require',
+        'password' => 'require|regex:\S{32}',
         'email'    => 'require|email|unique:admin,email',
     ];
 
@@ -33,10 +33,10 @@ class Admin extends Validate
      */
     protected $scene = [
         'add'  => ['username', 'email', 'nickname', 'password'],
-        'edit' => ['username', 'email', 'nickname'],
+        'edit' => ['username', 'email', 'nickname', 'password'],
     ];
 
-    public function __construct(array $rules = [], $message = [], $field = [])
+    public function __construct()
     {
         $this->field = [
             'username' => __('Username'),
@@ -44,6 +44,10 @@ class Admin extends Validate
             'password' => __('Password'),
             'email'    => __('Email'),
         ];
-        parent::__construct($rules, $message, $field);
+        $this->message = array_merge($this->message, [
+            'username.regex' => __('Please input correct username'),
+            'password.regex' => __('Please input correct password')
+        ]);
+        parent::__construct();
     }
 }
