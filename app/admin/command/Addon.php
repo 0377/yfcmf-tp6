@@ -29,7 +29,7 @@ class Addon extends Command
         $this
             ->setName('addon')
             ->addOption('name', 'a', Option::VALUE_REQUIRED, 'addon name', null)
-            ->addOption('action', 'c', Option::VALUE_REQUIRED, 'action(create/enable/disable/install/uninstall/refresh/upgrade/package)', 'create')
+            ->addOption('action', 'c', Option::VALUE_REQUIRED, 'action(create/enable/disable/install/uninstall/refresh/upgrade/package/move)', 'create')
             ->addOption('force', 'f', Option::VALUE_OPTIONAL, 'force override', null)
             ->addOption('release', 'r', Option::VALUE_OPTIONAL, 'addon release version', null)
             ->addOption('uid', 'u', Option::VALUE_OPTIONAL, 'fastadmin uid', null)
@@ -59,7 +59,7 @@ class Addon extends Command
         if (! $name) {
             throw new Exception('Addon name could not be empty');
         }
-        if (! $action || ! in_array($action, ['create', 'disable', 'enable', 'install', 'uninstall', 'refresh', 'upgrade', 'package'])) {
+        if (! $action || ! in_array($action, ['create', 'disable', 'enable', 'install', 'uninstall', 'refresh', 'upgrade', 'package', 'move'])) {
             throw new Exception('Please input correct action name');
         }
 
@@ -257,7 +257,68 @@ class Addon extends Command
                 $zip->close();
                 $output->info('Package Successed!');
                 break;
-
+            case 'move':
+                $movePath = [
+                    'adminOnlySelfDir' => ['admin/behavior', 'admin/controller', 'admin/library', 'admin/model', 'admin/validate', 'admin/view'],
+                    'adminAllSubDir' => ['admin/lang'],
+                    'publicDir' => ['public/assets/addons', 'public/assets/js/backend']
+                ];
+                $paths = [];
+                $appPath = str_replace('/', DS, app()->getBasePath());
+                $rootPath = str_replace('/', DS, app()->getRootPath());
+                foreach ($movePath as $k => $items) {
+                    switch ($k) {
+                        case 'adminOnlySelfDir':
+                            foreach ($items as $v) {
+                                $v = str_replace('/', DS, $v);
+                                $oldPath = $appPath . $v . DS . $name;
+                                $newPath = $rootPath . "addons" . DS . $name . DS . "application" . DS . $v . DS . $name;
+                                $paths[$oldPath] = $newPath;
+                            }
+                            break;
+                        case 'adminAllSubDir':
+                            foreach ($items as $v) {
+                                $v = str_replace('/', DS, $v);
+                                $vPath = $appPath . $v;
+                                $list = scandir($vPath);
+                                foreach ($list as $_v) {
+                                    if (!in_array($_v, ['.', '..']) && is_dir($vPath . DS . $_v)) {
+                                        $oldPath = $appPath . $v . DS . $_v . DS . $name;
+                                        $newPath = $rootPath . "addons" . DS . $name . DS . "application" . DS . $v . DS . $_v . DS . $name;
+                                        $paths[$oldPath] = $newPath;
+                                    }
+                                }
+                            }
+                            break;
+                        case 'publicDir':
+                            foreach ($items as $v) {
+                                $v = str_replace('/', DS, $v);
+                                $oldPath = $rootPath . $v . DS . $name;
+                                $newPath = $rootPath . 'addons' . DS . $name . DS . $v . DS . $name;
+                                $paths[$oldPath] = $newPath;
+                            }
+                            break;
+                    }
+                }
+                foreach ($paths as $oldPath => $newPath) {
+                    if (is_dir($oldPath)) {
+                        if ($force) {
+                            if (is_dir($newPath)) {
+                                $list = scandir($newPath);
+                                foreach ($list as $_v) {
+                                    if (!in_array($_v, ['.', '..'])) {
+                                        $file = $newPath . DS . $_v;
+                                        @chmod($file, 0777);
+                                        @unlink($file);
+                                    }
+                                }
+                                @rmdir($newPath);
+                            }
+                        }
+                        copydirs($oldPath, $newPath);
+                    }
+                }
+                break;
             default:
                 break;
         }
