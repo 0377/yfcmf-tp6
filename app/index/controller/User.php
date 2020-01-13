@@ -3,6 +3,8 @@
 namespace app\index\controller;
 
 use app\common\library\Sms;
+use app\common\model\Ems;
+use addons\wechat\model\WechatCaptcha;
 use think\facade\Event;
 use think\facade\Config;
 use think\facade\Cookie;
@@ -22,7 +24,7 @@ class User extends Frontend
         parent::_initialize();
         $auth = $this->auth;
 
-        if (! Config::get('fastadmin.usercenter')) {
+        if (!Config::get('fastadmin.usercenter')) {
             $this->error(__('User center already closed'));
         }
 
@@ -90,39 +92,52 @@ class User extends Frontend
             $captcha = $this->request->post('captcha');
             $token = $this->request->post('__token__');
             $rule = [
-                'username'  => 'require|length:3,30',
-                'password'  => 'require|length:6,30',
-                'email'     => 'require|email',
-                'mobile'    => 'regex:/^1\d{10}$/',
+                'username' => 'require|length:3,30',
+                'password' => 'require|length:6,30',
+                'email' => 'require|email',
+                'mobile' => 'regex:/^1\d{10}$/',
                 //'captcha'   => 'require|captcha',
                 '__token__' => 'require|token',
             ];
 
             $msg = [
                 'username.require' => 'Username can not be empty',
-                'username.length'  => 'Username must be 3 to 30 characters',
+                'username.length' => 'Username must be 3 to 30 characters',
                 'password.require' => 'Password can not be empty',
-                'password.length'  => 'Password must be 6 to 30 characters',
+                'password.length' => 'Password must be 6 to 30 characters',
                 //'captcha.require'  => 'Captcha can not be empty',
                 //'captcha.captcha'  => 'Captcha is incorrect',
-                'email'            => 'Email is incorrect',
-                'mobile'           => 'Mobile is incorrect',
+                'email' => 'Email is incorrect',
+                'mobile' => 'Mobile is incorrect',
             ];
             $data = [
-                'username'  => $username,
-                'password'  => $password,
-                'email'     => $email,
-                'mobile'    => $mobile,
+                'username' => $username,
+                'password' => $password,
+                'email' => $email,
+                'mobile' => $mobile,
                 //'captcha'   => $captcha,
                 '__token__' => $token,
             ];
-            $ret = Sms::check($mobile, $captcha, 'register');
-            if (!$ret) {
+            //验证码
+            $captchaResult = true;
+            $captchaType = config("fastadmin.user_register_captcha");
+            if ($captchaType) {
+                if ($captchaType == 'mobile') {
+                    $captchaResult = Sms::check($mobile, $captcha, 'register');
+                } elseif ($captchaType == 'email') {
+                    $captchaResult = Ems::check($mobile, $captcha, 'register');
+                } elseif ($captchaType == 'wechat') {
+                    $captchaResult = WechatCaptcha::check($captcha, 'register');
+                } elseif ($captchaType == 'text') {
+                    $captchaResult = \think\Validate::is($captcha, 'captcha');
+                }
+            }
+            if (!$captchaResult) {
                 $this->error(__('Captcha is incorrect'));
             }
             $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
-            if (! $result) {
+            if (!$result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->buildToken()]);
             }
             if ($this->auth->register($username, $password, $email, $mobile)) {
@@ -133,10 +148,11 @@ class User extends Frontend
         }
         //判断来源
         $referer = $this->request->server('HTTP_REFERER');
-        if (! $url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
-            && ! preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
+        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+            && !preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
             $url = $referer;
         }
+        $this->view->assign('captchaType', config('fastadmin.user_register_captcha'));
         $this->view->assign('url', $url);
         $this->view->assign('title', __('Register'));
 
@@ -158,25 +174,25 @@ class User extends Frontend
             $keeplogin = (int) $this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
-                'account'  => 'require|length:3,50',
+                'account' => 'require|length:3,50',
                 'password' => 'require|length:6,30',
                 //'__token__' => 'require|token',
             ];
 
             $msg = [
-                'account.require'  => 'Account can not be empty',
-                'account.length'   => 'Account must be 3 to 50 characters',
+                'account.require' => 'Account can not be empty',
+                'account.length' => 'Account must be 3 to 50 characters',
                 'password.require' => 'Password can not be empty',
-                'password.length'  => 'Password must be 6 to 30 characters',
+                'password.length' => 'Password must be 6 to 30 characters',
             ];
             $data = [
-                'account'   => $account,
-                'password'  => $password,
+                'account' => $account,
+                'password' => $password,
                 '__token__' => $token,
             ];
             $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
-            if (! $result) {
+            if (!$result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->buildToken()]);
 
                 return false;
@@ -189,8 +205,8 @@ class User extends Frontend
         }
         //判断来源
         $referer = $this->request->server('HTTP_REFERER');
-        if (! $url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
-            && ! preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
+        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+            && !preg_match("/(user\/login|user\/register|user\/logout)/i", $referer)) {
             $url = $referer;
         }
         $this->view->assign('url', $url);
@@ -230,23 +246,23 @@ class User extends Frontend
             $renewpassword = $this->request->post('renewpassword');
             $token = $this->request->post('__token__');
             $rule = [
-                'oldpassword|'.__('Old password')     => 'require|length:6,30',
-                'newpassword|'.__('New password')     => 'require|length:6,30',
+                'oldpassword|'.__('Old password') => 'require|length:6,30',
+                'newpassword|'.__('New password') => 'require|length:6,30',
                 'renewpassword|'.__('Renew password') => 'require|length:6,30|confirm:newpassword',
-                '__token__'                           => 'token',
+                '__token__' => 'token',
             ];
 
             $msg = [
             ];
             $data = [
-                'oldpassword'   => $oldpassword,
-                'newpassword'   => $newpassword,
+                'oldpassword' => $oldpassword,
+                'newpassword' => $newpassword,
                 'renewpassword' => $renewpassword,
-                '__token__'     => $token,
+                '__token__' => $token,
             ];
             $validate = validate($rule, $msg, false, false);
             $result = $validate->check($data);
-            if (! $result) {
+            if (!$result) {
                 $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
 
                 return false;
