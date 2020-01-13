@@ -497,7 +497,7 @@ trait Backend
                 $msg = "导入失败，包含【{$matches[1]}】的记录已存在";
             }
             $this->error($msg);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
 

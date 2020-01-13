@@ -78,7 +78,7 @@ class User extends Frontend
      */
     public function register()
     {
-        $url = $this->request->request('url', '', 'trim');
+        $url = $this->request->request('url', '');
         if ($this->auth->id) {
             $this->success(__('You\'ve logged in, do not login again'), $url ? $url : url('user/index'));
         }
@@ -148,7 +148,7 @@ class User extends Frontend
      */
     public function login()
     {
-        $url = $this->request->request('url', '', 'trim');
+        $url = $this->request->request('url', '');
         if ($this->auth->id) {
             $this->success(__('You\'ve logged in, do not login again'), $url ? $url : url('user/index'));
         }

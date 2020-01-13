@@ -4,6 +4,7 @@ namespace app\admin\model;
 
 use app\common\model\MoneyLog;
 use app\common\model\BaseModel;
+use app\common\model\ScoreLog;
 
 class User extends BaseModel
 {
@@ -47,6 +48,10 @@ class User extends BaseModel
                 'user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'],
                 'before'  => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额',
             ]);
+        }
+        if (isset($changedata['score'])) {
+            $origin = $row->getOrigin();
+            ScoreLog::create(['user_id' => $row['id'], 'score' => $changedata['score'] - $origin['score'], 'before' => $origin['score'], 'after' => $changedata['score'], 'memo' => '管理员变更积分']);
         }
     }
 
