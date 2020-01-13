@@ -19,6 +19,8 @@ return [
     'login_failure_retry' => true,
     //是否同一账号同一时间只能在一个地方登录
     'login_unique'        => false,
+    //是否开启IP变动检测
+    'loginip_check'      => true,
     //登录页默认背景图
     'login_background'    => '/assets/img/loginbg.jpg',
     //是否启用多级菜单导航
@@ -28,7 +30,7 @@ return [
     //API是否允许跨域
     'api_cross'           => false,
     //版本号
-    'version'             => '2.0.2',
+    'version'             => '2.0.3',
     //API接口地址
     'api_url'             => 'https://api.iuok.cn',
 ];

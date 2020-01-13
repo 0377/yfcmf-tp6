@@ -206,11 +206,16 @@ class Auth extends \fast\Auth
         if (Config::get('fastadmin.login_unique')) {
             $my = Admin::find($admin['id']);
             if (! $my || $my['token'] != $admin['token']) {
+                $this->logout();
                 return false;
             }
         }
-        if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
-            return false;
+        //判断管理员IP是否变动
+        if (Config::get('fastadmin.loginip_check')) {
+            if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
+                $this->logout();
+                return false;
+            }
         }
         $this->logined = true;
         return true;
