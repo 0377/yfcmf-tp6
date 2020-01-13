@@ -166,6 +166,9 @@ class Admin extends Backend
         if (! $row) {
             $this->error(__('No Results were found'));
         }
+        if (!in_array($row->id, $this->childrenAdminIds)) {
+            $this->error(__('You have no permission'));
+        }
         if ($this->request->isPost()) {
             $this->token();
             $params = $this->request->post('row/a');
@@ -232,6 +235,7 @@ class Admin extends Backend
     public function del($ids = '')
     {
         if ($ids) {
+            $ids = array_intersect($this->childrenAdminIds, array_filter(explode(',', $ids)));
             // 避免越权删除管理员
             $childrenGroupIds = $this->childrenGroupIds;
             $adminList = $this->model->where('id', 'in', $ids)->where('id', 'in',
@@ -243,7 +247,7 @@ class Admin extends Backend
                 foreach ($adminList as $k => $v) {
                     $deleteIds[] = $v->id;
                 }
-                $deleteIds = array_diff($deleteIds, [$this->auth->id]);
+                $deleteIds = array_values(array_diff($deleteIds, [$this->auth->id]));
                 if ($deleteIds) {
                     $this->model->destroy($deleteIds);
                     AuthGroupAccess::where('uid', 'in', $deleteIds)->delete();
@@ -251,7 +255,7 @@ class Admin extends Backend
                 }
             }
         }
-        $this->error();
+        $this->error(__('You have no permission'));
     }
 
     /**
