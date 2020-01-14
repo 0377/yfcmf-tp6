@@ -126,7 +126,7 @@ class Config extends Backend
     {
         if ($this->request->isPost()) {
             $this->token();
-            $params = $this->request->post("row/a", [], 'trim');
+            $row = $this->request->post("row/a", [], 'trim');
             if ($row) {
                 $configList = [];
                 foreach ($this->model->select() as $v) {
