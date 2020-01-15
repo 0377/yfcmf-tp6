@@ -83,15 +83,17 @@ class Sms
      * @param mixed  $mobile   手机号,多个以,分隔
      * @param string $msg      消息内容
      * @param string $template 消息模板
+     * @param array  $data     模板变量
      *
      * @return bool
      */
-    public static function notice($mobile, $msg = '', $template = null)
+    public static function notice($mobile, $msg = '', $template = null, $data = [])
     {
         $params = [
             'mobile'   => $mobile,
             'msg'      => $msg,
             'template' => $template,
+            'data'     => $data,
         ];
         $result = Event::trigger('sms_notice', $params, true);
 
