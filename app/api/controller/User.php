@@ -3,7 +3,7 @@
 namespace app\api\controller;
 
 use fast\Random;
-use think\Validate;
+use think\facade\Validate;
 use app\common\library\Ems;
 use app\common\library\Sms;
 use app\common\controller\Api;
@@ -70,7 +70,7 @@ class User extends Api
         if (! Sms::check($mobile, $captcha, 'mobilelogin')) {
             $this->error(__('Captcha is incorrect'));
         }
-        $user = \app\common\model\User::getByMobile($mobile);
+        $user = \app\common\model\User::where('mobile',$mobile)->find();
         if ($user) {
             if ($user->status != 'normal') {
                 $this->error(__('Account is locked'));
@@ -291,7 +291,7 @@ class User extends Api
             if (! Validate::regex($mobile, "^1\d{10}$")) {
                 $this->error(__('Mobile is incorrect'));
             }
-            $user = \app\common\model\User::getByMobile($mobile);
+            $user = \app\common\model\User::where('mobile',$mobile)->find();
             if (! $user) {
                 $this->error(__('User not found'));
             }
@@ -304,7 +304,7 @@ class User extends Api
             if (! Validate::is($email, 'email')) {
                 $this->error(__('Email is incorrect'));
             }
-            $user = \app\common\model\User::getByEmail($email);
+            $user = \app\common\model\User::where('email',$email)->find();
             if (! $user) {
                 $this->error(__('User not found'));
             }

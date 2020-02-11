@@ -49,7 +49,7 @@ class Ems extends Api
             $this->error(__('发送频繁'));
         }
         if ($event) {
-            $userinfo = User::getByEmail($email);
+            $userinfo = User::where('email',$email)->find();
             if ($event == 'register' && $userinfo) {
                 //已被注册
                 $this->error(__('已被注册'));
@@ -84,7 +84,7 @@ class Ems extends Api
         $captcha = $this->request->request('captcha');
 
         if ($event) {
-            $userinfo = User::getByEmail($email);
+            $userinfo = User::where('email',$email)->find();
             if ($event == 'register' && $userinfo) {
                 //已被注册
                 $this->error(__('已被注册'));

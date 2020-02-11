@@ -40,7 +40,7 @@ class Sms extends Api
             $this->error(__('发送频繁'));
         }
         if ($event) {
-            $userinfo = User::getByMobile($mobile);
+            $userinfo = User::where('mobile',$mobile)->find();
             if ($event == 'register' && $userinfo) {
                 //已被注册
                 $this->error(__('已被注册'));
@@ -82,7 +82,7 @@ class Sms extends Api
             $this->error(__('手机号不正确'));
         }
         if ($event) {
-            $userinfo = User::getByMobile($mobile);
+            $userinfo = User::where('mobile',$mobile)->find();
             if ($event == 'register' && $userinfo) {
                 //已被注册
                 $this->error(__('已被注册'));
