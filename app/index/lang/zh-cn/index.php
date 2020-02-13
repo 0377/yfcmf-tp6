@@ -8,7 +8,7 @@ return [
     'Languages tips'  => '不仅仅后台开发支持多语言,同时视图部分和JS部分仍然共享同一个语言包,语法相同且自动加载',
     'Module tips'     => '控制器、模型、视图、JS一一对应,使用RequireJS进行JS模块化管理,采用Bower进行前端包组件管理',
     'CRUD tips'       => '可使用命令行一键生成控制器、模型、视图和JS文件,一键生成API文档,一键生成回收站，一键生成后台权限节点和菜单栏',
-    'Extension tips'  => 'FastAdmin提供强大丰富的应用(插件)市场，可直接在线安装和卸载用户(插件)，同时支持命令行一键操作',
+    'Extension tips'  => 'YFCMF-TP6提供强大丰富的应用(插件)市场，可直接在线安装和卸载用户(插件)，同时支持命令行一键操作',
     'Do not hesitate' => '不要犹豫',
     'Start to act'    => '开始行动',
 ];

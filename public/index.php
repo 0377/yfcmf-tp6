@@ -13,7 +13,7 @@
 
 namespace think;
 
-// 判断是否安装fastadmin-tp6
+// 判断是否安装YFCMF-TP6
 if (! is_file('../config/install.lock')) {
     header("location:./install.php");
     exit;

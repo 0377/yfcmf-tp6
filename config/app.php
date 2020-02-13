@@ -33,7 +33,7 @@ return [
     'default_ajax_return'   => 'json',
 
     // 异常页面的模板文件
-    'exception_tmpl'        => app()->getThinkPath().'tpl/think_exception.tpl',
+    'exception_tmpl'        =>app()->getBasePath().'common'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR.'tpl'.DIRECTORY_SEPARATOR.'think_exception.tpl',
     'dispatch_success_tmpl' => app()->getBasePath().'common'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR.'tpl'.DIRECTORY_SEPARATOR.'dispatch_jump.tpl',
     'dispatch_error_tmpl'   => app()->getBasePath().'common'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR.'tpl'.DIRECTORY_SEPARATOR.'dispatch_jump.tpl',
     // 错误显示信息,非调试模式有效

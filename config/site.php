@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'name'        => 'FastAdmin',
+  'name'        => 'YFCMF-TP6',
   'beian'       => '',
   'cdnurl'      => '',
   'version'     => '1.0.1',

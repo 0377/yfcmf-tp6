@@ -88,7 +88,7 @@ return [
     'QQ group'                                               => 'QQ群',
     'Go to Dashboard'                                        => '登录后台',
     'Go to Member center'                                    => '会员中心',
-    'Contribution'                                           => '为FastAdmin贡献代码!',
+    'Contribution'                                           => '为YFCMF-TP6贡献代码!',
     'Copyrights'                                             => '版权所有',
     'Responsive'                                             => '响应式开发',
     'Languages'                                              => '多语言',
