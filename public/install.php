@@ -39,7 +39,7 @@ if (is_file('../config/install.lock') && $_GET['step'] != 5) {
     exit;
 }
 
-$site_name = 'FastAdmin-TP6';
+$site_name = 'YFCMF-TP6';
 $site_url = 'https://www.iuok.cn';
 $version = 'V2.0.1';
 $_date = date('Y');

@@ -16,7 +16,7 @@ return [
     'Online store'                   => '在线商店',
     'Local addon'                    => '本地插件',
     'Conflict tips'                  => '此插件中发现和现有系统中部分文件发现冲突！以下文件将会被影响，请备份好相关文件后再继续操作',
-    'Login tips'                     => '此处登录账号为<a href="https://www.iuok.cn" target="_blank">FastAdmin-TP6官网账号</a>',
+    'Login tips'                     => '此处登录账号为<a href="https://www.iuok.cn" target="_blank">YFCMF-TP6官网账号</a>',
     'Logined tips'                   => '你好！%s<br />当前你已经登录，将同步保存你的购买记录',
     'Pay tips'                       => '扫码支付后如果仍然无法立即下载，请不要重复支付，请加<a href="https://jq.qq.com/?_wv=1027&k=487PNBb" target="_blank">QQ群：345183861</a>向管理员反馈',
     'Pay click tips'                 => '请点击这里在新窗口中进行支付！',

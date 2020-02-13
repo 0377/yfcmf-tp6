@@ -1,11 +1,14 @@
 {
-    "name": "0377/fastadmin-tp6",
-    "description": "the fastest admin framework",
+    "name": "0377/yfcmf-tp6",
+    "description": "YFCMF新版本，基于thinkphp6.0和fastadmin",
     "type": "project",
     "keywords": [
         "thinkphp6",
         "thinkphp",
-        "fastadmin"
+        "fastadmin",
+        "fastadmin-tp6",
+        "yfcmf",
+        "yfcmf-tp6"
     ],
     "homepage": "https://www.iuok.cn",
     "license": "Apache-2.0",
