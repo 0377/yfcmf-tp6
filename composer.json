@@ -25,7 +25,7 @@
         "topthink/think-view": "^1.0",
         "topthink/think-captcha": "^3.0",
         "overtrue/pinyin": "^4.0",
-        "mtdowling/cron-expression": "^1.2",
+        "dragonmantank/cron-expression": "^2.3",
         "topthink/think-multi-app": "^1.0",
         "overtrue/wechat": "~3.1",
         "endroid/qr-code": "^1.9",
