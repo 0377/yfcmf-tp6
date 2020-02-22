@@ -74,7 +74,7 @@
                                                     <ins>{:__('Array value')}</ins>
                                                 </dd>
                                                 <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
-                                                <textarea name="row[{$item.name}]" class="form-control hide" cols="30" rows="5">{$item.value|htmlentities}</textarea>
+                                                <textarea name="row[{$item.name}]" class="form-control hide" cols="30" rows="5">{$item.value|raw}</textarea>
                                             </dl>
                                             {/case}
                                             {case date}
