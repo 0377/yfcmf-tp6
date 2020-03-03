@@ -540,7 +540,7 @@ class Backend extends BaseController
 
         //验证Token
         if (!Validate::is($token, "token", ['__token__' => $token])) {
-            $this->error(__('Token verification error'), '', ['__token__' => $this->request->buildToken()]);
+            $this->error(__('Token verification error'), '', '',3,['__token__' => $this->request->buildToken()]);
         }
 
         //刷新Token
