@@ -72,6 +72,19 @@ class ExceptionHandle extends Handle
             return json(['code' => $code, 'msg' => $msg, 'time' => time(), 'data' => null], $statuscode);
         }
         //其它此交由系统处理
+        if (request()->isJson()) {
+            if ($e instanceof HttpResponseException || $e instanceof HttpException) {
+                return parent::render($request, $e);
+            } else {
+                $response = parent::render($request, $e);
+                $data = $response->getData();
+                if (isset($data['tables']['Environment Variables'])) {
+                    unset($data['tables']['Environment Variables']);
+                    $response->data($data);
+                }
+                return $response;
+            }
+        }
         return parent::render($request, $e);
     }
 }
