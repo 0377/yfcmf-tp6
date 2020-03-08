@@ -57,7 +57,11 @@ class Frontend extends BaseController
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
         $modulename = app()->http->getName();
-        $controllername = strtolower($this->request->controller());
+        $controller = preg_replace_callback('/\.[A-Z]/', function ($d) {
+            return strtolower($d[0]);
+        }, $this->request->controller(), 1);
+
+        $controllername = parseName($controller);
         $actionname = strtolower($this->request->action());
 
         // 如果有使用模板布局
@@ -137,8 +141,17 @@ class Frontend extends BaseController
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.str_replace('.', '/',
-                strtolower($name)).'.php');
+        if (strpos($name, '.')) {
+            $_arr = explode('.', $name);
+            if (count($_arr) == 2) {
+                $path = $_arr[0].'/'.parseName($_arr[1]);
+            } else {
+                $path = strtolower($name);
+            }
+        } else {
+            $path = parseName($name);
+        }
+        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.$path.'.php');
     }
 
     /**

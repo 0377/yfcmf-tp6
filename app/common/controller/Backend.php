@@ -130,7 +130,9 @@ class Backend extends BaseController
     public function _initialize()
     {
         $modulename = app()->http->getName();
-        $controller = preg_replace_callback('/\.[A-Z]/', function ($d){ return strtolower($d[0]);}, $this->request->controller(),1);
+        $controller = preg_replace_callback('/\.[A-Z]/', function ($d) {
+            return strtolower($d[0]);
+        }, $this->request->controller(), 1);
 
         $controllername = parseName($controller);
         $actionname = strtolower($this->request->action());
@@ -238,19 +240,28 @@ class Backend extends BaseController
     /**
      * 加载语言文件.
      *
-     * @param string $name
+     * @param  string  $name
      */
     protected function loadlang($name)
     {
-        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.str_replace('.', '/',
-                strtolower($name)).'.php');
+        if (strpos($name, '.')) {
+            $_arr = explode('.', $name);
+            if (count($_arr) == 2) {
+                $path = $_arr[0].'/'.parseName($_arr[1]);
+            } else {
+                $path = strtolower($name);
+            }
+        } else {
+            $path = parseName($name);
+        }
+        Lang::load(app()->getAppPath().'/lang/'.Lang::getLangset().'/'.$path.'.php');
     }
 
     /**
      * 渲染配置信息.
      *
-     * @param mixed $name 键名或数组
-     * @param mixed $value 值
+     * @param  mixed  $name  键名或数组
+     * @param  mixed  $value  值
      */
     protected function assignconfig($name, $value = '')
     {
@@ -261,8 +272,8 @@ class Backend extends BaseController
     /**
      * 生成查询所需要的条件,排序方式.
      *
-     * @param mixed $searchfields 快速查询的字段
-     * @param bool $relationSearch 是否关联查询
+     * @param  mixed  $searchfields  快速查询的字段
+     * @param  bool  $relationSearch  是否关联查询
      *
      * @return array
      */
@@ -515,7 +526,7 @@ class Backend extends BaseController
                     'pid'       => isset($item['pid']) ? $item['pid'] : 0,
                 ];
             }
-            if ($istree && !$primaryvalue) {
+            if ($istree && ! $primaryvalue) {
                 $tree = Tree::instance();
                 $tree->init($list, 'pid');
                 $list = $tree->getTreeList($tree->getTreeArray(0), $field);
@@ -539,8 +550,8 @@ class Backend extends BaseController
         $token = $this->request->post('__token__');
 
         //验证Token
-        if (!Validate::is($token, "token", ['__token__' => $token])) {
-            $this->error(__('Token verification error'), '', '',3,['__token__' => $this->request->buildToken()]);
+        if (! Validate::is($token, "token", ['__token__' => $token])) {
+            $this->error(__('Token verification error'), '', '', 3, ['__token__' => $this->request->buildToken()]);
         }
 
         //刷新Token
