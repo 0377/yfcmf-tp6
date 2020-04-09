@@ -204,9 +204,11 @@ class Backend extends BaseController
 
         $site = Config::get('site');
         $upload = \app\common\model\Config::upload();
-        //halt(request());
         // 上传信息配置后
-        Event::trigger('upload_config_init', $upload);
+        $event_upload_config = Event::trigger('upload_config_init', $upload,true);
+        if($event_upload_config){
+            $upload = array_merge($upload, $event_upload_config);
+        }
         // 配置信息
         $config = [
             'app_debug'      => Env::get('APP_DEBUG'),
@@ -222,9 +224,13 @@ class Backend extends BaseController
             'fastadmin'      => Config::get('fastadmin'),
             'referer'        => Session::get('referer'),
         ];
+        $config = array_merge($config, Config::get("view_replace_str"));
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
         // 配置信息后
-        Event::trigger('config_init', $config);
+        $event_config = Event::trigger('config_init', $config,true);
+        if($event_config){
+            $config = array_merge($config, $event_config);
+        }
         //加载当前控制器语言包
         $this->loadlang($this->request->controller());
         //渲染站点配置

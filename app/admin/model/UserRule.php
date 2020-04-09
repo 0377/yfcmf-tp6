@@ -4,6 +4,7 @@ namespace app\admin\model;
 
 use fast\Tree;
 use app\common\model\BaseModel;
+use think\Model;
 
 class UserRule extends BaseModel
 {
@@ -18,11 +19,10 @@ class UserRule extends BaseModel
     protected $append = [
         'status_text',
     ];
-
-    public static function onAfterInsert($row)
+    public static function onAfterWrite(Model $row)
     {
         $pk = $row->getPk();
-        $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
+        $row->where($pk, $row[$pk])->save(['weigh' => $row[$pk]]);
     }
 
     public function getStatusList()

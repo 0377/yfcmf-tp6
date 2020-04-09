@@ -15,7 +15,6 @@ namespace app\admin\library\traits;
 use think\Exception;
 use think\facade\Db;
 use app\admin\library\Auth;
-use think\exception\PDOException;
 use think\exception\ValidateException;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
@@ -129,17 +128,17 @@ trait Backend
 
                 try {
                     //是否采用模型验证
-                    if ($this->modelValidate) {
+                    /*if ($this->modelValidate) {
                         $name = str_replace('\\model\\', '\\validate\\', get_class($this->model));
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
-                    }
+                    }*/
                     $result = $this->model->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
                     Db::rollback();
                     $this->error($e->getMessage());
-                } catch (PDOException $e) {
+                } catch (\PDOException $e) {
                     Db::rollback();
                     $this->error($e->getMessage());
                 } catch (Exception $e) {
@@ -182,17 +181,17 @@ trait Backend
 
                 try {
                     //是否采用模型验证
-                    if ($this->modelValidate) {
+                    /*if ($this->modelValidate) {
                         $name = str_replace('\\model\\', '\\validate\\', get_class($this->model));
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
-                    }
+                    }*/
                     $result = $row->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
                     Db::rollback();
                     $this->error($e->getMessage());
-                } catch (PDOException $e) {
+                } catch (\PDOException $e) {
                     Db::rollback();
                     $this->error($e->getMessage());
                 } catch (Exception $e) {
@@ -233,7 +232,7 @@ trait Backend
                     $count += $v->delete();
                 }
                 Db::commit();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 Db::rollback();
                 $this->error($e->getMessage());
             } catch (Exception $e) {
@@ -272,7 +271,7 @@ trait Backend
                 $count += $v->force()->delete();
             }
             Db::commit();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             Db::rollback();
             $this->error($e->getMessage());
         } catch (Exception $e) {
@@ -310,7 +309,7 @@ trait Backend
                 $count += $item->restore();
             }
             Db::commit();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             Db::rollback();
             $this->error($e->getMessage());
         } catch (Exception $e) {
@@ -348,7 +347,7 @@ trait Backend
                             $count += $item->save($values);
                         }
                         Db::commit();
-                    } catch (PDOException $e) {
+                    } catch (\PDOException $e) {
                         Db::rollback();
                         $this->error($e->getMessage());
                     } catch (Exception $e) {
@@ -416,10 +415,10 @@ trait Backend
         //导入文件首行类型,默认是注释,如果需要使用字段名称请使用name
         $importHeadType = isset($this->importHeadType) ? $this->importHeadType : 'comment';
 
-        $table = $this->model->getQuery()->getTable();
-        $database = \think\Config::get('database.database');
+        $table = $this->model->db()->getTable();
+        $database = \think\facade\Config::get('database.database');
         $fieldArr = [];
-        $list = db()->query('SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
+        $list = Db::query('SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
             [$table, $database]);
         foreach ($list as $k => $v) {
             if ($importHeadType == 'comment') {
@@ -490,7 +489,7 @@ trait Backend
                 }
             }
             $this->model->saveAll($insert);
-        } catch (PDOException $exception) {
+        } catch (\PDOException $exception) {
             $msg = $exception->getMessage();
             if (preg_match("/.+Integrity constraint violation: 1062 Duplicate entry '(.+)' for key '(.+)'/is", $msg,
                 $matches)) {

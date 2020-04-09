@@ -2,7 +2,7 @@
     {if $addon.tips}
     <div class="alert {$addon.tips.extend|default='alert-info-light'}" style="margin-bottom:10px;">
         <b>{$addon.tips.title}</b><br>
-        {$addon.tips.value}
+        {$addon.tips.value|raw}
     </div>
     {/if}
     <table class="table table-striped">

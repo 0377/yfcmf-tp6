@@ -173,7 +173,7 @@ class Group extends Backend
                         $childparams[$key]['id'] = $children_auth_group->id;
                         $childparams[$key]['rules'] = implode(',', array_intersect(explode(',', $children_auth_group->rules), $rules));
                     }
-                    AuthGroup::saveAll($childparams);
+                    (new AuthGroup())->saveAll($childparams);
                     Db::commit();
                     $this->success();
                 }catch (Exception $e){
