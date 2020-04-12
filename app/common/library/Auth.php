@@ -256,7 +256,8 @@ class Auth
         //设置登录标识
         $this->_logined = false;
         //删除Token
-        Token::delete($this->_token);
+        //Token::delete($this->_token);
+        Token::clear($this->_user->id);
         //注销成功的事件
         Event::trigger('user_logout_successed', $this->_user);
 
@@ -289,7 +290,8 @@ class Auth
                 $newpassword = $this->getEncryptPassword($newpassword, $salt);
                 $this->_user->save(['loginfailure' => 0, 'password' => $newpassword, 'salt' => $salt]);
 
-                Token::delete($this->_token);
+                //Token::delete($this->_token);
+                Token::clear($this->_user->id);
                 //修改密码成功的事件
                 Event::trigger('user_changepwd_successed', $this->_user);
                 Db::commit();

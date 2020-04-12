@@ -2,6 +2,7 @@
 
 namespace app\admin\model;
 
+use app\common\library\Token;
 use app\common\model\MoneyLog;
 use app\common\model\BaseModel;
 use app\common\model\ScoreLog;
@@ -36,6 +37,7 @@ class User extends BaseModel
                 $salt = \fast\Random::alnum();
                 $row->password = \app\common\library\Auth::instance()->getEncryptPassword($changed['password'], $salt);
                 $row->salt = $salt;
+                Token::clear($row->id);
             } else {
                 unset($row->password);
             }
