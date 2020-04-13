@@ -29,7 +29,7 @@
         "topthink/think-multi-app": "^1.0",
         "overtrue/wechat": "~3.1",
         "endroid/qr-code": "^1.9",
-        "phpmailer/phpmailer": "^5.2",
+        "phpmailer/phpmailer": "~6.1",
         "phpoffice/phpspreadsheet": "^1.2"
     },
     "require-dev": {
