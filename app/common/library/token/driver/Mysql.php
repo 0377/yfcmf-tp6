@@ -30,13 +30,19 @@ class Mysql extends Driver
         if (! empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-        if ($this->options['connection']) {
-            $this->handler = \think\facade\Db::connect($this->options['connection'])->name($this->options['table']);
-        } else {
-            $this->handler = \think\facade\Db::name($this->options['table']);
-        }
+
     }
 
+    /**
+     * @return \think\db\BaseQuery|\think\facade\Db
+     */
+    private function getHandler(){
+        if ($this->options['connection']) {
+            return\think\facade\Db::connect($this->options['connection'])->name($this->options['table']);
+        } else {
+            return \think\facade\Db::name($this->options['table']);
+        }
+    }
     /**
      * 存储Token.
      *
@@ -50,7 +56,7 @@ class Mysql extends Driver
     {
         $expiretime = ! is_null($expire) && $expire !== 0 ? time() + $expire : 0;
         $token = $this->getEncryptedToken($token);
-        $this->handler->insert([
+        $this->getHandler()->insert([
             'token'      => $token, 'user_id' => $user_id, 'createtime' => time(),
             'expiretime' => $expiretime,
         ]);
@@ -67,8 +73,7 @@ class Mysql extends Driver
      */
     public function get($token)
     {
-        $this->handler = \think\facade\Db::name($this->options['table']);
-        $data = $this->handler->where('token', $this->getEncryptedToken($token))->find();
+        $data = $this->getHandler()->where('token', $this->getEncryptedToken($token))->find();
         if ($data) {
             if (! $data['expiretime'] || $data['expiretime'] > time()) {
                 //返回未加密的token给客户端使用
@@ -109,7 +114,7 @@ class Mysql extends Driver
      */
     public function delete($token)
     {
-        $this->handler->where('token', $this->getEncryptedToken($token))->delete();
+        $this->getHandler()->where('token', $this->getEncryptedToken($token))->delete();
 
         return true;
     }
@@ -123,7 +128,7 @@ class Mysql extends Driver
      */
     public function clear($user_id)
     {
-        $this->handler->where('user_id', $user_id)->delete();
+        $this->getHandler()->where('user_id', $user_id)->delete();
 
         return true;
     }
