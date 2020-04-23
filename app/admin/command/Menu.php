@@ -97,7 +97,7 @@ class Menu extends Command
                     throw new Exception('Operation is aborted!');
                 }
             }
-            AuthRule::destroy($ids);
+            AuthRule::destroy(['id'=>$ids]);
 
             Cache::delete('__menu__');
             $output->info('Delete Successed');

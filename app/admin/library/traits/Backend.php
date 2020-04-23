@@ -24,7 +24,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 trait Backend
 {
     /**
-     * 排除前台提交过来的字段.
+     * 排除前台提交过来的字段
      *
      * @param $params
      *
@@ -48,7 +48,7 @@ trait Backend
     }
 
     /**
-     * 查看.
+     * 查看
      */
     public function index()
     {
@@ -81,7 +81,7 @@ trait Backend
     }
 
     /**
-     * 回收站.
+     * 回收站
      */
     public function recyclebin()
     {
@@ -111,7 +111,7 @@ trait Backend
     }
 
     /**
-     * 添加.
+     * 添加
      */
     public function add()
     {
@@ -158,7 +158,7 @@ trait Backend
     }
 
     /**
-     * 编辑.
+     * 编辑
      */
     public function edit($ids = null)
     {
@@ -212,7 +212,7 @@ trait Backend
     }
 
     /**
-     * 删除.
+     * 删除
      */
     public function del($ids = '')
     {
@@ -249,7 +249,7 @@ trait Backend
     }
 
     /**
-     * 真实删除.
+     * 真实删除
      */
     public function destroy($ids = '')
     {
@@ -323,7 +323,7 @@ trait Backend
     }
 
     /**
-     * 批量更新.
+     * 批量更新
      */
     public function multi($ids = '')
     {
@@ -368,7 +368,7 @@ trait Backend
     }
 
     /**
-     * 导入.
+     * 导入
      */
     protected function import()
     {

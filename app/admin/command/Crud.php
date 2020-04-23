@@ -400,7 +400,7 @@ class Crud extends Command
         $baseFileName = parseName(array_pop($baseNameArr), 0);
         array_push($baseNameArr, $baseFileName);
         $controllerBaseName = strtolower(implode(DIRECTORY_SEPARATOR, $baseNameArr));
-        $controllerUrl = strtolower(implode('/', $baseNameArr));
+        $controllerUrl = $originControllerUrl = strtolower(implode('/', $baseNameArr));
         $controllerUrl = $_controllerUrl = preg_replace("/\//", '.', $controllerUrl, 1);
         //视图文件
         $viewArr = $controllerArr;
@@ -859,6 +859,7 @@ class Crud extends Command
                 'controllerNamespace'     => $controllerNamespace,
                 'modelNamespace'          => $modelNamespace,
                 'validateNamespace'       => $validateNamespace,
+                'originControllerUrl'     => $originControllerUrl,
                 'controllerUrl'           => $controllerUrl,
                 'controllerName'          => $controllerName,
                 'controllerAssignList'    => implode("\n", $controllerAssignList),
