@@ -43,7 +43,7 @@ $site_name = 'YFCMF-TP6';
 $site_url = 'https://www.iuok.cn';
 $version = 'V2.0.1';
 $_date = date('Y');
-$sql_url = '../fastadmin.sql';
+$sql_url = '../yfcmf_tp6.sql';
 
 $html_title = '程序安装向导';
 $install_css = <<<EOF
@@ -527,7 +527,7 @@ EOF;
 
 
         $db_host = $_POST['db_host'] ? $_POST['db_host'] : '127.0.0.1';
-        $db_name = $_POST['db_name'] ? $_POST['db_name'] : 'fastadmin_tp6';
+        $db_name = $_POST['db_name'] ? $_POST['db_name'] : 'yfcmf_tp6';
         $db_user = $_POST['db_user'] ? $_POST['db_user'] : '';
         $db_pwd = $_POST['db_pwd'] ? $_POST['db_pwd'] : '';
         $db_prefix = $_POST['db_prefix'] ? $_POST['db_prefix'] : 'fa_';
