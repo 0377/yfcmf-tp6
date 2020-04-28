@@ -43,10 +43,10 @@ class Index extends Backend
     {
         //左侧菜单
         [$menulist, $navlist, $fixedmenu, $referermenu] = $this->auth->getSidebar([
-//            'dashboard' => 'hot',
-//            'addon'     => ['new', 'red', 'badge'],
-//            'auth/rule' => __('Menu'),
-//            'general'   => ['new', 'purple'],
+            //            'dashboard' => 'hot',
+            //            'addon'     => ['new', 'red', 'badge'],
+            //            'auth/rule' => __('Menu'),
+            //            'general'   => ['new', 'purple'],
         ], $this->view->site['fixedpage']);
         $action = $this->request->request('action');
         if ($this->request->isPost()) {
@@ -73,29 +73,27 @@ class Index extends Backend
             $this->success(__("You've logged in, do not login again"), $url);
         }
         if ($this->request->isPost()) {
-            $username = $this->request->post('username');
-            $password = $this->request->post('password');
+            $username  = $this->request->post('username');
+            $password  = $this->request->post('password');
             $keeplogin = $this->request->post('keeplogin');
-            $token = $this->request->post('__token__');
-            $rule = [
-                'username'  => 'require|length:3,30',
-                'password'  => 'require|length:3,30',
-                '__token__' => 'require|token',
+            $token     = $this->request->post('__token__');
+            $rule      = [
+                'username|'.__('Username') => 'require|length:3,30',
+                'password|'.__('Password') => 'require|length:3,30',
+                '__token__'                => 'require|token',
             ];
-            $data = [
+            $data      = [
                 'username'  => $username,
                 'password'  => $password,
                 '__token__' => $token,
             ];
             if (Config::get('fastadmin.login_captcha')) {
-                $rule['captcha'] = 'require|captcha';
-                $data['captcha'] = $this->request->post('captcha');
+                $rule['captcha|'.__('Captcha')] = 'require|captcha';
+                $data['captcha']                = $this->request->post('captcha');
             }
-
-            $validate = new Validate($rule, [],
-                ['username' => __('Username'), 'password' => __('Password'), 'captcha' => __('Captcha')]);
-            $result = $validate->check($data);
-            if (! $result) {
+            $validate = validate($rule, [], false, false);
+            $result   = $validate->check($data);
+            if (!$result) {
                 $this->error($validate->getError(), $url, ['token' => $this->request->buildToken()]);
             }
             AdminLog::setTitle(__('Login'));
