@@ -46,5 +46,6 @@ class AuthRule extends BaseModel
             }
             $this->set('route', $route);
         }
+        $this->set('name', $value);
     }
 }
