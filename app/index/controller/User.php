@@ -129,7 +129,7 @@ class User extends Frontend
                 } elseif ($captchaType == 'wechat') {
                     $captchaResult = WechatCaptcha::check($captcha, 'register');
                 } elseif ($captchaType == 'text') {
-                    $captchaResult = \think\Validate::is($captcha, 'captcha');
+                    $captchaResult = \think\facade\Validate::is($captcha, 'captcha');
                 }
             }
             if (!$captchaResult) {
