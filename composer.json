@@ -1,47 +1,43 @@
 {
-    "name": "0377/yfcmf-tp6",
-    "description": "YFCMF新版本，基于thinkphp6.0和fastadmin",
+    "name": "topthink/think",
+    "description": "the new thinkphp framework",
     "type": "project",
     "keywords": [
-        "thinkphp6",
+        "framework",
         "thinkphp",
-        "fastadmin",
-        "fastadmin-tp6",
-        "yfcmf",
-        "yfcmf-tp6"
+        "ORM"
     ],
-    "homepage": "https://www.iuok.cn",
+    "homepage": "http://thinkphp.cn/",
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "ice",
-            "email": "ice@sbing.vip"
-        }
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        },
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }        
     ],
     "require": {
         "php": ">=7.1.0",
-        "topthink/framework": "^6.0",
+        "topthink/framework": "^6.0.0",
         "topthink/think-orm": "^2.0",
-        "topthink/think-view": "^1.0",
+        "topthink/think-annotation": "^1.1",
+        "topthink/think-ide-helper": "^1.0",
+        "topthink/think-helper": "^3.1",
         "topthink/think-captcha": "^3.0",
-        "overtrue/pinyin": "^4.0",
-        "dragonmantank/cron-expression": "^2.3",
-        "topthink/think-multi-app": "^1.0",
-        "overtrue/wechat": "~3.1",
-        "endroid/qr-code": "^1.9",
-        "phpmailer/phpmailer": "~6.1",
-        "phpoffice/phpspreadsheet": "^1.2"
+        "topthink/think-view": "^1.0"
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.2"
+        "symfony/var-dumper": "^4.2",
+        "topthink/think-trace":"^1.0"
     },
     "autoload": {
         "psr-4": {
             "app\\": "app",
+            "yfcmf\\": "yfcmf",
             "addons\\": "addons"
-        },
-        "psr-0": {
-            "": "extend/"
         }
     },
     "config": {

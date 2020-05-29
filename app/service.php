@@ -1,7 +1,9 @@
 <?php
 
-// 定义服务
-return array_merge([
-    '\app\common\service\AuthService', //登陆认证服务
-    '\app\common\service\AddonService', //插件服务
-], config('addons.service'));
+// 系统服务定义文件
+// 服务在完成全局初始化之后执行
+use yfcmf\service\YfcmfService;
+
+return [
+    YfcmfService::class,
+];

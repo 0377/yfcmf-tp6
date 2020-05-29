@@ -32,5 +32,5 @@ return [
   'mail_smtp_pass'   => 'password',
   'mail_verify_type' => '2',
   'mail_from'        => '10000@qq.com',
-  'login_background' => '/assets/img/qrcode.png',
+  'theme' => '',
 ];

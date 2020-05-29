@@ -1,30 +1,18 @@
 <?php
-/**
- *  ============================================================================
- *  Created by PhpStorm.
- *  User: Ice
- *  邮箱: ice@sbing.vip
- *  网址: https://sbing.vip
- *  Date: 2019/11/27 下午6:09
- *  ============================================================================
- */
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2019 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: liu21st <liu21st@gmail.com>
+// +----------------------------------------------------------------------
 
 // [ 应用入口文件 ]
-
 namespace think;
 
-// 判断是否安装YFCMF-TP6
-if (! is_file('../config/install.lock')) {
-    header("location:./install.php");
-    exit;
-}
-
-//是否composer
-if (! file_exists('../vendor')) {
-    exit('根目录缺少vendor,请先composer install');
-}
-
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 // 执行HTTP应用并响应
 $http = (new App())->http;

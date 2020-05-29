@@ -2,7 +2,4 @@
 /.vscode
 /vendor
 *.log
-runtime
 .env
-composer.lock
-config/install.lock

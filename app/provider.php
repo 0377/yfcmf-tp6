@@ -1,10 +1,11 @@
 <?php
 
-use app\Request;
-use app\ExceptionHandle;
+use yfcmf\core\handle\AppExceptionHandle;
+use yfcmf\provider\YfcmfRequest;
+use yfcmf\provider\YfcmfRoute;
 
-// 容器Provider定义文件
 return [
-    'think\Request'          => Request::class,
-    'think\exception\Handle' => ExceptionHandle::class,
+    'think\Route'            => YfcmfRoute::class,
+    'think\Request'          => YfcmfRequest::class,
+    'think\exception\Handle' => AppExceptionHandle::class,
 ];
