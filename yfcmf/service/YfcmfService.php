@@ -1,63 +1,65 @@
 <?php
+/**
+ *  =============================================================
+ *  Created by PhpStorm.
+ *  User: Ice
+ *  邮箱: ice@sbing.vip
+ *  网址: https://sbing.vip
+ *  Date: 2020/6/28 下午12:05
+ *  ==============================================================
+ */
 
 namespace yfcmf\service;
 
-
-use Doctrine\Common\Annotations\Reader;
-use PhpDocReader\PhpDocReader;
-use think\annotation\Inject;
-use think\facade\Lang;
-use think\middleware\LoadLangPack;
+use think\Lang;
 use think\middleware\SessionInit;
 use think\Service;
 use think\facade\Env;
 use think\facade\Config;
-use think\facade\Request;
-use yfcmf\core\annotation\NeedAuth;
-use yfcmf\core\annotation\NeedLogin;
+use yfcmf\library\AdminAuth;
 use yfcmf\library\Auth;
 use yfcmf\library\Common;
 use yfcmf\library\Form;
-use yfcmf\middleware\AuthMiddleware;
+use yfcmf\middleware\AdminMiddleware;
 use yfcmf\middleware\FrontendMiddleware;
-use yfcmf\middleware\LangMiddleware;
 
 /**
  * 框架核心服务
  */
 class YfcmfService extends Service
 {
-    /** @var Reader */
-    protected $reader;
+    /** @var Lang */
+    protected $lang;
 
     public function register()
     {
         // 服务注册
-        $this->app->bind('auth', Auth::class);
+        if (defined('YFCMF_ADMIN') && YFCMF_ADMIN == true) {
+            $this->app->bind('auth', AdminAuth::class);
+        } else {
+            $this->app->bind('auth', Auth::class);
+        }
+
     }
 
-    public function boot(Reader $reader)
+    public function boot(Lang $lang)
     {
         // 服务启动
+        $this->lang = $lang;
         $this->initCore();
         if (Common::getPhpFile() === 'index') {
             $this->app->event->listen('HttpRun', function () {
-                $this->app->middleware->add(LangMiddleware::class);
                 $this->app->middleware->add(SessionInit::class);
                 $this->app->middleware->add(FrontendMiddleware::class);
             });
             Common::hook('init_yfcmf');
         } elseif (defined('YFCMF_ADMIN') && YFCMF_ADMIN == true) {
+            $this->app->event->listen('HttpRun', function () {
+                $this->app->middleware->add(SessionInit::class);
+                $this->app->middleware->add(AdminMiddleware::class);
+            });
             Common::hook('init_admin');
         }
-        //权限注解
-        $this->reader = $reader;
-        $this->authInject($reader);
-    }
-
-    protected function authInject(Reader $reader)
-    {
-
     }
 
 
@@ -68,6 +70,7 @@ class YfcmfService extends Service
     {
         // 设置mbstring字符编码
         mb_internal_encoding('UTF-8');
+        $this->initLang();
         $this->initView();
         // 设置替换内容
         $this->initReplaceString();
@@ -90,9 +93,34 @@ class YfcmfService extends Service
             $path  = $this->app->getRootPath().'resources'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR.'index'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR;
             Config::set(['view_path' => $path], 'view');
         } elseif (defined('YFCMF_ADMIN') && YFCMF_ADMIN == true) {
-            $path = $this->app->getRootPath().'resources'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR.'admin'.DIRECTORY_SEPARATOR;
+            $path = $this->app->getRootPath().'resources'.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR;
             Config::set(['view_path' => $path], 'view');
         }
+    }
+
+    /**
+     * 加载语言包
+     */
+    private function initLang()
+    {
+        // 自动侦测当前语言
+        $langset = $this->lang->detect(app()->request);
+
+        // 加载系统语言包
+        $path = '';
+        if (Common::getPhpFile() === 'index') {
+            $path = $this->app->getRootPath().'resources'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.'index';
+        } elseif (defined('YFCMF_ADMIN') && YFCMF_ADMIN == true) {
+            $path = $this->app->getRootPath().'resources'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.'admin';
+        }
+        if ($path) {
+            $files1 = glob($path.DIRECTORY_SEPARATOR.$langset.'.*');
+            $files2 = glob($path.DIRECTORY_SEPARATOR.$langset.DIRECTORY_SEPARATOR.'*');
+            $files  = array_merge($files1, $files2);
+            $this->lang->load($files);
+        }
+
+        $this->lang->saveToCookie($this->app->cookie);
     }
 
     /**

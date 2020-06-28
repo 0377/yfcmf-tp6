@@ -20,15 +20,16 @@ class YfcmfRoute extends Route
      */
     protected function path(): string
     {
-        $path = parent::path();
-        if (Common::getPhpFile() === 'index') {
+        $path    = parent::path();
+        $runFile = Common::getPhpFile();
+        if ($runFile === 'index') {
             if (strpos($path, 'api/') === 0) {
                 $path = 'api.'.substr($path, 4);
             } else {
                 $path = $path ? 'index.'.$path : 'index.index/index';
             }
         } elseif (defined('YFCMF_ADMIN') && YFCMF_ADMIN == true) {
-            $path = $path ? 'admin.'.$path : 'admin.index/index';
+            $path = $path !== $runFile.'.php' ? 'admin.'.$path : 'admin.index/index';
         }
 
         return $path;

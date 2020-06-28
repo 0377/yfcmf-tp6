@@ -1,21 +1,22 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2019 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
+/**
+ *  =============================================================
+ *  Created by PhpStorm.
+ *  User: Ice
+ *  邮箱: ice@sbing.vip
+ *  网址: https://sbing.vip
+ *  Date: 2020/6/28 下午12:06
+ *  ==============================================================
+ */
 
-// [ 应用入口文件 ]
 namespace think;
 
 require __DIR__ . '/../vendor/autoload.php';
+
 ! defined('YFCMF_ADMIN') && define('YFCMF_ADMIN', true);
-// 执行HTTP应用并响应
+
 $http = (new App())->http;
+
 $response = $http->run();
 
 $response->send();

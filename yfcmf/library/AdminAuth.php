@@ -11,18 +11,16 @@
 
 namespace yfcmf\library;
 
-use fast\Random;
+use app\model\Admin;
+use app\model\AdminRule;
 use think\Exception;
 use think\facade\Db;
 use think\facade\Event;
-use think\facade\Config;
 use think\facade\Request;
-use app\model\User;
 use think\facade\Validate;
-use app\model\UserRule;
 use think\helper\Str;
 
-class Auth
+class AdminAuth
 {
     protected static $instance = null;
     protected $_error = '';
@@ -33,17 +31,11 @@ class Auth
     protected $keeptime = 2592000;
     protected $requestUri = '';
     protected $rules = [];
-    //默认配置
-    protected $config = [];
-    protected $options = [];
+
     protected $allowFields = ['id', 'username', 'nickname', 'mobile', 'avatar', 'score'];
 
     public function __construct($options = [])
     {
-        if ($config = Config::get('user')) {
-            $this->config = array_merge($this->config, $config);
-        }
-        $this->options = array_merge($this->config, $options);
     }
 
     /**
@@ -59,7 +51,7 @@ class Auth
     /**
      * 获取User模型.
      *
-     * @return User
+     * @return Admin
      */
     public function getUser()
     {
@@ -99,7 +91,7 @@ class Auth
         }
         $user_id = intval($data['user_id']);
         if ($user_id > 0) {
-            $user = User::find($user_id);
+            $user = Admin::find($user_id);
             if (!$user) {
                 $this->setError('Account not exist');
 
@@ -126,86 +118,6 @@ class Auth
     }
 
     /**
-     * 注册用户.
-     *
-     * @param  string  $username  用户名
-     * @param  string  $password  密码
-     * @param  string  $email     邮箱
-     * @param  string  $mobile    手机号
-     * @param  array   $extend    扩展参数
-     *
-     * @return bool
-     */
-    public function register($username, $password, $email = '', $mobile = '', $extend = [])
-    {
-        // 检测用户名或邮箱、手机号是否存在
-        if (User::getByUsername($username)) {
-            $this->setError('Username already exist');
-
-            return false;
-        }
-        if ($email && User::getByEmail($email)) {
-            $this->setError('Email already exist');
-
-            return false;
-        }
-        if ($mobile && User::getByMobile($mobile)) {
-            $this->setError('Mobile already exist');
-
-            return false;
-        }
-
-        $ip   = request()->ip();
-        $time = time();
-
-        $data               = [
-            'username' => $username,
-            'password' => $password,
-            'email'    => $email,
-            'mobile'   => $mobile,
-            'level'    => 1,
-            'score'    => 0,
-            'avatar'   => '',
-        ];
-        $params             = array_merge($data, [
-            'nickname'  => $username,
-            'salt'      => Str::random(),
-            'jointime'  => $time,
-            'joinip'    => $ip,
-            'logintime' => $time,
-            'loginip'   => $ip,
-            'prevtime'  => $time,
-            'status'    => 'normal',
-        ]);
-        $params['password'] = $this->getEncryptPassword($password, $params['salt']);
-        $params             = array_merge($params, $extend);
-
-        //账号注册时需要开启事务,避免出现垃圾数据
-        Db::startTrans();
-
-        try {
-            $user = User::create($params);
-
-            $this->_user = User::find($user->id);
-
-            //设置Token
-            $this->_token = Random::uuid();
-            Token::set($this->_token, $user->id, $this->keeptime);
-
-            //注册成功的事件
-            Event::trigger('user_register_successed', $this->_user);
-            Db::commit();
-        } catch (Exception $e) {
-            $this->setError($e->getMessage());
-            Db::rollback();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * 用户登录.
      *
      * @param  string  $account   账号,用户名、邮箱、手机号
@@ -217,7 +129,7 @@ class Auth
     {
         $field = Validate::is($account, 'email') ? 'email' : (Validate::regex($account,
             '/^1\d{10}$/') ? 'mobile' : 'username');
-        $user  = User::where([$field => $account])->find();
+        $user  = Admin::where([$field => $account])->find();
         if (!$user) {
             $this->setError('Account is incorrect');
 
@@ -286,11 +198,10 @@ class Auth
             Db::startTrans();
 
             try {
-                $salt        = Random::alnum();
+                $salt        = Str::random(6);
                 $newpassword = $this->getEncryptPassword($newpassword, $salt);
                 $this->_user->save(['loginfailure' => 0, 'password' => $newpassword, 'salt' => $salt]);
 
-                //Token::delete($this->_token);
                 Token::clear($this->_user->id);
                 //修改密码成功的事件
                 Event::trigger('user_changepwd_successed', $this->_user);
@@ -319,7 +230,7 @@ class Auth
      */
     public function direct($user_id)
     {
-        $user = User::find($user_id);
+        $user = Admin::find($user_id);
         if ($user) {
             Db::startTrans();
 
@@ -345,7 +256,7 @@ class Auth
 
                 $this->_user = $user;
 
-                $this->_token = Random::uuid();
+                $this->_token = Str::random(32);
                 Token::set($this->_token, $user->id, $this->keeptime);
 
                 $this->_logined = true;
@@ -441,7 +352,7 @@ class Auth
             return [];
         }
         $rules       = explode(',', $group->rules);
-        $this->rules = UserRule::where('status', 'normal')->where('id', 'in',
+        $this->rules = AdminRule::where('status', 'normal')->where('id', 'in',
             $rules)->field('id,pid,name,title,ismenu')->select();
 
         return $this->rules;
@@ -496,7 +407,7 @@ class Auth
      */
     public function delete($user_id)
     {
-        $user = User::find($user_id);
+        $user = Admin::find($user_id);
         if (!$user) {
             return false;
         }
@@ -504,11 +415,8 @@ class Auth
 
         try {
             // 删除会员
-            User::destroy($user_id);
-            // 删除会员指定的所有Token
-            Token::clear($user_id);
-
-            Event::trigger('user_delete_successed', $user);
+            Admin::destroy($user_id);
+            Event::trigger('admin_delete_successed', $user);
             Db::commit();
         } catch (Exception $e) {
             Db::rollback();
@@ -594,7 +502,7 @@ class Auth
                 $fields[] = 'id';
             }
             $ids        = array_unique($ids);
-            $selectlist = User::where('id', 'in', $ids)->column($fields);
+            $selectlist = Admin::where('id', 'in', $ids)->column($fields);
             foreach ($selectlist as $k => $v) {
                 $list[$v['id']] = $v;
             }
@@ -610,9 +518,9 @@ class Auth
     /**
      * 设置错误信息.
      *
-     * @param $error 错误信息
+     * @param $error string 错误信息
      *
-     * @return Auth
+     * @return AdminAuth
      */
     public function setError($error)
     {
