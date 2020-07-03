@@ -255,15 +255,15 @@ class Extractor
             $urlArr = [];
             $className = $class->getName();
 
-            [$prefix, $suffix] = explode('\\'.\think\Config::get('url_controller_layer').'\\', $className);
+            [$prefix, $suffix] = explode('\\'.\think\facade\Config::get('route.controller_layer').'\\', $className);
             $prefixArr = explode('\\', $prefix);
             $suffixArr = explode('\\', $suffix);
-            if ($prefixArr[0] == \think\Config::get('app_namespace')) {
+            if ($prefixArr[0] == \think\facade\Config::get('app.app_namespace')?:'app' ) {
                 $prefixArr[0] = '';
             }
             $urlArr = array_merge($urlArr, $prefixArr);
             $urlArr[] = implode('.', array_map(function ($item) {
-                return \think\parseName($item);
+                return parseName($item);
             }, $suffixArr));
             $urlArr[] = $method->getName();
 

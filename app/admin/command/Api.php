@@ -73,7 +73,7 @@ class Api extends Command
         // 模块
         $module = $input->getOption('module');
 
-        $moduleDir = APP_PATH.$module.DIRECTORY_SEPARATOR;
+        $moduleDir = app()->getBasePath().$module.DIRECTORY_SEPARATOR;
         if (! is_dir($moduleDir)) {
             throw new Exception('module not found');
         }
@@ -91,7 +91,7 @@ class Api extends Command
             }
         }
 
-        $controllerDir = $moduleDir.Config::get('url_controller_layer').DIRECTORY_SEPARATOR;
+        $controllerDir = $moduleDir.Config::get('route.controller_layer').DIRECTORY_SEPARATOR;
         $files = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($controllerDir),
             \RecursiveIteratorIterator::LEAVES_ONLY
@@ -112,9 +112,9 @@ class Api extends Command
             'apiurl'      => $url,
             'language'    => $language,
         ];
+
         $builder = new Builder($classes);
         $content = $builder->render($template_file, ['config' => $config, 'lang' => $lang]);
-
         if (! file_put_contents($output_file, $content)) {
             throw new Exception('Cannot save the content to '.$output_file);
         }

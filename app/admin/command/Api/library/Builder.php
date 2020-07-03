@@ -40,7 +40,8 @@ class Builder
     public function __construct($classes = [])
     {
         $this->classes = array_merge($this->classes, $classes);
-        $this->view = new \think\View(Config::get('view'), Config::get('view_replace_str'));
+        //$this->view = new \think\View(Config::get('view'), Config::get('view_replace_str'));
+        $this->view = \think\facade\View::instance();
     }
 
     protected function extractAnnotations()
@@ -173,14 +174,15 @@ class Builder
         $sectorArr = [];
         foreach ($allClassAnnotations as $index => $allClassAnnotation) {
             $sector = isset($allClassAnnotation['ApiSector']) ? $allClassAnnotation['ApiSector'][0] : $allClassAnnotation['ApiTitle'][0];
+            $sector = $this->removeStrDot($sector);
             $sectorArr[$sector] = isset($allClassAnnotation['ApiWeigh']) ? $allClassAnnotation['ApiWeigh'][0] : 0;
         }
         arsort($sectorArr);
-        $routes = include_once CONF_PATH.'route.php';
+        //$routes = include_once CONF_PATH.'route.php';
         $subdomain = false;
-        if (config('url_domain_deploy') && isset($routes['__domain__']) && isset($routes['__domain__']['api']) && $routes['__domain__']['api']) {
-            $subdomain = true;
-        }
+//        if (config('url_domain_deploy') && isset($routes['__domain__']) && isset($routes['__domain__']['api']) && $routes['__domain__']['api']) {
+//            $subdomain = true;
+//        }
         $counter = 0;
         $section = null;
         $weigh = 0;
@@ -192,6 +194,7 @@ class Builder
                 } else {
                     $section = $class;
                 }
+                $section = $this->removeStrDot($section);
                 if (0 === count($docs)) {
                     continue;
                 }
@@ -199,13 +202,14 @@ class Builder
                 if ($subdomain) {
                     $route = substr($route, 4);
                 }
+                //var_dump($section,$name);
                 $docslist[$section][$name] = [
                     'id'                => $counter,
                     'method'            => is_array($docs['ApiMethod'][0]) ? $docs['ApiMethod'][0]['data'] : $docs['ApiMethod'][0],
                     'method_label'      => $this->generateBadgeForMethod($docs),
                     'section'           => $section,
                     'route'             => $route,
-                    'title'             => is_array($docs['ApiTitle'][0]) ? $docs['ApiTitle'][0]['data'] : $docs['ApiTitle'][0],
+                    'title'             => $this->removeStrDot(is_array($docs['ApiTitle'][0]) ? $docs['ApiTitle'][0]['data'] : $docs['ApiTitle'][0]),
                     'summary'           => is_array($docs['ApiSummary'][0]) ? $docs['ApiSummary'][0]['data'] : $docs['ApiSummary'][0],
                     'body'              => isset($docs['ApiBody'][0]) ? is_array($docs['ApiBody'][0]) ? $docs['ApiBody'][0]['data'] : $docs['ApiBody'][0] : '',
                     'headerslist'       => $this->generateHeadersTemplate($docs),
@@ -229,7 +233,6 @@ class Builder
             $methods = array_merge(array_flip(array_keys($methodSectorArr)), $methods);
         }
         $docslist = array_merge(array_flip(array_keys($sectorArr)), $docslist);
-
         return $docslist;
     }
 
@@ -251,5 +254,20 @@ class Builder
         $docslist = $this->parse();
 
         return $this->view->display(file_get_contents($template), array_merge($vars, ['docslist' => $docslist]));
+    }
+
+    /**
+     * 去掉字符串结尾点字符
+     *
+     * @param  string  $str
+     *
+     * @return string
+     */
+    private function removeStrDot($str='')
+    {
+        if (mb_substr($str,-1) == '.'){
+            $str = mb_substr($str,0,-1);
+        }
+        return $str;
     }
 }
