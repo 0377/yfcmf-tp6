@@ -415,7 +415,7 @@ class Crud extends Command
         $editFile = $viewDir.'edit.html';
         $indexFile = $viewDir.'index.html';
         $recyclebinFile = $viewDir.'recyclebin.html';
-        $langFile = $adminPath.'lang'.DIRECTORY_SEPARATOR.Lang::detect(app()->request).DIRECTORY_SEPARATOR.$controllerBaseName.'.php';
+        $langFile = $adminPath.'lang'.DIRECTORY_SEPARATOR.'zh-cn'.DIRECTORY_SEPARATOR.$controllerBaseName.'.php';
 
         //是否为删除模式
         $delete = $input->getOption('delete');
