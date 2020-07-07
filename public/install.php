@@ -22,10 +22,16 @@ function input(&$data)
 {
     foreach ((array) $data as $key => $value) {
         if (is_string($value)) {
-            if (! get_magic_quotes_gpc()) {
+            if (function_exists('get_magic_quotes_gpc')) {
+                if (! get_magic_quotes_gpc()) {
+                    $value = htmlentities($value, ENT_NOQUOTES);
+                    $value = addslashes(trim($value));
+                }
+            }else{
                 $value = htmlentities($value, ENT_NOQUOTES);
                 $value = addslashes(trim($value));
             }
+
         } else {
             $data[$key] = input($value);
         }
@@ -39,9 +45,11 @@ if (is_file('../config/install.lock') && $_GET['step'] != 5) {
     exit;
 }
 
+
+$config = include "../config/fastadmin.php";
 $site_name = 'YFCMF-TP6';
 $site_url = 'https://www.iuok.cn';
-$version = 'V2.0.1';
+$version = $config['version']?:'2.0.0';
 $_date = date('Y');
 $sql_url = '../yfcmf_tp6.sql';
 
