@@ -979,7 +979,7 @@ class Crud extends Command
 
         //继续生成菜单
         if ($menu) {
-            exec("php think menu -c {$controllerUrl}");
+            exec("php think menu -c {$originControllerUrl}");
         }
 
         $output->info('Build Successed');
