@@ -32,7 +32,7 @@ return [
     //API是否允许跨域
     'api_cross' => false,
     //版本号
-    'version' => '3.0.0',
+    'version' => '3.0.1',
     //API接口地址
     'api_url' => 'https://api.iuok.cn',
 ];
