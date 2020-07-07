@@ -22,7 +22,7 @@ function input(&$data)
 {
     foreach ((array) $data as $key => $value) {
         if (is_string($value)) {
-            if (function_exists('get_magic_quotes_gpc')) {
+            if (function_exists('get_magic_quotes_gpc') && PHP_VERSION < '7.4') {
                 if (! get_magic_quotes_gpc()) {
                     $value = htmlentities($value, ENT_NOQUOTES);
                     $value = addslashes(trim($value));
@@ -290,7 +290,7 @@ $install_css
 
 <script src="https://cdn.bootcss.com/iCheck/1.0.2/icheck.min.js"></script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jquery-validate/1.11.1/jquery.validate.min.js"></script>
 
 </head>
 <body>
