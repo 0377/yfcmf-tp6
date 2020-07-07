@@ -1032,11 +1032,12 @@ if (! function_exists('upload_file')) {
      * @param  string  $name  上传的位置
      * @param  string  $path  上传的文件夹
      * @param  string  $validate  规则验证
+     * @param  string  $url  前缀
      *
      * @return string|bool
      * @author niu
      */
-    function upload_file($file = null, $name = 'local', $path = '', $validate = '')
+    function upload_file($file = null, $name = 'local', $path = '', $validate = '', $url = '/')
     {
         //文件
         if (! $file) {
@@ -1056,9 +1057,10 @@ if (! function_exists('upload_file')) {
             //重命名
             return date('Ymd').'/'.md5((string) microtime(true));
         });
-        if (isset($filesystem['url'])) {
-            $savename = $filesystem['url'].$savename;
+        if(empty($url)){
+            $url = '/';
         }
+        $savename = $url.$savename;
 
         return $savename;
     }

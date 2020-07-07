@@ -13,6 +13,7 @@
 namespace app\admin\controller;
 
 use think\facade\Db;
+use think\facade\Event;
 use think\facade\Lang;
 use think\AddonService;
 use think\facade\Cache;
@@ -121,12 +122,20 @@ class Ajax extends Backend
         }
 
         //上传图片
-        $validate = "filesize:{$size}|fileExt:jpg,png,gif,jpeg,bmp,webp";
-        $savename = false;
+        $_validate[] = 'filesize:'.$size;
+        if ($upload['mimetype']) {
+            $_validate[] = 'fileExt:'.$upload['mimetype'];
+        }
+        $validate = implode('|', $_validate);
 
+        $event_config = Event::trigger('upload_init', $upload,true);
+        if($event_config){
+            $upload = array_merge($upload, $event_config);
+        }
         try {
-            $savename = upload_file($file, 'public', 'uploads', $validate);
+            $savename = upload_file($file, $upload['driver'], 'uploads', $validate, $upload['cdnurl']);
         } catch (\Exception $e) {
+            $savename = false;
             $this->error($e->getMessage());
         }
 
@@ -144,7 +153,7 @@ class Ajax extends Backend
             'mimetype'    => $fileInfo['type'],
             'url'         => $savename,
             'uploadtime'  => time(),
-            'storage'     => 'local',
+            'storage'     => $upload['driver'],
             'sha1'        => $sha1,
             'extparam'    => json_encode($extparam),
         ];

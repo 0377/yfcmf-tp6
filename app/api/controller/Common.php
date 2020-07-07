@@ -17,6 +17,7 @@ use app\common\model\Area;
 use app\common\model\Version;
 use app\common\controller\Api;
 use app\common\model\Attachment;
+use think\facade\Event;
 
 /**
  * 公共接口.
@@ -112,15 +113,18 @@ class Common extends Api
         $_validate[] = 'filesize:'.$size;
         if ($upload['mimetype']) {
             $_validate[] = 'fileExt:'.$upload['mimetype'];
-        } else {
-            $_validate[] = 'fileExt:jpg,png,gif,jpeg,bmp,webp';
         }
         $validate = implode('|', $_validate);
+
+        $event_config = Event::trigger('upload_init', $upload,true);
+        if($event_config){
+            $upload = array_merge($upload, $event_config);
+        }
         try {
-            $savename = upload_file($file, 'public', $upload['uploaddir'], $validate);
+            $savename = upload_file($file, $upload['driver'], 'uploads', $validate, $upload['cdnurl']);
         } catch (\Exception $e) {
             $savename = false;
-            $this->error($e->getMessage().$validate);
+            $this->error($e->getMessage());
         }
         if (! $savename) {
             $this->error('上传失败');
@@ -136,7 +140,7 @@ class Common extends Api
             'mimetype'    => $fileInfo['type'],
             'url'         => $savename,
             'uploadtime'  => time(),
-            'storage'     => 'local',
+            'storage'     => $upload['driver'],
             'sha1'        => $sha1,
         ];
         $attachment = new Attachment();
