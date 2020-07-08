@@ -182,4 +182,5 @@ return [
     'Rule tips'                                             => '规则通常对应一个控制器的方法,同时左侧的菜单栏数据也从规则中体现,通常建议通过命令行进行生成规则节点',
     'Access is allowed only to the super management group'  => '仅超级管理组能访问',
     'Local addon'                                           => '本地插件',
+    'Security tips'                                         => '<i class="fa fa-warning"></i> 安全提示：为了你的后台安全，请勿将后台管理入口设置为admin或fast',
 ];

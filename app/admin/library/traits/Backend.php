@@ -12,6 +12,7 @@
 
 namespace app\admin\library\traits;
 
+use app\admin\model\User;
 use think\Exception;
 use think\facade\Db;
 use app\admin\library\Auth;
@@ -71,7 +72,7 @@ trait Backend
                 ->limit($offset, $limit)
                 ->select();
 
-            $list = $list->toArray();
+            $list   = $list->toArray();
             $result = ['total' => $total, 'rows' => $list];
 
             return json($result);
@@ -128,11 +129,11 @@ trait Backend
 
                 try {
                     //是否采用模型验证
-                    /*if ($this->modelValidate) {
-                        $name = str_replace('\\model\\', '\\validate\\', get_class($this->model));
+                    if ($this->modelValidate) {
+                        $name     = str_replace('\\model\\', '\\validate\\', get_class($this->model));
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.add' : $name) : $this->modelValidate;
-                        $this->model->validateFailException(true)->validate($validate);
-                    }*/
+                        validate($validate)->scene($this->modelSceneValidate ? 'edit' : $name)->check($params);
+                    }
                     $result = $this->model->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
@@ -181,11 +182,15 @@ trait Backend
 
                 try {
                     //是否采用模型验证
-                    /*if ($this->modelValidate) {
-                        $name = str_replace('\\model\\', '\\validate\\', get_class($this->model));
-                        $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name.'.edit' : $name) : $this->modelValidate;
-                        $row->validateFailException(true)->validate($validate);
-                    }*/
+                    if ($this->modelValidate) {
+                        $name     = str_replace('\\model\\', '\\validate\\', get_class($this->model));
+                        $validate = is_bool($this->modelValidate) ? $name : $this->modelValidate;
+                        $pk       = $row->getPk();
+                        if (!isset($params[$pk])) {
+                            $params[$pk] = $row->$pk;
+                        }
+                        validate($validate)->scene($this->modelSceneValidate ? 'edit' : $name)->check($params);
+                    }
                     $result = $row->save($params);
                     Db::commit();
                 } catch (ValidateException $e) {
@@ -217,7 +222,7 @@ trait Backend
     public function del($ids = '')
     {
         if ($ids) {
-            $pk = $this->model->getPk();
+            $pk       = $this->model->getPk();
             $adminIds = $this->getDataLimitAdminIds();
             if (is_array($adminIds)) {
                 $this->model->where($this->dataLimitField, 'in', $adminIds);
@@ -253,9 +258,9 @@ trait Backend
      */
     public function destroy($ids = '')
     {
-        $pk = $this->model->getPk();
+        $pk       = $this->model->getPk();
         $adminIds = $this->getDataLimitAdminIds();
-        $where = [];
+        $where    = [];
         if (is_array($adminIds)) {
             $where[$this->dataLimitField] = $adminIds;
         }
@@ -291,9 +296,9 @@ trait Backend
      */
     public function restore($ids = '')
     {
-        $pk = $this->model->getPk();
+        $pk       = $this->model->getPk();
         $adminIds = $this->getDataLimitAdminIds();
-        $where = [];
+        $where    = [];
         if (is_array($adminIds)) {
             $where[$this->dataLimitField] = $adminIds;
         }
@@ -386,12 +391,12 @@ trait Backend
             $this->error(__('Unknown data format'));
         }
         if ($ext === 'csv') {
-            $file = fopen($filePath, 'r');
+            $file     = fopen($filePath, 'r');
             $filePath = tempnam(sys_get_temp_dir(), 'import_csv');
-            $fp = fopen($filePath, 'w');
-            $n = 0;
+            $fp       = fopen($filePath, 'w');
+            $n        = 0;
             while ($line = fgets($file)) {
-                $line = rtrim($line, "\n\r\0");
+                $line     = rtrim($line, "\n\r\0");
                 $encoding = mb_detect_encoding($line, ['utf-8', 'gbk', 'latin1', 'big5']);
                 if ($encoding != 'utf-8') {
                     $line = mb_convert_encoding($line, 'utf-8', $encoding);
@@ -415,10 +420,10 @@ trait Backend
         //导入文件首行类型,默认是注释,如果需要使用字段名称请使用name
         $importHeadType = isset($this->importHeadType) ? $this->importHeadType : 'comment';
 
-        $table = $this->model->db()->getTable();
+        $table    = $this->model->db()->getTable();
         $database = \think\facade\Config::get('database.database');
         $fieldArr = [];
-        $list = Db::query('SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
+        $list     = Db::query('SELECT COLUMN_NAME,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
             [$table, $database]);
         foreach ($list as $k => $v) {
             if ($importHeadType == 'comment') {
@@ -435,14 +440,14 @@ trait Backend
             if (!$PHPExcel = $reader->load($filePath)) {
                 $this->error(__('Unknown data format'));
             }
-            $currentSheet = $PHPExcel->getSheet(0);  //读取文件中的第一个工作表
-            $allColumn = $currentSheet->getHighestDataColumn(); //取得最大的列号
-            $allRow = $currentSheet->getHighestRow(); //取得一共有多少行
+            $currentSheet    = $PHPExcel->getSheet(0);  //读取文件中的第一个工作表
+            $allColumn       = $currentSheet->getHighestDataColumn(); //取得最大的列号
+            $allRow          = $currentSheet->getHighestRow(); //取得一共有多少行
             $maxColumnNumber = Coordinate::columnIndexFromString($allColumn);
-            $fields = [];
+            $fields          = [];
             for ($currentRow = 1; $currentRow <= 1; $currentRow++) {
                 for ($currentColumn = 1; $currentColumn <= $maxColumnNumber; $currentColumn++) {
-                    $val = $currentSheet->getCellByColumnAndRow($currentColumn, $currentRow)->getValue();
+                    $val      = $currentSheet->getCellByColumnAndRow($currentColumn, $currentRow)->getValue();
                     $fields[] = $val;
                 }
             }
@@ -450,10 +455,10 @@ trait Backend
             for ($currentRow = 2; $currentRow <= $allRow; $currentRow++) {
                 $values = [];
                 for ($currentColumn = 1; $currentColumn <= $maxColumnNumber; $currentColumn++) {
-                    $val = $currentSheet->getCellByColumnAndRow($currentColumn, $currentRow)->getValue();
+                    $val      = $currentSheet->getCellByColumnAndRow($currentColumn, $currentRow)->getValue();
                     $values[] = is_null($val) ? '' : $val;
                 }
-                $row = [];
+                $row  = [];
                 $temp = array_combine($fields, $values);
                 foreach ($temp as $k => $v) {
                     if (isset($fieldArr[$k]) && $k !== '') {
