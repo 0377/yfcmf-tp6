@@ -12,6 +12,8 @@
 
 namespace app\common\library;
 
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 use think\facade\Config;
 
 class Email
@@ -22,9 +24,9 @@ class Email
     protected static $instance;
 
     /**
-     * phpmailer对象
+     * @var PHPMailer phpmailer对象
      */
-    protected $mail = [];
+    protected $mail;
 
     /**
      * 错误内容.
@@ -66,18 +68,19 @@ class Email
             $this->options = array_merge($this->options, $config);
         }
         $this->options = array_merge($this->options, $options);
-        $securArr = [1 => 'tls', 2 => 'ssl'];
 
-        $this->mail = new \PHPMailer(true);
-        $this->mail->CharSet = $this->options['charset'];
+        $securArr      = [1 => 'tls', 2 => 'ssl'];
+
+        $this->mail            = new PHPMailer(true);
+        $this->mail->CharSet   = $this->options['charset'];
         $this->mail->SMTPDebug = $this->options['debug'];
         $this->mail->isSMTP();
-        $this->mail->SMTPAuth = true;
-        $this->mail->Host = $this->options['mail_smtp_host'];
-        $this->mail->Username = $this->options['mail_from'];
-        $this->mail->Password = $this->options['mail_smtp_pass'];
+        $this->mail->SMTPAuth   = true;
+        $this->mail->Host       = $this->options['mail_smtp_host'];
+        $this->mail->Username   = $this->options['mail_from'];
+        $this->mail->Password   = $this->options['mail_smtp_pass'];
         $this->mail->SMTPSecure = isset($securArr[$this->options['mail_verify_type']]) ? $securArr[$this->options['mail_verify_type']] : '';
-        $this->mail->Port = $this->options['mail_smtp_port'];
+        $this->mail->Port       = $this->options['mail_smtp_port'];
 
         //设置发件人
         $this->from($this->options['mail_from'], $this->options['mail_smtp_user']);
@@ -107,7 +110,7 @@ class Email
      */
     public function from($email, $name = '')
     {
-        $this->options['from'] = $email;
+        $this->options['from']      = $email;
         $this->options['from_name'] = $name;
 
         return $this;
@@ -123,7 +126,7 @@ class Email
      */
     public function to($email, $name = '')
     {
-        $this->options['to'] = $email;
+        $this->options['to']      = $email;
         $this->options['to_name'] = $name;
 
         return $this;
@@ -133,13 +136,13 @@ class Email
      * 设置邮件正文.
      *
      * @param  string  $body
-     * @param  bool  $ishtml
+     * @param  bool    $ishtml
      *
      * @return $this
      */
     public function message($body, $ishtml = true)
     {
-        $this->options['body'] = $body;
+        $this->options['body']   = $body;
         $this->options['ishtml'] = $ishtml;
 
         return $this;
@@ -184,10 +187,9 @@ class Email
                 } else {
                     $this->mail->Body = $this->options['body'];
                 }
-
                 try {
                     $result = $this->mail->send();
-                } catch (\phpmailerException $e) {
+                } catch (Exception $e) {
                     $this->setError($e->getMessage());
                 }
 
@@ -199,7 +201,7 @@ class Email
                 $headers .= 'Content-type: text/html; charset='.$this->options['charset']."\r\n";
                 $headers .= "To: {$this->options['to_name']} <{$this->options['to']}>\r\n"; //收件人
                 $headers .= "From: {$this->options['from_name']} <{$this->options['from']}>\r\n"; //发件人
-                $result = mail($this->options['to'], $this->options['subject'], $this->options['body'], $headers);
+                $result  = mail($this->options['to'], $this->options['subject'], $this->options['body'], $headers);
                 $this->setError($result ? '' : error_get_last()['message']);
                 break;
             default:

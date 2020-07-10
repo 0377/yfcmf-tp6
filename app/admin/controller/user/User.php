@@ -3,6 +3,7 @@
 namespace app\admin\controller\user;
 
 use app\common\controller\Backend;
+use app\common\library\Auth;
 
 /**
  * 会员管理.
@@ -13,6 +14,7 @@ class User extends Backend
 {
     protected $relationSearch = true;
 
+    protected $searchFields = 'id,username,nickname';
     /**
      * @var \app\admin\model\User
      */
@@ -42,7 +44,7 @@ class User extends Backend
                 ->where($where)
                 ->order($sort, $order)
                 ->count();
-            $list = $this->model
+            $list  = $this->model
                 ->withJoin('group')
                 ->where($where)
                 ->order($sort, $order)
@@ -64,8 +66,12 @@ class User extends Backend
      */
     public function edit($ids = null)
     {
-        $row = $this->model->get($ids);
-        if (! $row) {
+        if ($this->request->isPost()) {
+            $this->token();
+        }
+        $row                 = $this->model->get($ids);
+        $this->modelValidate = true;
+        if (!$row) {
             $this->error(__('No Results were found'));
         }
         $this->view->assign('groupList',
@@ -73,5 +79,19 @@ class User extends Backend
                 ['class' => 'form-control selectpicker']));
 
         return parent::edit($ids);
+    }
+
+    /**
+     * 删除
+     */
+    public function del($ids = "")
+    {
+        $row                 = $this->model->get($ids);
+        $this->modelValidate = true;
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+        Auth::instance()->delete($row['id']);
+        $this->success();
     }
 }

@@ -40,6 +40,7 @@ class ExceptionHandle extends Handle
      */
     public function report(Throwable $exception): void
     {
+        hook('app_exception_report', ['exception'=>$exception,'ignoreReport'=>$this->ignoreReport]);
         // 使用内置的方式记录异常日志
         parent::report($exception);
     }
@@ -57,6 +58,7 @@ class ExceptionHandle extends Handle
         if ($e instanceof ValidateException) {
             $this->error($e->getMessage(), '', '', 3, ['__token__' => $request->buildToken()]);
         }
+        hook('admin_exception', $e);
         // 添加自定义异常处理机制
         // 其他错误交给系统处理
         return parent::render($request, $e);
