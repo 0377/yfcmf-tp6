@@ -11,6 +11,10 @@ return [
             'url'        => '/',
             'visibility' => 'public',
         ],
+        'runtime' => [
+            'type' => 'local',
+            'root' => app()->getRootPath().'runtime',
+        ],
         // 更多的磁盘配置信息
     ],
 ];
