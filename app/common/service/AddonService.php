@@ -32,7 +32,7 @@ class AddonService extends Service
     public function register()
     {
         // 插件目录
-        define('ADDON_PATH', app()->getRootPath().'addons'.DIRECTORY_SEPARATOR);
+        ! defined('ADDON_PATH') && define('ADDON_PATH', app()->getRootPath().'addons'.DIRECTORY_SEPARATOR);
         ! defined('DS') && define('DS', DIRECTORY_SEPARATOR);
         // 如果插件目录不存在则创建
         if (! is_dir(ADDON_PATH)) {
