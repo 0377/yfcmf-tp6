@@ -607,7 +607,7 @@ class Crud extends Command
                     $cssClassArr = ['form-control'];
                     $fieldName = "row[{$field}]";
                     $defaultValue = $v['COLUMN_DEFAULT'];
-                    $editValue = "{\$row.{$field}|htmlentities}";
+                    $editValue = "{\$row.{$field}}";
                     // 如果默认值非null,则是一个必选项
                     if ($v['IS_NULLABLE'] == 'NO') {
                         $attrArr['data-rule'] = 'required';
