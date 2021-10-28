@@ -4,8 +4,9 @@
         <!-- 加载样式及META信息 -->
         {include file="common/meta" /}
     </head>
-    <body class="hold-transition skin-green sidebar-mini fixed {if $config.fastadmin.multiplenav}multiplenav{/if}" id="tabs">
-        <div class="wrapper">
+    <body class="hold-transition {$Think.config.fastadmin.adminskin|default='skin-black-blue'} sidebar-mini fixed {:$Think.config.fastadmin.multipletab?'multipletab':''} {:$Think.config.fastadmin.multiplenav?'multiplenav':''}" id="tabs">
+
+    <div class="wrapper">
 
             <!-- 头部区域 -->
             <header id="header" class="main-header">

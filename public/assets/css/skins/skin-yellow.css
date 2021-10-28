@@ -2,6 +2,9 @@
  * Skin: Yellow
  * ------------
  */
+.skin-yellow .main-header {
+  background-color: #f39c12;
+}
 .skin-yellow .main-header .navbar {
   background-color: #f39c12;
 }
@@ -15,7 +18,10 @@
 .skin-yellow .main-header .navbar .nav .open > a:hover,
 .skin-yellow .main-header .navbar .nav .open > a:focus,
 .skin-yellow .main-header .navbar .nav > .active > a {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+  color: #f6f6f6;
+}
+.skin-yellow .main-header .navbar .nav-addtabs li > .close-tab {
   color: #f6f6f6;
 }
 .skin-yellow .main-header .navbar .sidebar-toggle {
@@ -23,7 +29,7 @@
 }
 .skin-yellow .main-header .navbar .sidebar-toggle:hover {
   color: #f6f6f6;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
 }
 .skin-yellow .main-header .navbar .sidebar-toggle {
   color: #fff;
@@ -50,6 +56,17 @@
 .skin-yellow .main-header .logo:hover {
   background-color: #db8b0b;
 }
+@media (max-width: 767px) {
+  .skin-yellow .main-header .logo {
+    background-color: #f39c12;
+    color: #fff;
+    border-bottom: 0 solid transparent;
+    border-right: none;
+  }
+  .skin-yellow .main-header .logo:hover {
+    background-color: #f39a0d;
+  }
+}
 .skin-yellow .main-header li.user-header {
   background-color: #f39c12;
 }
@@ -65,6 +82,9 @@
 .skin-yellow .user-panel > .info > a {
   color: #fff;
 }
+.skin-yellow .sidebar-menu .treeview-menu {
+  padding-left: 3px;
+}
 .skin-yellow .sidebar-menu > li.header {
   color: #4b646f;
   background: #1a2226;
@@ -79,7 +99,6 @@
   border-left-color: #f39c12;
 }
 .skin-yellow .sidebar-menu > li > .treeview-menu {
-  margin: 0 1px;
   background: #2c3b41;
 }
 .skin-yellow .sidebar a {
@@ -136,5 +155,15 @@
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
   border-bottom-left-radius: 0;
+}
+@media (max-width: 767px) {
+  .skin-yellow.multiplenav .sidebar .mobilenav a.btn-app {
+    background: #374850;
+    color: #fff;
+  }
+  .skin-yellow.multiplenav .sidebar .mobilenav a.btn-app.active {
+    background: #f39c12;
+    color: #fff;
+  }
 }
 /*# sourceMappingURL=skin-yellow.css.map */

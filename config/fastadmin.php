@@ -24,9 +24,13 @@ return [
     //是否开启IP变动检测
     'loginip_check' => true,
     //登录页默认背景图
-    'login_background' => '/assets/img/loginbg.jpg',
+    'login_background' => '',
     //是否启用多级菜单导航
     'multiplenav' => false,
+    //是否开启多选项卡(仅在开启多级菜单时起作用)
+    'multipletab'           => true,
+    //后台皮肤,为空时表示使用skin-blue-light
+    'adminskin'             => '',
     //自动检测更新
     'checkupdate' => false,
     //API是否允许跨域
@@ -35,4 +39,6 @@ return [
     'version' => '3.0.2',
     //API接口地址
     'api_url' => 'https://api.iuok.cn',
+    // 是否开启多语言
+    'lang_switch_on' => true
 ];

@@ -1,5 +1,5 @@
 /*
- * Skin: Blue
+ * Skin: Black light
  * -----------
  */
 @import "../bootstrap-less/mixins.less";
@@ -7,14 +7,10 @@
 @import "../fastadmin/variables.less";
 @import "../fastadmin/mixins.less";
 
-@blue: #4e73df;
-@sidebar-dark-bg: #4e73df;
-@sidebar-dark-color: #ccd9ff;
-@sidebar-dark-submenu-color: #ccd9ff;
-@sidebar-dark-submenu-bg: darken(@sidebar-dark-bg, 3%);
-
-.skin-blue {
+.skin-black-light {
+    //Navbar & Logo
     .main-header {
+        .box-shadow(0px 1px 1px rgba(0, 0, 0, 0.05));
 
         .navbar-toggle {
             color: #333;
@@ -26,7 +22,7 @@
         }
 
         .navbar {
-            .navbar-variant(#fff; #444; @blue; rgba(0, 0, 0, .02));
+            .navbar-variant(#222d32; #fff; #f6f6f6; rgba(0, 0, 0, 0.3));
 
             > .sidebar-toggle {
                 color: #333;
@@ -35,7 +31,8 @@
 
             .navbar-nav {
                 > li > a {
-                    border-right: 1px solid #eee;
+                    //border-right: 1px solid #eee;
+                    color: #fff;
                 }
             }
 
@@ -43,7 +40,7 @@
             .navbar-right {
                 > li {
                     > a {
-                        border-left: 1px solid #eee;
+                        //border-left: 1px solid #eee;
                         border-left: none;
                         border-right-width: 0;
                     }
@@ -51,64 +48,48 @@
             }
         }
 
-        > .logo {
-            .logo-variant(@blue; #fff);
-            border-right: 1px solid @blue;
-            box-shadow: none;
+        .logo {
+            .logo-variant(#222d32; #fff);
+            //border-right: 1px solid #eee;
             @media (max-width: @screen-header-collapse) {
-                .logo-variant(#fff; #222);
+                .logo-variant(#222d32; #fff);
                 border-right: none;
             }
         }
 
         li.user-header {
-            background-color: @blue;
+            background-color: #222d32;
         }
-
-        .nav-addtabs > li > a, .nav-addtabs > li.active > a {
-            border-right-color: transparent;
-        }
-
     }
 
+    //Content Header
     .content-header {
         background: transparent;
         box-shadow: none;
     }
 
-    .skin-dark-sidebar(#fff);
+    //Create the sidebar skin
+    .skin-light-sidebar(#222d32);
 
-    .sidebar-form input[type="text"] {
-        .placeholder(#fff);
+    .main-sidebar {
+        .box-shadow(7px 0 14px rgba(0, 0, 0, .03));
     }
 
-    .sidebar-form input[type="text"], .sidebar-form .btn {
-        color: #fff;
+    .content-wrapper, .main-footer {
+        border-left: none;
     }
 
     &.multiplenav {
         @media (max-width: @screen-header-collapse) {
-            .main-header {
-                .navbar {
-                    .navbar-variant(@sidebar-dark-bg; #fff);
-                }
-
-
-                > .logo {
-                    .logo-variant(@sidebar-dark-bg; #fff);
-                }
-            }
-
             .sidebar .mobilenav a.btn-app {
-                background: lighten(@sidebar-dark-bg, 10%);
-                color: #fff;
+                background: #eceff3;
+                color: #757575;
 
                 &.active {
-                    background: #fff;
-                    color: lighten(@sidebar-dark-bg, 10%);
+                    background: #222d32;
+                    color: #fff;
                 }
             }
         }
-
     }
 }

@@ -314,17 +314,23 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'adminlte', 'form'], functi
 
             var my_skins = [
                 "skin-blue",
-                "skin-white",
+                "skin-black",
                 "skin-red",
                 "skin-yellow",
                 "skin-purple",
                 "skin-green",
                 "skin-blue-light",
-                "skin-white-light",
+                "skin-black-light",
                 "skin-red-light",
                 "skin-yellow-light",
                 "skin-purple-light",
-                "skin-green-light"
+                "skin-green-light",
+                "skin-black-blue",
+                "skin-black-purple",
+                "skin-black-red",
+                "skin-black-green",
+                "skin-black-yellow",
+                "skin-black-pink",
             ];
             setup();
 

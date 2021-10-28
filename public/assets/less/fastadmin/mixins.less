@@ -20,6 +20,10 @@
     color: @hover-color;
   }
 
+  .nav-addtabs li > .close-tab {
+    color: @hover-color;
+  }
+
   //Add color to the sidebar toggle button
   .sidebar-toggle {
     color: @font-color;
@@ -74,22 +78,12 @@
 }
 
 //Different radius each side
-.border-radius(@top-left;
-@top-right
-;
-@bottom-left
-;
-@bottom-right
-)
+.border-radius(@top-left,  @top-right,  @bottom-left,  @bottom-right)
 {
-  border-top-left-radius: @top-left
-;
-  border-top-right-radius: @top-right
-;
-  border-bottom-right-radius: @bottom-right
-;
-  border-bottom-left-radius: @bottom-left
-;
+  border-top-left-radius: @top-left;
+  border-top-right-radius: @top-right;
+  border-bottom-right-radius: @bottom-right;
+  border-bottom-left-radius: @bottom-left;
 }
 
 //Gradient background
@@ -129,6 +123,9 @@
     }
   }
   //Sidebar Menu. First level links
+  .sidebar-menu .treeview-menu {
+    padding-left: 3px;
+  }
   .sidebar-menu > li {
     //Section Headning
     &.header {
@@ -147,7 +144,7 @@
     }
     //First Level Submenu
     > .treeview-menu {
-      margin: 0 1px;
+      //margin: 0 1px;
       background: @sidebar-dark-submenu-bg;
     }
   }
@@ -235,13 +232,14 @@
     //links
     > a {
       border-left: 3px solid transparent;
-      font-weight: 600;
+      //font-weight: 600;
     }
     //Hover and active states
     &:hover > a,
     &.active > a {
       color: @sidebar-light-hover-color;
       background: @sidebar-light-hover-bg;
+      border-left-color: @icon-active-color;
     }
     &:hover > a {
 
@@ -249,7 +247,7 @@
     &.active {
       border-left-color: @icon-active-color;
       > a {
-        font-weight: 600;
+        //font-weight: 600;
       }
     }
     //First Level Submenu
