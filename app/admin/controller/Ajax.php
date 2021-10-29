@@ -95,19 +95,25 @@ class Ajax extends Backend
         $typeArr = explode('/', $fileInfo['type']);
 
         //禁止上传PHP和HTML文件
-        if (in_array($fileInfo['type'], ['text/x-php', 'text/html']) || in_array($suffix, ['php', 'html', 'htm'])) {
+        if (in_array($fileInfo['type'], ['text/x-php', 'text/html']) || in_array($suffix, ['php', 'html', 'htm', 'phar', 'phtml']) || preg_match("/^php(.*)/i", $suffix)) {
             $this->error(__('Uploaded file format is limited'));
         }
+
+        //Mimetype值不正确
+        if (stripos($fileInfo['type'], '/') === false) {
+            $this->error(__('Uploaded file format is limited'));
+        }
+
         //验证文件后缀
         if ($upload['mimetype'] !== '*' &&
             (
-                ! in_array($suffix, $mimetypeArr)
-                || (stripos($typeArr[0].'/', $upload['mimetype']) !== false && (! in_array($fileInfo['type'],
-                            $mimetypeArr) && ! in_array($typeArr[0].'/*', $mimetypeArr)))
+                !in_array($suffix, $mimetypeArr)
+                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'], $mimetypeArr) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
             )
         ) {
             $this->error(__('Uploaded file format is limited'));
         }
+
         //验证是否为图片文件
         $imagewidth = $imageheight = 0;
         if (in_array($fileInfo['type'],
