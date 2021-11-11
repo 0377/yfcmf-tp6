@@ -20,14 +20,14 @@ input($_GET);
 input($_POST);
 function input(&$data)
 {
-    foreach ((array) $data as $key => $value) {
+    foreach ((array)$data as $key => $value) {
         if (is_string($value)) {
             if (function_exists('get_magic_quotes_gpc') && PHP_VERSION < '7.4') {
-                if (! get_magic_quotes_gpc()) {
+                if (!get_magic_quotes_gpc()) {
                     $value = htmlentities($value, ENT_NOQUOTES);
                     $value = addslashes(trim($value));
                 }
-            }else{
+            } else {
                 $value = htmlentities($value, ENT_NOQUOTES);
                 $value = addslashes(trim($value));
             }
@@ -49,7 +49,7 @@ if (is_file('../config/install.lock') && $_GET['step'] != 5) {
 $config = include "../config/fastadmin.php";
 $site_name = 'YFCMF-TP6';
 $site_url = 'https://www.iuok.cn';
-$version = $config['version']?:'2.0.0';
+$version = $config['version'] ?: '2.0.0';
 $_date = date('Y');
 $sql_url = '../yfcmf_tp6.sql';
 
@@ -313,9 +313,11 @@ $html_footer = <<<EOF
 </body>
 </html>
 EOF;
-
-if (! in_array($_GET['step'], array(1, 2, 3, 4, 5))) {
+if (!isset($_GET['step'])) {
     $_GET['step'] = 0;
+    if (!in_array($_GET['step'], array(1, 2, 3, 4, 5))) {
+        $_GET['step'] = 0;
+    }
 }
 
 switch ($_GET['step']) {
@@ -534,12 +536,12 @@ EOF;
         step3($install_error, $install_recover);
 
 
-        $db_host = $_POST['db_host'] ? $_POST['db_host'] : '127.0.0.1';
-        $db_name = $_POST['db_name'] ? $_POST['db_name'] : 'yfcmf_tp6';
-        $db_user = $_POST['db_user'] ? $_POST['db_user'] : '';
-        $db_pwd = $_POST['db_pwd'] ? $_POST['db_pwd'] : '';
-        $db_prefix = $_POST['db_prefix'] ? $_POST['db_prefix'] : 'fa_';
-        $db_port = $_POST['db_port'] ? $_POST['db_port'] : '3306';
+        $db_host = $_POST['db_host'] ?? '127.0.0.1';
+        $db_name = $_POST['db_name'] ?? 'yfcmf_tp6';
+        $db_user = $_POST['db_user'] ?? '';
+        $db_pwd = $_POST['db_pwd'] ?? '';
+        $db_prefix = $_POST['db_prefix'] ?? 'fa_';
+        $db_port = $_POST['db_port'] ?? '3306';
 
         $install_error_html = '';
         if ($install_error != '') {
@@ -547,7 +549,9 @@ EOF;
           <label></label>
           <font class='error'>{$install_error}</font></div>";
         }
-
+        $_POST['admin'] = $_POST['admin'] ?? '';
+        $_POST['password'] = $_POST['password'] ?? '';
+        $_POST['rpassword'] = $_POST['rpassword'] ?? '';
         $step = <<<EOF
  $html_header
 <div class="main">
@@ -678,7 +682,7 @@ EOF;
     case 5:
         $sitepath = strtolower(substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')));
         $sitepath = str_replace('install', "", $sitepath);
-        $auto_site_url = strtolower('http://'.$_SERVER['HTTP_HOST'].$sitepath);
+        $auto_site_url = strtolower('http://' . $_SERVER['HTTP_HOST'] . $sitepath);
 
         $step = <<<EOF
 $html_header
@@ -721,13 +725,14 @@ EOF;
         break;
     default:
         # code...
+        $site_url = 'https://iuok.cn';
         $step = <<<EOF
 $html_header
 <div class="main">
   <div class="text-box" id="text-box">
     <div class="license">
       <h1>系统安装协议</h1>
-      <p>感谢您选择本系统。本系统是自主开发、集资讯、商城、讨论组、微商城、在线IM、客户管理于一体的门户型解决方案。官方网址为 $site_url。</p>
+      <p>感谢您选择本系统。本系统是自主开发、集资讯、商城、讨论组、微商城、在线IM、客户管理于一体的门户型解决方案。官方网址为 {$site_url}。</p>
       <p>用户须知：本协议是您与xxxx交流中心之间关于您安装使用xxxx公司提供的xxxx系统及服务的法律协议。无论您是个人或组织、盈利与否、用途如何（包括以学习和研究为目的），均需仔细阅读本协议。请您审阅并接受或不接受本协议条款。如您不同意本协议条款或xxxx公司随时对其的修改，您应不使用或主动取消xxxx公司提供的xxxx系统。否则，您的任何对xxxx电商系统使用的行为将被视为您对本服务条款全部的完全接受，包括接受xxxx对服务条款随时所做的任何修改。</p>
       <p>本服务条款一旦发生变更，xxxx公司将在网页上公布修改内容。修改后的服务条款一旦在网页上公布即有效代替原来的服务条款。如果您选择接受本条款，即表示您同意接受协议各项条件的约束。如果您不同意本服务条款，则不能获得使用本服务的权利。您若有违反本条款规定，xxxx公司有权随时中止或终止您对xxxx系统的使用资格并保留追究相关法律责任的权利。</p>
       <p>在理解、同意、并遵守本协议的全部条款后，方可开始使用xxxx系统。您可能与xxxx公司直接签订另一书面协议，以补充或者取代本协议的全部或者任何部分。</p>
@@ -783,7 +788,7 @@ EOF;
 function step3(&$install_error, &$install_recover)
 {
     global $html_title, $html_header, $html_footer, $sql_url;
-    if ($_POST['submitform'] != 'submit') {
+    if (!isset($_POST['submitform']) || $_POST['submitform'] != 'submit') {
         return;
     }
     $db_host = $_POST['db_host'];
@@ -795,7 +800,7 @@ function step3(&$install_error, &$install_recover)
     $admin = $_POST['admin'];
     $password = $_POST['password'];
     $rpassword = $_POST['rpassword'];
-    if (! $db_host || ! $db_port || ! $db_user || ! $db_pwd || ! $db_name || ! $db_prefix || ! $admin || ! $password) {
+    if (!$db_host || !$db_port || !$db_user || !$db_pwd || !$db_name || !$db_prefix || !$admin || !$password) {
         $install_error = '输入不完整，请检查';
     }
     if (strpos($db_prefix, '.') !== false) {
@@ -806,10 +811,10 @@ function step3(&$install_error, &$install_recover)
         //$install_error .= '非法用户名，用户名长度不应当超过 15 个英文字符，且不能包含特殊字符，一般是中文，字母或者数字';
     }
 
-    if (! preg_match("/^\w{3,12}$/", $admin)) {
+    if (!preg_match("/^\w{3,12}$/", $admin)) {
         $install_error .= "用户名只能由3-12位数字、字母、下划线组合";
     }
-    if (! preg_match("/^[\S]{6,16}$/", $password)) {
+    if (!preg_match("/^[\S]{6,16}$/", $password)) {
         $install_error .= "密码长度必须在6-16位之间，不能包含空格";
     }
     if ($password !== $rpassword) {
@@ -821,14 +826,14 @@ function step3(&$install_error, &$install_recover)
 
     //检测能否读取安装文件
     $sql = file_get_contents($sql_url);
-    if (! $sql) {
+    if (!$sql) {
         $install_error = "数据库文件无法打开";
         return;
     }
     $sql = str_replace("`fa_", "`{$db_prefix}", $sql);
     try {
         $pdo = new PDO("mysql:host={$db_host};port={$db_port}", $db_user, $db_pwd, array(
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
         ));
     } catch (PDOException $e) {
@@ -839,7 +844,7 @@ function step3(&$install_error, &$install_recover)
     //检测是否支持innodb存储引擎
     $pdoStatement = $pdo->query("SHOW VARIABLES LIKE 'innodb_version'");
     $result = $pdoStatement->fetch();
-    if (! $result) {
+    if (!$result) {
         $install_error = "当前数据库不支持innodb存储引擎，请开启后再重新尝试安装";
         return;
     }
@@ -907,13 +912,13 @@ EOF;
 
     $sitepath = strtolower(substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')));
     $sitepath = str_replace('install', "", $sitepath);
-    $auto_site_url = strtolower('http://'.$_SERVER['HTTP_HOST'].$sitepath);
+    $auto_site_url = strtolower('http://' . $_SERVER['HTTP_HOST'] . $sitepath);
     write_config($auto_site_url);
 
 
     //管理员账号密码
     $newSalt = substr(md5(uniqid(true)), 0, 6);
-    $newPassword = md5(md5($password).$newSalt);
+    $newPassword = md5(md5($password) . $newSalt);
     $pdo->query("UPDATE {$db_prefix}admin SET username = '{$admin}', email = 'admin@admin.com',password = '{$newPassword}', salt = '{$newSalt}' WHERE username = 'admin'");
 
 
@@ -928,7 +933,7 @@ EOF;
 function runquery($sql, $db_prefix, $pdo)
 {
 
-    if (! isset($sql) || empty($sql)) {
+    if (!isset($sql) || empty($sql)) {
         return;
     }
     $sql = str_replace("\r", "\n", str_replace('#__', $db_prefix, $sql));
@@ -938,7 +943,7 @@ function runquery($sql, $db_prefix, $pdo)
         $ret[$num] = '';
         $queries = explode("\n", trim($query));
         foreach ($queries as $query) {
-            $ret[$num] .= (isset($query[0]) && $query[0] == '#') || (isset($query[1]) && isset($query[1]) && $query[0].$query[1] == '--') ? '' : $query;
+            $ret[$num] .= (isset($query[0]) && $query[0] == '#') || (isset($query[1]) && isset($query[1]) && $query[0] . $query[1] == '--') ? '' : $query;
         }
         $num++;
     }
@@ -949,7 +954,7 @@ function runquery($sql, $db_prefix, $pdo)
             if (substr($query, 0, 12) == 'CREATE TABLE') {
                 $line = explode('`', $query);
                 $data_name = $line[1];
-                showjsmessage('数据表  '.$data_name.' ... 创建成功');
+                showjsmessage('数据表  ' . $data_name . ' ... 创建成功');
                 $pdo->exec($query);
                 unset($line, $data_name);
             } else {
@@ -962,7 +967,7 @@ function runquery($sql, $db_prefix, $pdo)
 //抛出JS信息
 function showjsmessage($message)
 {
-    echo '<script type="text/javascript">showmessage(\''.addslashes($message).' \');</script>'."\r\r";
+    echo '<script type="text/javascript">showmessage(\'' . addslashes($message) . ' \');</script>' . "\r\r";
     flush();
     ob_flush();
 }
@@ -1009,21 +1014,35 @@ function env_check(&$env_items)
 {
     $env_items[] = array('name' => '操作系统', 'min' => '无限制', 'good' => 'linux', 'cur' => PHP_OS, 'status' => 1);
     $env_items[] = array(
-        'name'   => 'PHP版本', 'min' => '7.0', 'good' => '7.2', 'cur' => PHP_VERSION,
+        'name' => 'PHP版本',
+        'min' => '7.0',
+        'good' => '7.2',
+        'cur' => PHP_VERSION,
         'status' => (PHP_VERSION < 7.0 ? 0 : 1)
     );
     $tmp = function_exists('gd_info') ? gd_info() : array();
     preg_match("/[\d.]+/", $tmp['GD Version'], $match);
     unset($tmp);
     $env_items[] = array(
-        'name' => 'GD库', 'min' => '2.0', 'good' => '2.0', 'cur' => $match[0], 'status' => ($match[0] < 2 ? 0 : 1)
+        'name' => 'GD库',
+        'min' => '2.0',
+        'good' => '2.0',
+        'cur' => $match[0],
+        'status' => ($match[0] < 2 ? 0 : 1)
     );
     $env_items[] = array(
-        'name' => '附件上传', 'min' => '未限制', 'good' => '2M', 'cur' => ini_get('upload_max_filesize'), 'status' => 1
+        'name' => '附件上传',
+        'min' => '未限制',
+        'good' => '2M',
+        'cur' => ini_get('upload_max_filesize'),
+        'status' => 1
     );
     $disk_place = function_exists('disk_free_space') ? floor(disk_free_space(ROOT_PATH) / (1024 * 1024)) : 0;
     $env_items[] = array(
-        'name'   => '磁盘空间', 'min' => '100M', 'good' => '>100M', 'cur' => empty($disk_place) ? '未知' : $disk_place.'M',
+        'name' => '磁盘空间',
+        'min' => '100M',
+        'good' => '>100M',
+        'cur' => empty($disk_place) ? '未知' : $disk_place . 'M',
         'status' => $disk_place < 100 ? 0 : 1
     );
 }
@@ -1034,10 +1053,10 @@ function env_check(&$env_items)
 function dirfile_check(&$dirfile_items)
 {
     foreach ($dirfile_items as $key => $item) {
-        $item_path = '/'.$item['path'];
+        $item_path = '/' . $item['path'];
         if ($item['type'] == 'dir') {
-            if (! dir_writeable(ROOT_PATH.$item_path)) {
-                if (is_dir(ROOT_PATH.$item_path)) {
+            if (!dir_writeable(ROOT_PATH . $item_path)) {
+                if (is_dir(ROOT_PATH . $item_path)) {
                     $dirfile_items[$key]['status'] = 0;
                     $dirfile_items[$key]['current'] = '+r';
                 } else {
@@ -1049,8 +1068,8 @@ function dirfile_check(&$dirfile_items)
                 $dirfile_items[$key]['current'] = '+r+w';
             }
         } else {
-            if (file_exists(ROOT_PATH.$item_path)) {
-                if (is_writable(ROOT_PATH.$item_path)) {
+            if (file_exists(ROOT_PATH . $item_path)) {
+                if (is_writable(ROOT_PATH . $item_path)) {
                     $dirfile_items[$key]['status'] = 1;
                     $dirfile_items[$key]['current'] = '+r+w';
                 } else {
@@ -1058,11 +1077,11 @@ function dirfile_check(&$dirfile_items)
                     $dirfile_items[$key]['current'] = '+r';
                 }
             } else {
-                if ($fp = @fopen(ROOT_PATH.$item_path, 'wb+')) {
+                if ($fp = @fopen(ROOT_PATH . $item_path, 'wb+')) {
                     $dirfile_items[$key]['status'] = 1;
                     $dirfile_items[$key]['current'] = '+r+w';
                     @fclose($fp);
-                    @unlink(ROOT_PATH.$item_path);
+                    @unlink(ROOT_PATH . $item_path);
                 } else {
                     $dirfile_items[$key]['status'] = -1;
                     $dirfile_items[$key]['current'] = 'nofile';
@@ -1080,7 +1099,7 @@ function dirfile_check(&$dirfile_items)
 function dir_writeable($dir)
 {
     $writeable = 0;
-    if (! is_dir($dir)) {
+    if (!is_dir($dir)) {
         @mkdir($dir, 0755);
     } else {
         @chmod($dir, 0755);
@@ -1127,8 +1146,8 @@ function show_msg($msg)
 //make rand
 function random($length, $numeric = 0)
 {
-    $seed = base_convert(md5(print_r($_SERVER, 1).microtime()), 16, $numeric ? 10 : 35);
-    $seed = $numeric ? (str_replace('0', '', $seed).'012340567890') : ($seed.'zZ'.strtoupper($seed));
+    $seed = base_convert(md5(print_r($_SERVER, 1) . microtime()), 16, $numeric ? 10 : 35);
+    $seed = $numeric ? (str_replace('0', '', $seed) . '012340567890') : ($seed . 'zZ' . strtoupper($seed));
     $hash = '';
     $max = strlen($seed) - 1;
     for ($i = 0; $i < $length; $i++) {
@@ -1142,6 +1161,6 @@ function random($length, $numeric = 0)
  */
 function droptable($table_name)
 {
-    return "DROP TABLE IF EXISTS `".$table_name."`;";
+    return "DROP TABLE IF EXISTS `" . $table_name . "`;";
 }
 /**************function**************/
