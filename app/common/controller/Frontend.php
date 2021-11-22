@@ -57,6 +57,9 @@ class Frontend extends BaseController
         //移除HTML标签
         $this->request->filter('trim,strip_tags,htmlspecialchars');
         $modulename = app()->http->getName();
+        if (app()->http->isBind()){
+            $modulename = '';
+        }
         $controller = preg_replace_callback('/\.[A-Z]/', function ($d) {
             return strtolower($d[0]);
         }, $this->request->controller(), 1);

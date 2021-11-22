@@ -65,7 +65,6 @@ abstract class BaseController
     public function __construct(App $app)
     {
         $this->app = $app;
-        app()->http->setBind(true);
         $this->request = $this->app->request;
         $this->view = $this->app->view;
         // 控制器初始化
