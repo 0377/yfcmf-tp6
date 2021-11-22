@@ -18,7 +18,7 @@ return [
     // 开启应用快速访问
     'app_express'           => true,
     // 应用映射（自动多应用模式有效）
-    'app_map'               => ['fast' => 'admin'],
+    'app_map'               => ['yfcmf' => 'admin'],
     // 域名绑定（自动多应用模式有效）
     'domain_bind'           => [],
     // 禁止URL访问的应用列表（多应用模式有效）

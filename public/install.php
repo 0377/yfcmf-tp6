@@ -52,7 +52,8 @@ $site_url = 'https://www.iuok.cn';
 $version = $config['version'] ?: '2.0.0';
 $_date = date('Y');
 $sql_url = '../yfcmf_tp6.sql';
-
+// 后台默认地址
+$admin_url = '/yfcmf';
 $html_title = '程序安装向导';
 $install_css = <<<EOF
 <style>
@@ -702,13 +703,13 @@ $html_header
       
       <li class="admin">
         <div class="ico"></div>
-        <h5><a href="{$auto_site_url}/fast" target="_blank">系统管理</a></h5>
+        <h5><a href="{$auto_site_url}{$admin_url}" target="_blank">系统管理</a></h5>
         <h6>系统后台</h6>
       </li>
     </ul>
   </div>
   <div class="final-intro">
-    <p><strong>系统管理默认地址:&nbsp;</strong><a href="{$auto_site_url}/fast" target="_blank">{$auto_site_url}/fast</a></p>
+    <p><strong>系统管理默认地址:&nbsp;</strong><a href="{$auto_site_url}{$admin_url}" target="_blank">{$auto_site_url}{$admin_url}</a></p>
     <p><strong>网站首页默认地址:&nbsp;</strong><a href="$auto_site_url" target="_blank">$auto_site_url</a></p>
   </div>
 </div>
