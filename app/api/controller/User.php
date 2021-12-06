@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use fast\Random;
 use think\facade\Validate;
+use think\facade\Config;
 use app\common\library\Ems;
 use app\common\library\Sms;
 use app\common\controller\Api;
@@ -19,6 +20,9 @@ class User extends Api
     public function _initialize()
     {
         parent::_initialize();
+        if (!Config::get('fastadmin.usercenter')) {
+            $this->error(__('User center already closed'));
+        }
     }
 
     /**
