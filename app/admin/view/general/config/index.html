@@ -59,13 +59,16 @@
                                         <div class="col-sm-8 col-xs-12">
                                             {switch $item.type}
                                             {case string}
-                                            <input {$item.extend} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control" data-rule="{$item.rule}" data-tip="{$item.tip}"/>
+                                            <input {$item.extend_html} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control" data-rule="{$item.rule}" data-tip="{$item.tip}"/>
+                                            {/case}
+                                            {case password}
+                                            <input {$item.extend_html} type="password" name="row[{$item.name}]" value="{$item.value|htmlentities}" class="form-control" data-rule="{$item.rule}" data-tip="{$item.tip}"/>
                                             {/case}
                                             {case text}
-                                            <textarea {$item.extend} name="row[{$item.name}]" class="form-control" data-rule="{$item.rule}" rows="5" data-tip="{$item.tip}">{$item.value}</textarea>
+                                            <textarea {$item.extend_html} name="row[{$item.name}]" class="form-control" data-rule="{$item.rule}" rows="5" data-tip="{$item.tip}">{$item.value}</textarea>
                                             {/case}
                                             {case editor}
-                                            <textarea {$item.extend} name="row[{$item.name}]" id="editor-{$item.name}" class="form-control editor" data-rule="{$item.rule}" rows="5" data-tip="{$item.tip}">{$item.value}</textarea>
+                                            <textarea {$item.extend_html} name="row[{$item.name}]" id="editor-{$item.name}" class="form-control editor" data-rule="{$item.rule}" rows="5" data-tip="{$item.tip}">{$item.value}</textarea>
                                             {/case}
                                             {case array}
                                             <dl class="fieldlist" data-name="row[{$item.name}]">
@@ -78,16 +81,16 @@
                                             </dl>
                                             {/case}
                                             {case date}
-                                            <input {$item.extend} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
+                                            <input {$item.extend_html} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
                                             {/case}
                                             {case time}
-                                            <input {$item.extend} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control datetimepicker" data-date-format="HH:mm:ss" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
+                                            <input {$item.extend_html} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control datetimepicker" data-date-format="HH:mm:ss" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
                                             {/case}
                                             {case datetime}
-                                            <input {$item.extend} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
+                                            <input {$item.extend_html} type="text" name="row[{$item.name}]" value="{$item.value}" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
                                             {/case}
                                             {case number}
-                                            <input {$item.extend} type="number" name="row[{$item.name}]" value="{$item.value}" class="form-control" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
+                                            <input {$item.extend_html} type="number" name="row[{$item.name}]" value="{$item.value}" class="form-control" data-tip="{$item.tip}" data-rule="{$item.rule}"/>
                                             {/case}
                                             {case checkbox}
                                             {foreach name="item.content" item="vo"}
@@ -101,7 +104,7 @@
                                             {/case}
                                             {case value="select" break="0"}{/case}
                                             {case value="selects"}
-                                            <select {$item.extend} name="row[{$item.name}]{$item.type=='selects'?'[]':''}" class="form-control selectpicker" data-tip="{$item.tip}" {$item.type=='selects'?'multiple':''}>
+                                            <select {$item.extend_html} name="row[{$item.name}]{$item.type=='selects'?'[]':''}" class="form-control selectpicker" data-tip="{$item.tip}" {$item.type=='selects'?'multiple':''}>
                                                 {foreach name="item.content" item="vo"}
                                                 <option value="{$key}" {in name="key" value="$item.value" }selected{/in}>{$vo}</option>
                                                 {/foreach}
@@ -137,7 +140,7 @@
                                             <label for="row[{$item.name}]-no"><input id="row[{$item.name}]-no" name="row[{$item.name}]" type="radio" value="0" {$item.value?'':'checked'} data-tip="{$item.tip}" /> {:__('No')}</label>
                                             {/case}
                                             {case custom}
-                                            {$item.extend}
+                                            {$item.extend_html}
                                             {/case}
                                             {/switch}
                                         </div>

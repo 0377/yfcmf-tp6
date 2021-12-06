@@ -140,10 +140,10 @@ class Backend extends BaseController
         $path = str_replace('.', '/', $controllername).'/'.$actionname;
 
         // 定义是否Addtabs请求
-        ! defined('IS_ADDTABS') && define('IS_ADDTABS', input('addtabs') ? true : false);
+        ! defined('IS_ADDTABS') && define('IS_ADDTABS', request()->get('addtabs') ? true : false);
 
         // 定义是否Dialog请求
-        ! defined('IS_DIALOG') && define('IS_DIALOG', input('dialog') ? true : false);
+        ! defined('IS_DIALOG') && define('IS_DIALOG', request()->get('dialog') ? true : false);
 
         // 定义是否AJAX请求
         ! defined('IS_AJAX') && define('IS_AJAX', $this->request->isAjax());
@@ -175,7 +175,7 @@ class Backend extends BaseController
         }
 
         // 非选项卡时重定向
-        if (! $this->request->isPost() && ! IS_AJAX && ! IS_ADDTABS && ! IS_DIALOG && input('ref') == 'addtabs') {
+        if (! $this->request->isPost() && ! IS_AJAX && ! IS_ADDTABS && ! IS_DIALOG && request()->param('ref') == 'addtabs') {
             $url = preg_replace_callback("/([\?|&]+)ref=addtabs(&?)/i", function ($matches) {
                 return $matches[2] == '&' ? $matches[1] : '';
             }, $this->request->url());
@@ -367,7 +367,9 @@ class Backend extends BaseController
                 case 'BETWEEN':
                 case 'NOT BETWEEN':
                     $arr = array_slice(explode(',', $v), 0, 2);
-                    if (stripos($v, ',') === false || ! array_filter($arr)) {
+                    if (stripos($v, ',') === false || !array_filter($arr, function($v){
+                            return $v != '' && $v !== false && $v !== null;
+                        })) {
                         continue 2;
                     }
                     //当出现一边为空时改变操作符

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace app\common\middleware;
 
 use Closure;
+use think\facade\Lang;
 use think\Request;
 use think\Response;
 use think\facade\Env;
@@ -37,6 +38,11 @@ class FastInit
     {
         // 设置mbstring字符编码
         mb_internal_encoding('UTF-8');
+
+        // 修复多语言
+        app()->lang = new \think\Lang(\config('lang'));
+        app()->lang->detect($request);
+        app()->loadLangPack(Lang::getLangSet());
 
         // 设置替换内容
         $this->initReplaceString();

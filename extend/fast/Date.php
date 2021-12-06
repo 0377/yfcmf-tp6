@@ -127,7 +127,9 @@ class Date
      */
     public static function human($remote, $local = null)
     {
-        $timediff = (is_null($local) || $local ? time() : $local) - $remote;
+        $time_diff = (is_null($local) || $local ? time() : $local) - $remote;
+        $tense = $time_diff < 0 ? 'after' : 'ago';
+        $time_diff = abs($time_diff);
         $chunks = [
             [60 * 60 * 24 * 365, 'year'],
             [60 * 60 * 24 * 30, 'month'],
@@ -135,18 +137,19 @@ class Date
             [60 * 60 * 24, 'day'],
             [60 * 60, 'hour'],
             [60, 'minute'],
-            [1, 'second'],
+            [1, 'second']
         ];
+        $name = 'second';
+        $count = 0;
 
         for ($i = 0, $j = count($chunks); $i < $j; $i++) {
             $seconds = $chunks[$i][0];
             $name = $chunks[$i][1];
-            if (($count = floor($timediff / $seconds)) != 0) {
+            if (($count = floor($time_diff / $seconds)) != 0) {
                 break;
             }
         }
-
-        return __("%d {$name}%s ago", $count, ($count > 1 ? 's' : ''));
+        return __("%d $name%s $tense", $count, ($count > 1 ? 's' : ''));
     }
 
     /**

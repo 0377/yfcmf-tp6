@@ -23,7 +23,7 @@ class Ajax extends Frontend
     public function lang()
     {
         header('Content-Type: application/javascript');
-        $controllername = input('controllername');
+        $controllername = request()->param('controllername');
         $this->loadlang($controllername);
         //强制输出JSON Object
         $result = jsonp(Lang::get(), 200, [], ['json_encode_param' => JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE]);

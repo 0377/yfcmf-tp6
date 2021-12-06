@@ -62,31 +62,12 @@ CREATE TABLE `fa_admin_log` (
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='管理员日志表';
 
 -- ----------------------------
--- Records of fa_admin_log
--- ----------------------------
-INSERT INTO `fa_admin_log` VALUES ('1', '0', 'Unknown', '/fast/index/login.html?url=%2Ffast%2F', '登录', '{\"url\":\"\\/fast\\/\",\"__token__\":\"b1627ee9eb75e079b76a05e32dae0120\",\"username\":\"admin\",\"captcha\":\"eteb\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568890348');
-INSERT INTO `fa_admin_log` VALUES ('2', '0', 'Unknown', '/fast/index/login.html?url=%2Ffast%2F', '登录', '{\"url\":\"\\/fast\\/\",\"__token__\":\"b1627ee9eb75e079b76a05e32dae0120\",\"username\":\"admin\",\"captcha\":\"eteb\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568890421');
-INSERT INTO `fa_admin_log` VALUES ('3', '0', 'Unknown', '/fast/index/login.html?url=%2Ffast%2F', '登录', '{\"url\":\"\\/fast\\/\",\"__token__\":\"c69408a0530236b965867e99dd678e96\",\"username\":\"admin\",\"captcha\":\"eteb\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568890424');
-INSERT INTO `fa_admin_log` VALUES ('4', '0', 'Unknown', '/fast/index/login.html?url=%2Ffast%2F', '登录', '{\"url\":\"\\/fast\\/\",\"__token__\":\"5f2703c98e927f9de22754a637b6aa67\",\"username\":\"admin\",\"captcha\":\"1111\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568890451');
-INSERT INTO `fa_admin_log` VALUES ('5', '1', 'admin', '/fast/index/login.html?url=%2Ffast%2F', '登录', '{\"url\":\"\\/fast\\/\",\"__token__\":\"d5723cd95d7aa6477c23ddac46974414\",\"username\":\"admin\",\"captcha\":\"1111\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568891087');
-INSERT INTO `fa_admin_log` VALUES ('6', '1', 'admin', '/admin.php/index/login?url=%2Fadmin.php', '登录', '{\"url\":\"\\/admin.php\",\"__token__\":\"0c7897ec3302bce19b7996725ff8a565\",\"username\":\"admin\",\"captcha\":\"3u6k\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568941832');
-INSERT INTO `fa_admin_log` VALUES ('7', '1', 'admin', '/admin.php/general.config/edit', '', '{\"row\":{\"name\":\"FastAdmin\",\"beian\":\"\",\"cdnurl\":\"\",\"version\":\"1.0.1\",\"timezone\":\"Asia\\/Shanghai\",\"forbiddenip\":\"\",\"languages\":\"{&quot;backend&quot;:&quot;zh-cn&quot;,&quot;frontend&quot;:&quot;zh-cn&quot;}\",\"fixedpage\":\"dashboard\",\"login_background\":\"\\/images\\/loginbg.jpg\"}}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568941851');
-INSERT INTO `fa_admin_log` VALUES ('8', '1', 'admin', '/admin.php/general.config/edit', '', '{\"row\":{\"name\":\"FastAdmin\",\"beian\":\"\",\"cdnurl\":\"\",\"version\":\"1.0.1\",\"timezone\":\"Asia\\/Shanghai\",\"forbiddenip\":\"\",\"languages\":\"{&quot;backend&quot;:&quot;zh-cn&quot;,&quot;frontend&quot;:&quot;zh-cn&quot;}\",\"fixedpage\":\"dashboard\",\"login_background\":\"\\/images\\/loginbg.jpg\"}}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568942814');
-INSERT INTO `fa_admin_log` VALUES ('9', '1', 'admin', '/admin.php/general.config/edit', '', '{\"row\":{\"name\":\"FastAdmin\",\"beian\":\"\",\"cdnurl\":\"\",\"version\":\"1.0.1\",\"timezone\":\"Asia\\/Shanghai\",\"forbiddenip\":\"\",\"languages\":\"{&quot;backend&quot;:&quot;zh-cn&quot;,&quot;frontend&quot;:&quot;zh-cn&quot;}\",\"fixedpage\":\"dashboard\",\"login_background\":\"\\/images\\/loginbg.jpg\"}}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568942891');
-INSERT INTO `fa_admin_log` VALUES ('10', '1', 'admin', '/admin.php/general.config/edit', '', '{\"row\":{\"name\":\"FastAdmin\",\"beian\":\"\",\"cdnurl\":\"\",\"version\":\"1.0.1\",\"timezone\":\"Asia\\/Shanghai\",\"forbiddenip\":\"\",\"languages\":\"{&amp;quot;backend&amp;quot;:&amp;quot;zh-cn&amp;quot;,&amp;quot;frontend&amp;quot;:&amp;quot;zh-cn&amp;quot;}\",\"fixedpage\":\"dashboard\",\"login_background\":\"\\/images\\/loginbg.jpg\"}}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568943029');
-INSERT INTO `fa_admin_log` VALUES ('11', '1', 'admin', '/admin.php/index/login', '登录', '{\"__token__\":\"6b617469b45ef168a215a59db81aa7eb\",\"username\":\"admin\",\"captcha\":\"hhta\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568943906');
-INSERT INTO `fa_admin_log` VALUES ('12', '1', 'admin', '/admin.php/index/login?url=%2Fadmin.php%2Fauth%2Fadmin%3Fref%3Daddtabs', '登录', '{\"url\":\"\\/admin.php\\/auth\\/admin?ref=addtabs\",\"__token__\":\"55120e2382be5811590e4f39440b5f1e\",\"username\":\"admin\",\"captcha\":\"b6bd\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568963813');
-INSERT INTO `fa_admin_log` VALUES ('13', '1', 'admin', '/admin.php/index/login?url=%2Fadmin.php%2Fauth.admin%2Findex', '登录', '{\"url\":\"\\/admin.php\\/auth.admin\\/index\",\"__token__\":\"a451e5417d582d8619589bcad46f0f47\",\"username\":\"admin\",\"captcha\":\"qvvd\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568967277');
-INSERT INTO `fa_admin_log` VALUES ('14', '1', 'admin', '/admin.php/general.config/edit', '', '{\"row\":{\"name\":\"FastAdmin\",\"beian\":\"\",\"cdnurl\":\"\",\"version\":\"1.0.1\",\"timezone\":\"Asia\\/Shanghai\",\"forbiddenip\":\"\",\"languages\":\"{&amp;amp;quot;backend&amp;amp;quot;:&amp;amp;quot;zh-cn&amp;amp;quot;,&amp;amp;quot;frontend&amp;amp;quot;:&amp;amp;quot;zh-cn&amp;amp;quot;}\",\"fixedpage\":\"dashboard\",\"login_background\":\"\\/assets\\/img\\/qrcode.png\"}}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568970894');
-INSERT INTO `fa_admin_log` VALUES ('15', '1', 'admin', '/admin.php/index/login?url=%2Fadmin.php%2Fgeneral.attachment%2Fselect%3Felement_id%3Dfachoose-login_background%26multiple%3Dfalse%26mimetype%3Dimage%2F%2A%26admin_id%3D%26user_id%3D%26dialog%3D1', '登录', '{\"url\":\"\\/admin.php\\/general.attachment\\/select?element_id=fachoose-login_background&multiple=false&mimetype=image\\/*&admin_id=&user_id=&dialog=1\",\"__token__\":\"f14829e9927751315451637ecd9263a0\",\"username\":\"admin\",\"captcha\":\"ugll\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568974340');
-INSERT INTO `fa_admin_log` VALUES ('16', '1', 'admin', '/admin.php/addon/install', '', '{\"name\":\"command\",\"force\":\"0\",\"uid\":\"0\",\"token\":\"\",\"version\":\"1.0.5\",\"faversion\":\"1.0.0.20190705_beta\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', '1568974525');
-
--- ----------------------------
 -- Table structure for fa_attachment
 -- ----------------------------
 DROP TABLE IF EXISTS `fa_attachment`;
 CREATE TABLE `fa_attachment` (
   `id` int(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `category` varchar(50) DEFAULT '' COMMENT '类别',
   `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
   `url` varchar(255) NOT NULL DEFAULT '' COMMENT '物理路径',
@@ -94,6 +75,7 @@ CREATE TABLE `fa_attachment` (
   `imageheight` varchar(30) NOT NULL DEFAULT '' COMMENT '高度',
   `imagetype` varchar(30) NOT NULL DEFAULT '' COMMENT '图片类型',
   `imageframes` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片帧数',
+  `filename` varchar(100) DEFAULT '' COMMENT '文件名称',
   `filesize` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小',
   `mimetype` varchar(100) NOT NULL DEFAULT '' COMMENT 'mime类型',
   `extparam` varchar(255) NOT NULL DEFAULT '' COMMENT '透传数据',
@@ -331,7 +313,7 @@ INSERT INTO `fa_config` VALUES ('3', 'cdnurl', 'basic', 'Cdn url', '如果静态
 INSERT INTO `fa_config` VALUES ('4', 'version', 'basic', 'Version', '如果静态资源有变动请重新配置该值', 'string', '1.0.1', '', 'required', '');
 INSERT INTO `fa_config` VALUES ('5', 'timezone', 'basic', 'Timezone', '', 'string', 'Asia/Shanghai', '', 'required', '');
 INSERT INTO `fa_config` VALUES ('6', 'forbiddenip', 'basic', 'Forbidden ip', '一行一条记录', 'text', '', '', '', '');
-INSERT INTO `fa_config` VALUES ('7', 'languages', 'basic', 'Languages', '', 'array', '{&amp;amp;quot;backend&amp;amp;quot;:&amp;amp;quot;zh-cn&amp;amp;quot;,&amp;amp;quot;frontend&amp;amp;quot;:&amp;amp;quot;zh-cn&amp;amp;quot;}', '', 'required', '');
+INSERT INTO `fa_config` VALUES ('7', 'languages', 'basic', 'Languages', '', 'array', '{\"backend\":\"zh-cn\",\"frontend\":\"zh-cn\"}', '', 'required', '');
 INSERT INTO `fa_config` VALUES ('8', 'fixedpage', 'basic', 'Fixed page', '请尽量输入左侧菜单栏存在的链接', 'string', 'dashboard', '', 'required', '');
 INSERT INTO `fa_config` VALUES ('9', 'categorytype', 'dictionary', 'Category type', '', 'array', '{\"default\":\"Default\",\"page\":\"Page\",\"article\":\"Article\",\"test\":\"Test\"}', '', '', '');
 INSERT INTO `fa_config` VALUES ('10', 'configgroup', 'dictionary', 'Config group', '', 'array', '{\"basic\":\"Basic\",\"email\":\"Email\",\"dictionary\":\"Dictionary\",\"user\":\"User\",\"example\":\"Example\"}', '', '', '');
@@ -342,7 +324,7 @@ INSERT INTO `fa_config` VALUES ('14', 'mail_smtp_user', 'email', 'Mail smtp user
 INSERT INTO `fa_config` VALUES ('15', 'mail_smtp_pass', 'email', 'Mail smtp password', '（填写您的密码）', 'string', 'password', '', '', '');
 INSERT INTO `fa_config` VALUES ('16', 'mail_verify_type', 'email', 'Mail vertify type', '（SMTP验证方式[推荐SSL]）', 'select', '2', '[\"None\",\"TLS\",\"SSL\"]', '', '');
 INSERT INTO `fa_config` VALUES ('17', 'mail_from', 'email', 'Mail from', '', 'string', '10000@qq.com', '', '', '');
-INSERT INTO `fa_config` VALUES ('18', 'login_background', 'basic', '', '', 'image', '/assets/img/qrcode.png', '', '', '');
+INSERT INTO `fa_config` VALUES ('18', 'attachmentcategory', 'dictionary', 'Attachment category', '', 'array', '{\"category1\":\"Category1\",\"category2\":\"Category2\",\"custom\":\"Custom\"}', '', '', '', '');
 
 -- ----------------------------
 -- Table structure for fa_ems

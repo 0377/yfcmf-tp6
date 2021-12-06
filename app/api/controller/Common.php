@@ -135,9 +135,13 @@ class Common extends Api
         if (! $savename) {
             $this->error('上传失败');
         }
+        $category = request()->post('category');
+        $category = array_key_exists($category, config('site.attachmentcategory') ?? []) ? $category : '';
         $params = [
             'admin_id'    => 0,
             'user_id'     => (int) $this->auth->id,
+            'category'    => $category,
+            'filename'    => mb_substr(htmlspecialchars(strip_tags($fileInfo['name'])), 0, 100),
             'filesize'    => $fileInfo['size'],
             'imagewidth'  => $imagewidth,
             'imageheight' => $imageheight,

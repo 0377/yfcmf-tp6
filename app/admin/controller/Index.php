@@ -114,7 +114,7 @@ class Index extends Backend
             $this->redirect($url);
         }
         $background = Config::get('fastadmin.login_background');
-        $background = stripos($background, 'http') === 0 ? $background : config('site.cdnurl').$background;
+        $background = $background ? (stripos($background, 'http') === 0 ? $background : config('site.cdnurl') . $background) : '';
         $this->view->assign('background', $background);
         $this->view->assign('title', __('Login'));
         Event::trigger('admin_login_init', $this->request);

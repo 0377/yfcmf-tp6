@@ -16,6 +16,7 @@ class Config extends BaseModel
     protected $updateTime = false;
     // 追加属性
     protected $append = [
+        'extend_html'
     ];
 
     /**
@@ -27,6 +28,7 @@ class Config extends BaseModel
     {
         $typeList = [
             'string'   => __('String'),
+            'password' => __('Password'),
             'text'     => __('Text'),
             'editor'   => __('Editor'),
             'number'   => __('Number'),
@@ -73,6 +75,16 @@ class Config extends BaseModel
     }
 
     public function getExtendAttr($value, $data)
+    {
+        $result = preg_replace_callback("/\{([a-zA-Z]+)\}/", function ($matches) use ($data) {
+            if (isset($data[$matches[1]])) {
+                return $data[$matches[1]];
+            }
+        }, $data['extend']);
+        return $result;
+    }
+
+    public function getExtendHtmlAttr($value, $data)
     {
         $result = preg_replace_callback("/\{([a-zA-Z]+)\}/", function ($matches) use ($data) {
             if (isset($data[$matches[1]])) {
