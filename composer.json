@@ -30,7 +30,8 @@
         "overtrue/wechat": "~4.2",
         "endroid/qr-code": "^1.9",
         "phpmailer/phpmailer": "~6.1",
-        "phpoffice/phpspreadsheet": "^1.13"
+        "phpoffice/phpspreadsheet": "^1.13",
+        "nelexa/zip": "^3.3"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2"

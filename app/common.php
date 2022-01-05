@@ -339,6 +339,56 @@ function get_addon_instance($name)
     }
 }
 
+if (! function_exists('remove_empty_folder')) {
+    /**
+     * 移除空目录
+     * @param string $dir 目录
+     */
+    function remove_empty_folder($dir)
+    {
+        try {
+            $isDirEmpty = !(new \FilesystemIterator($dir))->valid();
+            if ($isDirEmpty) {
+                @rmdir($dir);
+                remove_empty_folder(dirname($dir));
+            }
+        } catch (\UnexpectedValueException $e) {
+
+        } catch (\Exception $e) {
+
+        }
+    }
+}
+
+if (! function_exists('get_addon_tables')) {
+    /**
+     * 获取插件创建的表
+     * @param string $name 插件名
+     * @return array
+     */
+    function get_addon_tables($name)
+    {
+        $addonInfo = get_addon_info($name);
+        if (!$addonInfo) {
+            return [];
+        }
+        $regex = "/^CREATE\s+TABLE\s+(IF\s+NOT\s+EXISTS\s+)?`?([a-zA-Z_]+)`?/mi";
+        $sqlFile = ADDON_PATH . $name . DS . 'install.sql';
+        $tables = [];
+        if (is_file($sqlFile)) {
+            preg_match_all($regex, file_get_contents($sqlFile), $matches);
+            if ($matches && isset($matches[2]) && $matches[2]) {
+                $prefix = env('database.prefix');
+                $tables = array_map(function ($item) use ($prefix) {
+                    return str_replace("__PREFIX__", $prefix, $item);
+                }, $matches[2]);
+            }
+        }
+        return $tables;
+    }
+}
+
+
 /**
  * 插件显示内容里生成访问插件的url.
  *

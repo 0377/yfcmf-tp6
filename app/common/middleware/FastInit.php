@@ -40,9 +40,9 @@ class FastInit
         mb_internal_encoding('UTF-8');
 
         // 修复多语言
-        app()->lang = new \think\Lang(\config('lang'));
+        app()->lang = new \think\Lang(app(),\config('lang'));
         app()->lang->detect($request);
-        app()->loadLangPack(Lang::getLangSet());
+        app()->lang->switchLangSet(Lang::getLangSet());
 
         // 设置替换内容
         $this->initReplaceString();

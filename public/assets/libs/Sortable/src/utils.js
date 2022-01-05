@@ -122,7 +122,7 @@ function matrix(el, selfOnly) {
 		} while (!selfOnly && (el = el.parentNode));
 	}
 
-	const matrixFn = window.DOMMatrix || window.WebKitCSSMatrix || window.CSSMatrix;
+	const matrixFn = window.DOMMatrix || window.WebKitCSSMatrix || window.CSSMatrix || window.MSCSSMatrix;
 	/*jshint -W056 */
 	return matrixFn && (new matrixFn(appliedTransforms));
 }
@@ -147,10 +147,12 @@ function find(ctx, tagName, iterator) {
 
 
 function getWindowScrollingElement() {
-	if (IE11OrLess) {
-		return document.documentElement;
+	let scrollingElement = document.scrollingElement;
+
+	if (scrollingElement) {
+		return scrollingElement
 	} else {
-		return document.scrollingElement;
+		return document.documentElement
 	}
 }
 

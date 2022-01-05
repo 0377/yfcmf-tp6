@@ -61,15 +61,18 @@ abstract class Addons
      *
      * @return array
      */
-    final public function getInfo($name = '')
+    final public function getInfo($name = '', $force = false)
     {
         if (empty($name)) {
             $name = $this->getName();
         }
-        $info = Config::get($name, $this->infoRange);
-        if ($info) {
-            return $info;
+        if (!$force) {
+            $info = Config::get($name, $this->infoRange);
+            if ($info) {
+                return $info;
+            }
         }
+        $info = [];
         $info_file = $this->addons_path.'info.ini';
         if (is_file($info_file)) {
             $info = parse_ini_file($info_file, true, INI_SCANNER_TYPED) ?: [];
@@ -87,15 +90,18 @@ abstract class Addons
      *
      * @return array
      */
-    final public function getConfig($name = '')
+    final public function getConfig($name = '', $force = false)
     {
         if (empty($name)) {
             $name = $this->getName();
         }
-        $config = Config::get($name, $this->configRange);
-        if ($config) {
-            return $config;
+        if (!$force) {
+            $config = Config::get($name, $this->configRange);
+            if ($config) {
+                return $config;
+            }
         }
+        $config = [];
         $config_file = $this->addons_path.'config.php';
         if (is_file($config_file)) {
             $temp_arr = include $config_file;

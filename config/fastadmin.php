@@ -36,9 +36,15 @@ return [
     //API是否允许跨域
     'api_cross' => false,
     //版本号
-    'version' => '3.0.3',
+    'version' => '3.0.4',
     //API接口地址
     'api_url' => 'https://api.iuok.cn',
     // 是否开启多语言
-    'lang_switch_on' => true
+    'lang_switch_on' => true,
+    //是否允许未知来源的插件压缩包
+    'unknownsources'        => false,
+    //插件启用禁用时是否备份对应的全局文件
+    'backup_global_files'   => true,
+    //插件纯净模式，插件启用后是否删除插件目录的application、public和assets文件夹
+    'addon_pure_mode'       => false,
 ];

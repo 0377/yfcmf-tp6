@@ -789,7 +789,7 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 				fallbackTolerance = options.fallbackTolerance,
 				fallbackOffset = options.fallbackOffset,
 				touch = evt.touches ? evt.touches[0] : evt,
-				ghostMatrix = ghostEl && matrix(ghostEl),
+				ghostMatrix = ghostEl && matrix(ghostEl, true),
 				scaleX = ghostEl && ghostMatrix && ghostMatrix.a,
 				scaleY = ghostEl && ghostMatrix && ghostMatrix.d,
 				relativeScrollOffset = PositionGhostAbsolutely && ghostRelativeParent && getRelativeScrollOffset(ghostRelativeParent),
@@ -1352,6 +1352,7 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 			css(document.body, 'user-select', '');
 		}
 
+		css(dragEl, 'transform', '');
 
 		if (evt) {
 			if (moved) {
@@ -1652,6 +1653,8 @@ Sortable.prototype = /** @lends Sortable.prototype */ {
 		});
 
 		this._onDrop();
+
+		this._disableDelayedDragEvents();
 
 		sortables.splice(sortables.indexOf(this.el), 1);
 

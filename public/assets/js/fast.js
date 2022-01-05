@@ -68,6 +68,9 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
                 options = $.extend({
                     type: "POST",
                     dataType: "json",
+                    xhrFields: {
+                        withCredentials: true
+                    },
                     success: function (ret) {
                         index && Layer.close(index);
                         ret = Fast.events.onAjaxResponse(ret);
@@ -100,7 +103,8 @@ define(['jquery', 'bootstrap', 'toastr', 'layer', 'lang'], function ($, undefine
             //获取修复后可访问的cdn链接
             cdnurl: function (url, domain) {
                 var rule = new RegExp("^((?:[a-z]+:)?\\/\\/|data:image\\/)", "i");
-                var url = rule.test(url) ? url : Config.upload.cdnurl + url;
+                var cdnurl = Config.upload.cdnurl;
+                url = rule.test(url) || (cdnurl && url.indexOf(cdnurl) === 0) ? url : cdnurl + url;
                 if (domain && !rule.test(url)) {
                     domain = typeof domain === 'string' ? domain : location.origin;
                     url = domain + url;

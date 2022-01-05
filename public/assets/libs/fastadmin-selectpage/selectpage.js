@@ -2,14 +2,13 @@
  * @summary     SelectPage
  * @desc        Simple and powerful selection plugin
  * @file        selectpage.js
- * @version     2.18
+ * @version     2.19
  * @author      TerryZeng
  * @contact     https://terryz.github.io/
  * @license     MIT License
  *
  */
-;
-(function ($) {
+;(function ($) {
     "use strict";
     /**
      * Default options
@@ -24,7 +23,7 @@
          */
         data: undefined,
         /**
-         * Language ('cn', 'en', 'ja', 'es', 'pt-br')
+         * Language ('cn', 'en')
          * @type string
          * @default 'cn'
          */
@@ -103,10 +102,10 @@
          * @type string
          * @default 'AND'
          */
-        andOr: 'AND',
+        andOr: 'OR',
         /**
          * Result sort type
-         * @type array - if not set, will default used showField field
+         * @type array|boolean - if not set, will default used showField field
          * @example
          * orderBy : ['id desc']
          */
@@ -235,7 +234,7 @@
     /**
      * Plugin version number
      */
-    SelectPage.version = '2.18';
+    SelectPage.version = '2.19';
     /**
      * Plugin object cache key
      */
@@ -249,8 +248,7 @@
         option.searchField = option.searchField || option.showField;
 
         option.andOr = option.andOr.toUpperCase();
-        if (option.andOr !== 'AND' && option.andOr !== 'OR')
-            option.andOr = 'AND';
+        if (option.andOr !== 'AND' && option.andOr !== 'OR') option.andOr = 'AND';
 
         //support multiple field set
         var arr = ['searchField'];
@@ -263,18 +261,29 @@
 
         //set multiple order field
         //example:  [ ['id', 'ASC'], ['name', 'DESC'] ]
-        option.orderBy = this.setOrderbyOption(option.orderBy, option.showField);
+        if (option.orderBy !== false) option.orderBy = this.setOrderbyOption(option.orderBy, option.showField);
         //close auto fill result and auto select first in multiple mode and select item not close list
         if (option.multiple && !option.selectToCloseList) {
             option.autoFillResult = false;
             option.autoSelectFirst = false;
         }
         //show all item when pagination bar close, limited 200
-        if (!option.pagination)
-            option.pageSize = 200;
-        if ($.type(option.listSize) !== 'number' || option.listSize < 0)
-            option.listSize = 10;
+        if (!option.pagination) option.pageSize = 200;
 
+        if ($.type(option.listSize) !== 'number' || option.listSize < 0) option.listSize = 10;
+        if (typeof option.formatItem === 'string') {
+            var _formatItem = option.formatItem;
+            option.formatItem = function (row) {
+                if (typeof Template === 'function' && _formatItem.match(/\#([a-zA-Z0-9_\-]+)$/)) {
+                    return Template(_formatItem.substring(1), row);
+                } else {
+                    return _formatItem.replace(/\{(.*?)\}/gi, function (matched) {
+                        matched = matched.substring(1, matched.length - 1);
+                        return typeof row[matched] !== 'undefined' ? row[matched] : '';
+                    });
+                }
+            };
+        }
         this.option = option;
     };
 
@@ -284,27 +293,26 @@
      * @return {Array}
      */
     SelectPage.prototype.strToArray = function (str) {
-        if (!str)
-            return '';
-        return str.replace(/[\s　]+/g, '').split(',');
+        return str ? str.replace(/[\s　]+/g, '').split(',') : '';
     };
 
     /**
      * Set order field
      * @param {Array} arg_order
-     * @param {string} arg_field
+     * @param {string} arg_field - default sort field
      * @return {Array}
      */
     SelectPage.prototype.setOrderbyOption = function (arg_order, arg_field) {
         var arr = [], orders = [];
-        if (typeof arg_order == 'object') {
+        if (typeof arg_order === 'object') {
             for (var i = 0; i < arg_order.length; i++) {
                 orders = $.trim(arg_order[i]).split(' ');
-                arr[i] = (orders.length == 2) ? orders : [orders[0], 'ASC'];
+                if (orders.length)
+                    arr.push((orders.length === 2) ? orders.concat() : [orders[0], 'ASC']);
             }
         } else {
             orders = $.trim(arg_order).split(' ');
-            arr[0] = (orders.length == 2) ? orders : (orders[0].match(/^(ASC|DESC)$/i)) ? [arg_field, orders[0]] : [orders[0], 'ASC'];
+            arr[0] = (orders.length === 2) ? orders.concat() : (orders[0].toUpperCase().match(/^(ASC|DESC)$/i)) ? [arg_field, orders[0].toUpperCase()] : [orders[0], 'ASC'];
         }
         return arr;
     };
@@ -407,6 +415,7 @@
             disabled: 'sp_disabled',
 
             button: 'sp_button',
+            caret_open: 'sp_caret_open',
             btn_on: 'sp_btn_on',
             btn_out: 'sp_btn_out',
             input: 'sp_input',
@@ -475,8 +484,7 @@
             $hidden = $target.parents().addBack().filter(':hidden');
             style += 'visibility: hidden !important; display: ' + configs.display + ' !important; ';
 
-            if (configs.absolute === true)
-                style += 'position: absolute !important;';
+            if (configs.absolute === true) style += 'position: absolute !important;';
 
             // save the origin style props
             // set the hidden el css to be got the actual value later
@@ -494,10 +502,8 @@
             $hidden.each(function (i) {
                 var $this = $(this), _tmp = tmp[i];
 
-                if (_tmp === undefined)
-                    $this.removeAttr('style');
-                else
-                    $this.attr('style', _tmp);
+                if (_tmp === undefined) $this.removeAttr('style');
+                else $this.attr('style', _tmp);
             });
         };
 
@@ -527,20 +533,16 @@
             orgWidth = "100%";
         } else {
             // fix input width in hidden situation
-            if (orgWidth <= 0)
-                orgWidth = this.elementRealSize(input, 'outerWidth');
-            if (orgWidth < 150)
-                orgWidth = 150;
+            if (orgWidth <= 0) orgWidth = this.elementRealSize(input, 'outerWidth');
+            if (orgWidth < 150) orgWidth = 150;
+
         }
         elem.combo_input = input.attr({'autocomplete': 'off'}).addClass(css.input).wrap('<div>');
-        if (p.selectOnly)
-            elem.combo_input.prop('readonly', true);
+        if (p.selectOnly) elem.combo_input.prop('readonly', true);
         elem.container = elem.combo_input.parent().addClass(css.container);
         if (elem.combo_input.prop('disabled')) {
-            if (p.multiple)
-                elem.container.addClass(css.disabled);
-            else
-                elem.combo_input.addClass(css.input_off);
+            if (p.multiple) elem.container.addClass(css.disabled);
+            else elem.combo_input.addClass(css.input_off);
         }
 
         // set outer box width
@@ -551,8 +553,7 @@
         elem.dropdown = $('<span class="sp_caret"></span>');
         //clear button 'X' in single mode
         elem.clear_btn = $('<div>').html($('<i>').addClass('spfont sp-close')).addClass(css.clear_btn).attr('title', msg.clear);
-        if (!p.dropButton)
-            elem.clear_btn.addClass(css.align_right);
+        if (!p.dropButton) elem.clear_btn.addClass(css.align_right);
 
         //main box in multiple mode
         elem.element_box = $('<ul>').addClass(css.element_box);
@@ -561,8 +562,7 @@
         //result list box
         elem.result_area = $('<div>').addClass(css.re_area);
         //pagination bar
-        if (p.pagination)
-            elem.navi = $('<div>').addClass('sp_pagination').append('<ul>');
+        if (p.pagination) elem.navi = $('<div>').addClass('sp_pagination').append('<ul>');
         elem.results = $('<ul>').addClass(css.results);
 
         var namePrefix = '_text',
@@ -589,8 +589,7 @@
         }
         $(document.body).append(elem.result_area);
         elem.result_area.append(elem.results);
-        if (p.pagination)
-            elem.result_area.append(elem.navi);
+        if (p.pagination) elem.result_area.append(elem.navi);
 
         //Multiple select mode
         if (p.multiple) {
@@ -607,8 +606,7 @@
             var li = $('<li>').addClass('input_box');
             li.append(elem.combo_input);
             elem.element_box.append(li);
-            if (elem.combo_input.attr('placeholder'))
-                elem.combo_input.attr('placeholder_bak', elem.combo_input.attr('placeholder'));
+            if (elem.combo_input.attr('placeholder')) elem.combo_input.attr('placeholder_bak', elem.combo_input.attr('placeholder'));
         }
 
         this.elem = elem;
@@ -619,21 +617,21 @@
      */
     SelectPage.prototype.setButtonAttrDefault = function () {
         /*
-         if (this.option.selectOnly) {
-         if ($(this.elem.combo_input).val() !== '') {
-         if ($(this.elem.hidden).val() !== '') {
-         //选择条件
-         $(this.elem.combo_input).attr('title', this.message.select_ok).removeClass(this.css_class.select_ng).addClass(this.css_class.select_ok);
-         } else {
-         //输入方式
-         $(this.elem.combo_input).attr('title', this.message.select_ng).removeClass(this.css_class.select_ok).addClass(this.css_class.select_ng);
-         }
-         } else {
-         $(this.elem.hidden).val('');
-         $(this.elem.combo_input).removeAttr('title').removeClass(this.css_class.select_ng);
-         }
-         }
-         */
+        if (this.option.selectOnly) {
+            if ($(this.elem.combo_input).val() !== '') {
+                if ($(this.elem.hidden).val() !== '') {
+                    //选择条件
+                    $(this.elem.combo_input).attr('title', this.message.select_ok).removeClass(this.css_class.select_ng).addClass(this.css_class.select_ok);
+                } else {
+                    //输入方式
+                    $(this.elem.combo_input).attr('title', this.message.select_ng).removeClass(this.css_class.select_ok).addClass(this.css_class.select_ng);
+                }
+            } else {
+                $(this.elem.hidden).val('');
+                $(this.elem.combo_input).removeAttr('title').removeClass(this.css_class.select_ng);
+            }
+        }
+        */
         //this.elem.button.attr('title', this.message.get_all_btn);
         if (this.option.dropButton)
             this.elem.button.attr('title', this.message.close_btn);
@@ -654,8 +652,7 @@
         if (!refresh && !p.initRecord && el.combo_input.val())
             p.initRecord = el.combo_input.val();
         el.combo_input.val('');
-        if (!refresh)
-            el.hidden.val(p.initRecord);
+        if (!refresh) el.hidden.val(p.initRecord);
         key = refresh && el.hidden.val() ? el.hidden.val() : p.initRecord;
         if (key) {
             if (typeof p.data === 'object') {
@@ -669,8 +666,7 @@
                         }
                     }
                 });
-                if (!p.multiple && data.length > 1)
-                    data = [data[0]];
+                if (!p.multiple && data.length > 1) data = [data[0]];
                 self.afterInit(self, data);
             } else {//ajax data source mode to init selected item
                 var _paramsFunc = p.params, _params = {}, searchKey = p.searchField;
@@ -719,41 +715,33 @@
      * @param {Object} data - selected item data
      */
     SelectPage.prototype.afterInit = function (self, data) {
-        if (!data || ($.isArray(data) && data.length === 0))
-            return;
-        if (!$.isArray(data))
-            data = [data];
+        if (!data || ($.isArray(data) && data.length === 0)) return;
+        if (!$.isArray(data)) data = [data];
         var p = self.option, css = self.css_class;
 
-        var getText = function (row) {
-            var text = row[p.showField];
-            if (p.formatItem && $.isFunction(p.formatItem)) {
-                try {
-                    text = p.formatItem(row);
-                } catch (e) {
-                }
-            }
-            return text;
-        };
+        self.data = data;
 
         if (p.multiple) {
             self.prop.init_set = true;
             self.clearAll(self);
             $.each(data, function (i, row) {
-                var item = {text: getText(row), value: row[p.keyField]};
-                if (!self.isAlreadySelected(self, item))
-                    self.addNewTag(self, item);
+                var value = row[p.keyField];
+                var text = row[p.showField];
+                var item = {text: text, value: value};
+                if (!self.isAlreadySelected(self, item)) self.addNewTag(self, row, item);
             });
             self.tagValuesSet(self);
             self.inputResize(self);
-            console.log(self.elem.hidden.blur());
+            self.elem.hidden.blur();
             self.prop.init_set = false;
         } else {
             var row = data[0];
-            self.elem.combo_input.val(getText(row));
-            self.elem.hidden.val(row[p.keyField]);
-            self.prop.prev_value = getText(row);
-            self.prop.selected_text = getText(row);
+            var value = row[p.keyField];
+            var text = row[p.showField];
+            self.elem.combo_input.val(text);
+            self.elem.hidden.val(value);
+            self.prop.prev_value = text;
+            self.prop.selected_text = text;
             if (p.selectOnly) {
                 self.elem.combo_input.attr('title', self.message.select_ok).removeClass(css.select_ng).addClass(css.select_ok);
             }
@@ -771,8 +759,7 @@
                 ev.stopPropagation();
                 if (self.elem.result_area.is(':hidden') && !self.elem.combo_input.prop('disabled')) {
                     self.elem.combo_input.focus();
-                } else
-                    self.hideResults(self);
+                } else self.hideResults(self);
             });
         }
     };
@@ -802,10 +789,9 @@
         el.container.on('click.SelectPage', 'div.' + self.css_class.clear_btn, function (e) {
             e.stopPropagation();
             if (!self.disabled(self)) {
-                self.clearAll(self);
+                self.clearAll(self, true);
                 self.elem.hidden.change();
-                if (p.eClear && $.isFunction(p.eClear))
-                    p.eClear(self);
+                if (p.eClear && $.isFunction(p.eClear)) p.eClear(self);
             }
         });
         el.result_area.on('mousedown.SelectPage', function (e) {
@@ -831,7 +817,7 @@
                 });
                 //Clear all selected item
                 el.control.find('.sp_clear_all').on('click.SelectPage', function (e) {
-                    self.clearAll(self);
+                    self.clearAll(self, true);
                 }).hover(function () {
                     el.control_text.html(msg.clear_all);
                 }, function () {
@@ -840,16 +826,14 @@
             }
             el.element_box.on('click.SelectPage', function (e) {
                 var srcEl = e.target || e.srcElement;
-                if ($(srcEl).is('ul'))
-                    el.combo_input.focus();
+                if ($(srcEl).is('ul')) el.combo_input.focus();
             });
             //Tag close
             el.element_box.on('click.SelectPage', 'span.tag_close', function () {
-                var li = $(this).closest('li');
+                var li = $(this).closest('li'), data = li.data('dataObj');
                 self.removeTag(self, li);
                 showList();
-                if (p.eTagRemove && $.isFunction(p.eTagRemove))
-                    p.eTagRemove(1, self);
+                if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove([data]);
             });
             self.inputResize(self);
         }
@@ -862,8 +846,7 @@
         var self = this, css = self.css_class;
         var cleanContent = function (obj) {
             obj.elem.combo_input.val('');
-            if (!obj.option.multiple)
-                obj.elem.hidden.val('');
+            if (!obj.option.multiple) obj.elem.hidden.val('');
             obj.prop.selected_text = '';
         };
 
@@ -873,8 +856,7 @@
             var sp = $(ele).closest('div.' + css.container);
             //Open status result list
             $('div.' + css.container + '.' + css.container_open).each(function () {
-                if (this == sp[0])
-                    return;
+                if (this == sp[0]) return;
                 var $this = $(this), d = $this.find('input.' + css.input).data(SelectPage.dataKey);
 
                 if (!d.elem.combo_input.val() && d.elem.hidden.val() && !d.option.multiple) {
@@ -883,29 +865,24 @@
                     d.hideResults(d);
                     return true;
                 }
-                if (d.elem.results.find('li').not('.' + css.message_box).size()) {
+                if (d.elem.results.find('li').not('.' + css.message_box).length) {
                     if (d.option.autoFillResult) {
                         //have selected item, then hide result list
-                        if (d.elem.hidden.val())
-                            d.hideResults(d);
-                        else if (d.elem.results.find('li.sp_over').size()) {
+                        if (d.elem.hidden.val()) d.hideResults(d);
+                        else if (d.elem.results.find('li.sp_over').length) {
                             //no one selected and have highlight item, select the highlight item
                             d.selectCurrentLine(d, true);
                         } else if (d.option.autoSelectFirst) {
                             //no one selected, no one highlight, select the first item
                             d.nextLine(d);
                             d.selectCurrentLine(d, true);
-                        } else
-                            d.hideResults(d);
-                    } else
-                        d.hideResults(d);
+                        } else d.hideResults(d);
+                    } else d.hideResults(d);
                 } else {
                     //when no one item match, clear search keywords
-                    if (d.option.noResultClean)
-                        cleanContent(d);
+                    if (d.option.noResultClean) cleanContent(d);
                     else {
-                        if (!d.option.multiple)
-                            d.elem.hidden.val('');
+                        if (!d.option.multiple) d.elem.hidden.val('');
                     }
                     d.hideResults(d);
                 }
@@ -937,8 +914,7 @@
             e.preventDefault();
             e.stopPropagation();
 
-            if (!$(this).hasClass(css.selected))
-                self.selectCurrentLine(self, false);
+            if (!$(this).hasClass(css.selected)) self.selectCurrentLine(self, false);
         });
     };
 
@@ -960,11 +936,9 @@
                     down = d.elem.result_area.hasClass('shadowDown');
                 if (hasOverflow) {
                     if (down) {//open down
-                        if (listBottom > (viewHeight + screenScrollTop))
-                            d.calcResultsSize(d);
+                        if (listBottom > (viewHeight + screenScrollTop)) d.calcResultsSize(d);
                     } else {//open up
-                        if (offset.top < screenScrollTop)
-                            d.calcResultsSize(d);
+                        if (offset.top < screenScrollTop) d.calcResultsSize(d);
                     }
                 }
             });
@@ -976,8 +950,7 @@
      */
     SelectPage.prototype.ePaging = function () {
         var self = this;
-        if (!self.option.pagination)
-            return;
+        if (!self.option.pagination) return;
         self.elem.navi.find('li.csFirstPage').off('click').on('click', function (ev) {
             //$(self.elem.combo_input).focus();
             ev.preventDefault();
@@ -1018,15 +991,13 @@
      * @param msg {string} the text need to show
      */
     SelectPage.prototype.showMessage = function (self, msg) {
-        if (!msg)
-            return;
+        if (!msg) return;
         var msgLi = '<li class="' + self.css_class.message_box + '"><i class="spfont sp-warning"></i> ' + msg + '</li>';
         self.elem.results.empty().append(msgLi).show();
         self.calcResultsSize(self);
         self.setOpenStatus(self, true);
         self.elem.control.hide();
-        if (self.option.pagination)
-            self.elem.navi.hide();
+        if (self.option.pagination) self.elem.navi.hide();
     };
 
     /**
@@ -1052,10 +1023,8 @@
             } else if (target_top > scroll_bottom) {
                 //scroll down
                 gap = target_top - scroll_bottom;
-            } else
-                return; //do not scroll
-        } else if (target_top < scroll_top)
-            gap = target_top - scroll_top;
+            } else return; //do not scroll
+        } else if (target_top < scroll_top) gap = target_top - scroll_top;
         window.scrollBy(0, gap);
     };
     /**
@@ -1102,8 +1071,7 @@
             self.prop.prev_value = now_value;
             self.prop.first_show = false;
 
-            if (self.option.selectOnly)
-                self.setButtonAttrDefault();
+            if (self.option.selectOnly) self.setButtonAttrDefault();
             if (!self.option.multiple && !now_value) {
                 self.elem.combo_input.val('');
                 self.elem.hidden.val('');
@@ -1121,8 +1089,7 @@
      */
     SelectPage.prototype.processKey = function (self, e) {
         if ($.inArray(e.keyCode, [37, 38, 39, 40, 27, 9, 13]) === -1) {
-            if (e.keyCode != 16)
-                self.setCssFocusedInput(self); // except Shift(16)
+            if (e.keyCode != 16) self.setCssFocusedInput(self); // except Shift(16)
             self.inputResize(self);
             if ($.type(self.option.data) === 'string') {
                 self.prop.last_input_time = e.timeStamp;
@@ -1150,27 +1117,22 @@
             e.returnValue = false;
             switch (e.keyCode) {
                 case 37:// left
-                    if (e.shiftKey)
-                        self.firstPage(self);
-                    else
-                        self.prevPage(self);
+                    if (e.shiftKey) self.firstPage(self);
+                    else self.prevPage(self);
                     break;
                 case 38:// up
                     self.prop.key_select = true;
                     self.prevLine(self);
                     break;
                 case 39:// right
-                    if (e.shiftKey)
-                        self.lastPage(self);
-                    else
-                        self.nextPage(self);
+                    if (e.shiftKey) self.lastPage(self);
+                    else self.nextPage(self);
                     break;
                 case 40:// down
                     if (self.elem.results.children('li').length) {
                         self.prop.key_select = true;
                         self.nextLine(self);
-                    } else
-                        self.suggest(self);
+                    } else self.suggest(self);
                     break;
                 case 9:// tab
                     self.prop.key_paging = true;
@@ -1205,13 +1167,10 @@
      */
     SelectPage.prototype.suggest = function (self) {
         var q_word, val = $.trim(self.elem.combo_input.val());
-        if (self.option.multiple)
-            q_word = val;
+        if (self.option.multiple) q_word = val;
         else {
-            if (val && val === self.prop.selected_text)
-                q_word = '';
-            else
-                q_word = val;
+            if (val && val === self.prop.selected_text) q_word = '';
+            else q_word = val;
         }
         q_word = q_word.split(/[\s　]+/);
 
@@ -1223,10 +1182,8 @@
         //self.setLoading(self);
         var which_page_num = self.prop.current_page || 1;
 
-        if (typeof self.option.data == 'object')
-            self.searchForJson(self, q_word, which_page_num);
-        else
-            self.searchForDb(self, q_word, which_page_num);
+        if (typeof self.option.data == 'object') self.searchForJson(self, q_word, which_page_num);
+        else self.searchForDb(self, q_word, which_page_num);
     };
 
     /**
@@ -1248,12 +1205,10 @@
      */
     SelectPage.prototype.searchForDb = function (self, q_word, which_page_num) {
         var p = self.option;
-        if (!p.eAjaxSuccess || !$.isFunction(p.eAjaxSuccess))
-            self.hideResults(self);
+        if (!p.eAjaxSuccess || !$.isFunction(p.eAjaxSuccess)) self.hideResults(self);
         var _paramsFunc = p.params, _params = {}, searchKey = p.searchField;
         //when have new query keyword, then reset page number to 1.
-        if (q_word.length && q_word[0] && q_word[0] !== self.prop.prev_value)
-            which_page_num = 1;
+        if (q_word.length && q_word[0] && q_word[0] !== self.prop.prev_value) which_page_num = 1;
         var _orgParams = {
             q_word: q_word,
             pageNumber: which_page_num,
@@ -1265,7 +1220,9 @@
             keyField: self.option.keyField,
             searchField: self.option.searchField
         };
+        if (p.orderBy !== false) _orgParams.orderBy = p.orderBy;
         _orgParams[searchKey] = q_word[0];
+
         if (_paramsFunc) {
             var result = $.isFunction(_paramsFunc) ? _paramsFunc(self) : _paramsFunc;
             if (result && $.isPlainObject(result)) {
@@ -1351,7 +1308,7 @@
         } while (i < q_word.length);
 
         // SELECT * FROM data WHERE field LIKE q_word;
-        for (i = 0; i < p.data.length; i++) {
+        for (var i = 0; i < p.data.length; i++) {
             var flag = false, row = p.data[i], itemText;
             for (var j = 0; j < arr_reg.length; j++) {
                 itemText = row[p.searchField];
@@ -1359,44 +1316,44 @@
                     itemText = p.formatItem(row);
                 if (itemText.match(arr_reg[j])) {
                     flag = true;
-                    if (p.andOr == 'OR')
-                        break;
+                    if (p.andOr == 'OR') break;
                 } else {
                     flag = false;
-                    if (p.andOr == 'AND')
-                        break;
+                    if (p.andOr == 'AND') break;
                 }
             }
-            if (flag)
-                matched.push(row);
+            if (flag) matched.push(row);
         }
 
         // (CASE WHEN ...) then く order some column
-        var reg1 = new RegExp('^' + esc_q[0] + '$', 'gi'),
-            reg2 = new RegExp('^' + esc_q[0], 'gi'),
-            matched1 = [], matched2 = [], matched3 = [];
-        for (i = 0; i < matched.length; i++) {
-            var orderField = p.orderBy[0][0];
-            var orderValue = String(matched[i][orderField]);
-            if (orderValue.match(reg1)) {
-                matched1.push(matched[i]);
-            } else if (orderValue.match(reg2)) {
-                matched2.push(matched[i]);
-            } else {
-                matched3.push(matched[i]);
+        if (p.orderBy === false) sorted = matched.concat();
+        else {
+            var reg1 = new RegExp('^' + esc_q[0] + '$', 'gi'),
+                reg2 = new RegExp('^' + esc_q[0], 'gi'),
+                matched1 = [], matched2 = [], matched3 = [];
+            for (var i = 0; i < matched.length; i++) {
+                var orderField = p.orderBy[0][0];
+                var orderValue = String(matched[i][orderField]);
+                if (orderValue.match(reg1)) {
+                    matched1.push(matched[i]);
+                } else if (orderValue.match(reg2)) {
+                    matched2.push(matched[i]);
+                } else {
+                    matched3.push(matched[i]);
+                }
             }
-        }
 
-        if (p.orderBy[0][1].match(/^asc$/i)) {
-            matched1 = self.sortAsc(self, matched1);
-            matched2 = self.sortAsc(self, matched2);
-            matched3 = self.sortAsc(self, matched3);
-        } else {
-            matched1 = self.sortDesc(self, matched1);
-            matched2 = self.sortDesc(self, matched2);
-            matched3 = self.sortDesc(self, matched3);
+            if (p.orderBy[0][1].match(/^asc$/i)) {
+                matched1 = self.sortAsc(self, matched1);
+                matched2 = self.sortAsc(self, matched2);
+                matched3 = self.sortAsc(self, matched3);
+            } else {
+                matched1 = self.sortDesc(self, matched1);
+                matched2 = self.sortDesc(self, matched2);
+                matched3 = self.sortDesc(self, matched3);
+            }
+            sorted = sorted.concat(matched1).concat(matched2).concat(matched3);
         }
-        sorted = sorted.concat(matched1).concat(matched2).concat(matched3);
 
         /*
          if (sorted.length === undefined || sorted.length === 0 ) {
@@ -1420,8 +1377,7 @@
                         }
                     });
                     which_page_num = Math.ceil(index / p.pageSize);
-                    if (which_page_num < 1)
-                        which_page_num = 1;
+                    if (which_page_num < 1) which_page_num = 1;
                     self.prop.current_page = which_page_num;
                 }
             }
@@ -1438,26 +1394,22 @@
         //save original data
         json.originalResult = [];
         //after data filter handle
-        for (i = start; i < end; i++) {
-            if (sorted[i] === undefined)
-                break;
+        for (var i = start; i < end; i++) {
+            if (sorted[i] === undefined) break;
             json.originalResult.push(sorted[i]);
             for (var key in sorted[i]) {
                 if (key == p.keyField) {
-                    if (json.keyField === undefined)
-                        json.keyField = [];
+                    if (json.keyField === undefined) json.keyField = [];
                     json.keyField.push(sorted[i][key]);
                 }
                 if (key == p.showField) {
-                    if (json.candidate === undefined)
-                        json.candidate = [];
+                    if (json.candidate === undefined) json.candidate = [];
                     json.candidate.push(sorted[i][key]);
                 }
             }
         }
 
-        if (json.candidate === undefined)
-            json.candidate = [];
+        if (json.candidate === undefined) json.candidate = [];
         json.cnt_page = json.candidate.length;
         self.prepareResults(self, json, q_word, which_page_num);
     };
@@ -1507,19 +1459,17 @@
      * @param {number} which_page_num - target page number
      */
     SelectPage.prototype.prepareResults = function (self, json, q_word, which_page_num) {
-        if (self.option.pagination)
-            self.setNavi(self, json.cnt_whole, json.cnt_page, which_page_num);
+        self.data = json.originalResult;
+        if (self.option.pagination) self.setNavi(self, json.cnt_whole, json.cnt_page, which_page_num);
 
-        if (!json.keyField)
-            json.keyField = false;
+        if (!json.keyField) json.keyField = false;
 
         if (self.option.selectOnly && json.candidate.length === 1 && json.candidate[0] == q_word[0]) {
             self.elem.hidden.val(json.keyField[0]);
             this.setButtonAttrDefault();
         }
         var is_query = false;
-        if (q_word && q_word.length && q_word[0])
-            is_query = true;
+        if (q_word && q_word.length && q_word[0]) is_query = true;
         self.displayResults(self, json, is_query);
     };
 
@@ -1540,7 +1490,7 @@
                 var pageInfo = msg.page_info;
                 return pageInfo.replace(self.template.page.current, page_num).replace(self.template.page.total, last_page);
             };
-            if (pagebar.find('li').size() === 0) {
+            if (pagebar.find('li').length === 0) {
                 pagebar.hide().empty();
                 var iconFist = 'spfont sp-first',
                     iconPrev = 'spfont sp-previous',
@@ -1562,13 +1512,10 @@
 
         var pagebar = self.elem.navi.find('ul'),
             last_page = Math.ceil(cnt_whole / self.option.pageSize); //calculate total page
-        if (last_page === 0)
-            page_num = 0;
+        if (last_page === 0) page_num = 0;
         else {
-            if (last_page < page_num)
-                page_num = last_page;
-            else if (page_num === 0)
-                page_num = 1;
+            if (last_page < page_num) page_num = last_page;
+            else if (page_num === 0) page_num = 1;
         }
         self.prop.current_page = page_num;//update current page number
         self.prop.max_page = last_page;//update page count
@@ -1582,31 +1529,22 @@
             last = pagebar.find('li.csLastPage');
         //first and previous
         if (page_num === 1 || page_num === 0) {
-            if (!first.hasClass(dClass))
-                first.addClass(dClass);
-            if (!previous.hasClass(dClass))
-                previous.addClass(dClass);
+            if (!first.hasClass(dClass)) first.addClass(dClass);
+            if (!previous.hasClass(dClass)) previous.addClass(dClass);
         } else {
-            if (first.hasClass(dClass))
-                first.removeClass(dClass);
-            if (previous.hasClass(dClass))
-                previous.removeClass(dClass);
+            if (first.hasClass(dClass)) first.removeClass(dClass);
+            if (previous.hasClass(dClass)) previous.removeClass(dClass);
         }
         //next and last
         if (page_num === last_page || last_page === 0) {
-            if (!next.hasClass(dClass))
-                next.addClass(dClass);
-            if (!last.hasClass(dClass))
-                last.addClass(dClass);
+            if (!next.hasClass(dClass)) next.addClass(dClass);
+            if (!last.hasClass(dClass)) last.addClass(dClass);
         } else {
-            if (next.hasClass(dClass))
-                next.removeClass(dClass);
-            if (last.hasClass(dClass))
-                last.removeClass(dClass);
+            if (next.hasClass(dClass)) next.removeClass(dClass);
+            if (last.hasClass(dClass)) last.removeClass(dClass);
         }
 
-        if (last_page > 1)
-            self.ePaging(); //pagination event bind
+        if (last_page > 1) self.ePaging(); //pagination event bind
     };
 
     /**
@@ -1619,7 +1557,7 @@
         var p = self.option, el = self.elem;
         el.results.hide().empty();
         if (p.multiple && $.type(p.maxSelectLimit) === 'number' && p.maxSelectLimit > 0) {
-            var selectedSize = el.element_box.find('li.selected_tag').size();
+            var selectedSize = el.element_box.find('li.selected_tag').length;
             if (selectedSize > 0 && selectedSize >= p.maxSelectLimit) {
                 var msg = self.message.max_selected;
                 self.showMessage(self, msg.replace(self.template.msg.maxSelectLimit, p.maxSelectLimit));
@@ -1641,13 +1579,12 @@
                         console.error('formatItem内容格式化函数内容设置不正确！');
                         itemText = arr_candidate[i];
                     }
-                } else
-                    itemText = arr_candidate[i];
+                } else itemText = arr_candidate[i];
                 var list = $('<li>').html(itemText).attr({
-                    pkey: arr_primary_key[i]
+                    pkey: arr_primary_key[i],
+                    index: i
                 });
-                if (!p.formatItem)
-                    list.attr('title', itemText);
+                if (!p.formatItem) list.attr('title', itemText);
 
                 //Set selected item highlight
                 if ($.inArray(arr_primary_key[i].toString(), keyArr) !== -1) {
@@ -1664,10 +1601,8 @@
         }
         el.results.show();
 
-        if (p.multiple && p.multipleControlbar)
-            el.control.show();
-        if (p.pagination)
-            el.navi.show();
+        if (p.multiple && p.multipleControlbar) el.control.show();
+        if (p.pagination) el.navi.show();
         self.calcResultsSize(self);
         self.setOpenStatus(self, true);
 
@@ -1676,8 +1611,7 @@
         //scrolling listen
         self.eScroll();
         //auto highlight first item in search, have result and set autoSelectFirst to true situation
-        if (is_query && json.candidate.length && p.autoSelectFirst)
-            self.nextLine(self);
+        if (is_query && json.candidate.length && p.autoSelectFirst) self.nextLine(self);
     };
 
     /**
@@ -1725,11 +1659,12 @@
                     top = 0, dist = 5, //set distance between input element and result list
                     //the actual top coordinate of result list
                     listBottom = screenTop + inputHeight + listHeight + dist,
+                    listTop = screenTop + listHeight + dist,
                     hasOverflow = docHeight > viewHeight;
 
                 if ((screenTop - screenScrollTop - dist > listHeight) &&
                     (hasOverflow && listBottom > (viewHeight + screenScrollTop)) ||
-                    (!hasOverflow && listBottom > viewHeight)) {
+                    (!hasOverflow && listBottom > viewHeight && screenTop >= listTop)) {
                     //open up
                     top = offset.top - listHeight - dist;
                     el.result_area.removeClass('shadowUp shadowDown').addClass('shadowUp');
@@ -1750,8 +1685,7 @@
             var pss = rePosition();
             el.result_area.css(pss).show(1, function () {
                 var repss = rePosition();
-                if (pss.top !== repss.top || pss.left !== repss.left)
-                    el.result_area.css(repss);
+                if (pss.top !== repss.top || pss.left !== repss.left) el.result_area.css(repss);
             });
         }
     };
@@ -1788,14 +1722,11 @@
      */
     SelectPage.prototype.disabled = function (self, disabled) {
         var p = self.option, el = self.elem;
-        if ($.type(disabled) === 'undefined')
-            return el.combo_input.prop('disabled');
+        if ($.type(disabled) === 'undefined') return el.combo_input.prop('disabled');
         if ($.type(disabled) === 'boolean') {
             el.combo_input.prop('disabled', disabled);
-            if (disabled)
-                el.container.addClass(self.css_class.disabled);
-            else
-                el.container.removeClass(self.css_class.disabled);
+            if (disabled) el.container.addClass(self.css_class.disabled);
+            else el.container.removeClass(self.css_class.disabled);
         }
     };
 
@@ -1849,18 +1780,19 @@
     /**
      * do something after select/unSelect action
      * @param {Object} self
+     * @param {boolean} reOpen
      */
-    SelectPage.prototype.afterAction = function (self) {
+    SelectPage.prototype.afterAction = function (self, reOpen) {
         self.inputResize(self);
         self.elem.combo_input.change();
         self.setCssFocusedInput(self);
-        if (self.prop.init_set)
-            return;
+        if (self.prop.init_set) return;
         if (self.option.multiple) {
             if (self.option.selectToCloseList) {
                 self.hideResults(self);
                 self.elem.combo_input.blur();
-            } else {
+            }
+            if (!self.option.selectToCloseList && reOpen) {
                 self.suggest(self);
                 self.elem.combo_input.focus();
             }
@@ -1880,39 +1812,39 @@
 
         var p = self.option, current = self.getCurrentLine(self);
         if (current) {
+            var data = current.data('dataObj');
+            var text = data[p.showField] || current.text();
+            var value = current.attr('pkey');
             if (!p.multiple) {
-                self.elem.combo_input.val(current.text());
-                self.elem.hidden.val(current.attr('pkey'));
+                self.elem.combo_input.val(text);
+                self.elem.hidden.val(value);
             } else {
                 //build tags in multiple selection mode
                 self.elem.combo_input.val('');
-                var item = {text: current.text(), value: current.attr('pkey')};
+                var item = {text: text, value: value};
                 if (!self.isAlreadySelected(self, item)) {
-                    self.addNewTag(self, item);
+                    self.addNewTag(self, data, item);
                     self.tagValuesSet(self);
                 }
             }
 
-            if (p.selectOnly)
-                self.setButtonAttrDefault();
+            if (p.selectOnly) self.setButtonAttrDefault();
 
             //Select item callback
-            if (p.eSelect && $.isFunction(p.eSelect))
-                p.eSelect(current.data('dataObj'), self);
+            if (p.eSelect && $.isFunction(p.eSelect)) p.eSelect(data, self);
 
             self.prop.prev_value = self.elem.combo_input.val();
             self.prop.selected_text = self.elem.combo_input.val();
 
             self.putClearButton();
         }
-        self.afterAction(self);
+        self.afterAction(self, true);
     };
     /**
      * Show clear button when item selected in single selection mode
      */
     SelectPage.prototype.putClearButton = function () {
-        if (!this.option.multiple && !this.elem.combo_input.prop('disabled'))
-            this.elem.container.append(this.elem.clear_btn);
+        if (!this.option.multiple && !this.elem.combo_input.prop('disabled')) this.elem.container.append(this.elem.clear_btn);
     };
     /**
      * Select all list item
@@ -1921,58 +1853,60 @@
     SelectPage.prototype.selectAllLine = function (self) {
         var p = self.option, jsonarr = new Array();
         self.elem.results.find('li').each(function (i, row) {
-            var $row = $(row);
-            var item = {text: $row.text(), value: $row.attr('pkey')};
+            var $row = $(row), data = $row.data('dataObj');
+            var text = data[p.showField] || $row.text();
+            var value = $row.attr('pkey');
+            var item = {text: text, value: value};
             if (!self.isAlreadySelected(self, item)) {
-                self.addNewTag(self, item);
+                self.addNewTag(self, data, item);
                 self.tagValuesSet(self);
             }
-            jsonarr.push($row.data('dataObj'));
+            jsonarr.push(data);
             //limited max selected items
             if ($.type(p.maxSelectLimit) === 'number' &&
                 p.maxSelectLimit > 0 &&
-                p.maxSelectLimit === self.elem.element_box.find('li.selected_tag').size()) {
+                p.maxSelectLimit === self.elem.element_box.find('li.selected_tag').length) {
                 return false;
             }
         });
-        if (p.eSelect && $.isFunction(p.eSelect))
-            p.eSelect(jsonarr, self);
-        self.afterAction(self);
+        if (p.eSelect && $.isFunction(p.eSelect)) p.eSelect(jsonarr, self);
+        self.afterAction(self, true);
     };
     /**
      * Cancel select all item in current page
      * @param {Object} self
      */
     SelectPage.prototype.unSelectAllLine = function (self) {
-        var p = self.option, size = self.elem.results.find('li').size();
+        var p = self.option, size = self.elem.results.find('li').length, ds = [];
         self.elem.results.find('li').each(function (i, row) {
             var key = $(row).attr('pkey');
             var tag = self.elem.element_box.find('li.selected_tag[itemvalue="' + key + '"]');
+            if (tag.length) ds.push(tag.data('dataObj'));
             self.removeTag(self, tag);
         });
-        self.afterAction(self);
-        if (p.eTagRemove && $.isFunction(p.eTagRemove))
-            p.eTagRemove(size, self);
+        self.afterAction(self, true);
+        if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove(ds);
     };
     /**
      * Clear all selected items
      * @param {Object} self
+     * @param {boolean} open - open list after clear selected item
      */
-    SelectPage.prototype.clearAll = function (self) {
-        var p = self.option, size = 0;
+    SelectPage.prototype.clearAll = function (self, open) {
+        var p = self.option, ds = [];
         if (p.multiple) {
-            size = self.elem.element_box.find('li.selected_tag').size();
+            self.elem.element_box.find('li.selected_tag').each(function (i, row) {
+                ds.push($(row).data('dataObj'));
+                row.remove();
+            });
             self.elem.element_box.find('li.selected_tag').remove();
         }
         self.reset(self);
-        self.afterAction(self);
+        self.afterAction(self, open);
 
-        if (!p.multiple)
-            self.elem.clear_btn.remove();
         if (p.multiple) {
-            if (p.eTagRemove && $.isFunction(p.eTagRemove))
-                p.eTagRemove(size, self);
-        }
+            if (p.eTagRemove && $.isFunction(p.eTagRemove)) p.eTagRemove(ds);
+        } else self.elem.clear_btn.remove();
     };
 
     /**
@@ -1991,13 +1925,10 @@
      * @param {Object} self
      */
     SelectPage.prototype.getCurrentLine = function (self) {
-        if (self.elem.result_area.is(':hidden'))
-            return false;
+        if (self.elem.result_area.is(':hidden')) return false;
         var obj = self.elem.results.find('li.' + self.css_class.select);
-        if (obj.size())
-            return obj;
-        else
-            return false;
+        if (obj.length) return obj;
+        else return false;
     };
 
     /**
@@ -2011,8 +1942,7 @@
             var keys = self.elem.hidden.val();
             if (keys) {
                 var karr = keys.split(',');
-                if (karr && karr.length && $.inArray(item.value, karr) != -1)
-                    isExist = true;
+                if (karr && karr.length && $.inArray(item.value, karr) != -1) isExist = true;
             }
         }
         return isExist;
@@ -2021,17 +1951,17 @@
     /**
      * Add a new tag in multiple selection mode
      * @param {Object} self
+     * @param {object} data - raw row data
      * @param {Object} item
      */
-    SelectPage.prototype.addNewTag = function (self, item) {
-        if (!self.option.multiple || !item)
-            return;
+    SelectPage.prototype.addNewTag = function (self, data, item) {
+        if (!self.option.multiple || !data || !item) return;
         var tmp = self.template.tag.content, tag;
         tmp = tmp.replace(self.template.tag.textKey, item.text);
         tmp = tmp.replace(self.template.tag.valueKey, item.value);
         tag = $(tmp);
-        if (self.elem.combo_input.prop('disabled'))
-            tag.find('span.tag_close').hide();
+        tag.data('dataObj', data);
+        if (self.elem.combo_input.prop('disabled')) tag.find('span.tag_close').hide();
         self.elem.combo_input.closest('li').before(tag);
     };
     /**
@@ -2047,11 +1977,11 @@
                 index = $.inArray(key.toString(), keyarr);
             if (index != -1) {
                 keyarr.splice(index, 1);
-                self.elem.hidden.val(keyarr.toString());
+                self.elem.hidden.val(keyarr.toString()).trigger("change");
             }
         }
         $(item).remove();
-        self.afterAction(self);
+        self.inputResize(self);
     };
 
     /**
@@ -2059,18 +1989,16 @@
      * @param {Object} self
      */
     SelectPage.prototype.tagValuesSet = function (self) {
-        if (!self.option.multiple)
-            return;
+        if (!self.option.multiple) return;
         var tags = self.elem.element_box.find('li.selected_tag');
-        if (tags && tags.size()) {
+        if (tags && tags.length) {
             var result = new Array();
             $.each(tags, function (i, li) {
                 var v = $(li).attr('itemvalue');
-                if ($.type(v) !== 'undefined')
-                    result.push(v);
+                if ($.type(v) !== 'undefined') result.push(v);
             });
             if (result.length) {
-                self.elem.hidden.val(result.join(','));
+                self.elem.hidden.val(result.join(',')).trigger("change");
             }
         }
     };
@@ -2080,8 +2008,7 @@
      * @param {Object} self
      */
     SelectPage.prototype.inputResize = function (self) {
-        if (!self.option.multiple)
-            return;
+        if (!self.option.multiple) return;
         var width = '',
             inputLi = self.elem.combo_input.closest('li');
         var setDefaultSize = function (self, inputLi) {
@@ -2090,15 +2017,12 @@
                 width = (minimumWidth * 0.75) + 'em';
             self.elem.combo_input.css('width', width).removeAttr('placeholder');
         };
-        if (self.elem.element_box.find('li.selected_tag').size() === 0) {
+        if (self.elem.element_box.find('li.selected_tag').length === 0) {
+            if (!inputLi.hasClass('full_width')) inputLi.addClass('full_width');
             if (self.elem.combo_input.attr('placeholder_bak')) {
-                if (!inputLi.hasClass('full_width'))
-                    inputLi.addClass('full_width');
                 self.elem.combo_input.attr('placeholder', self.elem.combo_input.attr('placeholder_bak')).removeAttr('style');
-            } else
-                setDefaultSize(self, inputLi);
-        } else
-            setDefaultSize(self, inputLi);
+            }
+        } else setDefaultSize(self, inputLi);
     };
 
     /**
@@ -2107,8 +2031,7 @@
      */
     SelectPage.prototype.nextLine = function (self) {
         var obj = self.getCurrentLine(self), idx;
-        if (!obj)
-            idx = -1;
+        if (!obj) idx = -1;
         else {
             idx = self.elem.results.children('li').index(obj);
             obj.removeClass(self.css_class.select);
@@ -2118,8 +2041,7 @@
             var next = self.elem.results.children('li').eq(idx);
             next.addClass(self.css_class.select);
             self.setCssFocusedResults(self);
-        } else
-            self.setCssFocusedInput(self);
+        } else self.setCssFocusedInput(self);
         self.scrollWindow(self, false);
     };
 
@@ -2129,8 +2051,7 @@
      */
     SelectPage.prototype.prevLine = function (self) {
         var obj = self.getCurrentLine(self), idx;
-        if (!obj)
-            idx = self.elem.results.children('li').length;
+        if (!obj) idx = self.elem.results.children('li').length;
         else {
             idx = self.elem.results.children('li').index(obj);
             obj.removeClass(self.css_class.select);
@@ -2140,8 +2061,7 @@
             var prev = self.elem.results.children('li').eq(idx);
             prev.addClass(self.css_class.select);
             self.setCssFocusedResults(self);
-        } else
-            self.setCssFocusedInput(self);
+        } else self.setCssFocusedInput(self);
         self.scrollWindow(self, false);
     };
 
@@ -2156,8 +2076,7 @@
             var $this = $(this),
                 data = $this.data(SelectPage.dataKey),
                 params = $.extend({}, defaults, $this.data(), data && data.option, typeof option === 'object' && option);
-            if (!data)
-                $this.data(SelectPage.dataKey, (data = new SelectPage(this, params)));
+            if (!data) $this.data(SelectPage.dataKey, (data = new SelectPage(this, params)));
         });
     }
 

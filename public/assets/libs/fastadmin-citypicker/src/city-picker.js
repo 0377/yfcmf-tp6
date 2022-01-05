@@ -551,7 +551,7 @@
 
     CityPicker.DEFAULTS = {
         simple: false,
-        responsive: false,
+        responsive: true,
         render: 'text',//填充为代码还是文本，可选code或text
         placeholder: '请选择省/市/区',
         level: 'district',

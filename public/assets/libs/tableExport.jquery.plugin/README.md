@@ -31,11 +31,26 @@ To export the table in XLSX (Excel 2007+ XML Format) format, you need to include
 <script type="text/javascript" src="libs/js-xlsx/xlsx.core.min.js"></script>
 ```
 
-To export the table as a PDF file the following includes are required:
+To export an html table to a PDF file, you can use jsPDF-AutoTable as a PDF producer:
 
 ```html
 <script type="text/javascript" src="libs/jsPDF/jspdf.min.js"></script>
 <script type="text/javascript" src="libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+```
+
+Many HTML stylings can be converted to PDF with jsPDF, but support for non-western character sets is almost non-existent. Especially if you want to export Arabic or Chinese characters to your PDF file, you can use pdfmake as an alternative PDF producer. The disadvantage compared to jspdf is that using pdfmake has a reduced styling capability. To use pdfmake enable the pdfmake option and instead of the jsPDF files include    
+
+```html
+<script type="text/javascript" src="libs/pdfmake/pdfmake.min.js"></script>
+<script type="text/javascript" src="libs/pdfmake/vfs_fonts.js"></script>
+
+<!-- To export arabic characters include mirza_fonts.js _instead_ of vfs_fonts.js
+<script type="text/javascript" src="libs/pdfmake/mirza_fonts.js"></script>
+-->
+
+<!-- For a chinese font include either gbsn00lp_fonts.js or ZCOOLXiaoWei_fonts.js _instead_ of vfs_fonts.js 
+<script type="text/javascript" src="libs/pdfmake/gbsn00lp_fonts.js"></script>
+-->
 ```
 
 To export the table in PNG format, you need to include:
@@ -65,8 +80,9 @@ Library | Version
 [es6-promise](https://github.com/stefanpenner/es6-promise) | \>= 4.2.4
 [FileSaver](https://github.com/hhurz/tableExport.jquery.plugin/blob/master/libs/FileSaver/FileSaver.min.js) | \>= 1.2.0
 [html2canvas](https://github.com/niklasvh/html2canvas) | \>= 0.5.0-beta4
-[jsPDF](https://github.com/MrRio/jsPDF) | 1.3.2 - 1.3.4
+[jsPDF](https://github.com/MrRio/jsPDF) | \>=1.3.4
 [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable) | 2.0.14 or 2.0.17
+[pdfmake](https://github.com/bpampuch/pdfmake) | 0.1.65
 [SheetJS](https://github.com/SheetJS/js-xlsx) | \>= 0.12.5
 
 
@@ -136,6 +152,15 @@ $('table').tableExport({fileName: sFileName,
                        });
 ```
 
+```
+// PDF export using pdfmake
+
+$('#tableID').tableExport({type:'pdf',
+                           pdfmake:{enabled:true,
+                                    docDefinition:{pageOrientation:'landscape'}}
+                          });
+```
+
 Options (Default settings)
 =======
 
@@ -201,10 +226,21 @@ onCellData: null
 onCellHtmlData: null
 onCellHtmlHyperlink: null
 onIgnoreRow: null
+onTableExportBegin: null
+onTableExportEnd: null
 outputMode: 'file'
 pdfmake: enabled: false
-         docDefinition: pageOrientation: 'portrait'
-                        defaultStyle: font: 'Roboto'
+         docDefinition: pageSize: 'A4'
+                        pageOrientation: 'portrait'
+                        styles: header: background: '#34495E'
+                                        color: '#FFFFFF'
+                                        bold: true
+                                        alignment: 'center'
+                                        fillColor: '#34495E
+                        alternateRow: fillColor: '#f5f5f5'
+                        defaultStyle: color: '#000000'
+                                      fontSize: 8
+                                      font: 'Roboto'
          fonts: {}
 preserve: leadingWS: false
           trailingWS: false

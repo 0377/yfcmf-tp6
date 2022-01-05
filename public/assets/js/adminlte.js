@@ -312,6 +312,7 @@ function _init() {
                             size: "8px"
                         });
                     }
+                    $(".sidebar").trigger("mouseover");
                 }
             }
         }
@@ -408,7 +409,6 @@ function _init() {
                 //Get the clicked link and the next element
                 var $this = $(this);
                 var checkElement = $this.next();
-
                 //Check if the next element is a menu and is visible
                 if ((checkElement.is('.treeview-menu')) && (checkElement.is(':visible')) && (!$('body').hasClass('sidebar-collapse'))) {
                     //Close the menu
@@ -442,7 +442,7 @@ function _init() {
                         //parent.find('li.active').removeClass('active');
                         //parent_li.addClass('active');
                         //Fix the layout in case the sidebar stretches over the height of the window
-                        _this.layout.fix();
+                        // _this.layout.fix();
                     });
                     parent_li.addClass('treeview-open');
                 } else {

@@ -2010,7 +2010,7 @@ if (typeof jQuery === 'undefined') {
 
     if (this.options.html) {
       var typeContent = typeof content
-
+debugger;
       if (this.options.sanitize) {
         title = this.sanitizeHtml(title)
 

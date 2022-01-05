@@ -114,8 +114,9 @@
                             data = {total: that.options.totalRows};
                             data[that.options.dataField] = that.getData();
 
+                            var Table = typeof require === 'function' ? require('table') : null;
                             selectedData = {total: that.options.totalRows};
-                            selectedData[that.options.dataField] = that.getAllSelections();
+                            selectedData[that.options.dataField] = Table && that.options.maintainSelected ? Table.api.selecteddata(that.$el) : that.getAllSelections();
                         }
 
                         that.load(selectedData);

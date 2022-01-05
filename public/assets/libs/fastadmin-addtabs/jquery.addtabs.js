@@ -145,8 +145,8 @@
                 } else if (options.iframeForceRefreshTable) {
                     try {
                         //检测iframe中是否存在刷新按钮
-                        if ($("#" + conid + " iframe").contents().find(".btn-refresh").size() > 0) {
-                            $("#" + conid + " iframe")[0].contentWindow.$(".btn-refresh").trigger("click");
+                        if ($("#" + conid + " iframe").contents().find(".btn-refresh:not([data-force-refresh=false])").size() > 0) {
+                            $("#" + conid + " iframe")[0].contentWindow.$(".btn-refresh:not([data-force-refresh=false])").trigger("click");
                         }
                     } catch (e) {
 

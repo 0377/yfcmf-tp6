@@ -24,14 +24,14 @@
     "docs",
     "assets"
   ],
-  "version": "1.11.3",
-  "_release": "1.11.3",
+  "version": "1.11.5",
+  "_release": "1.11.5",
   "_resolution": {
     "type": "version",
-    "tag": "1.11.3",
-    "commit": "8aa6944b83b1267a9ef4c84bd4f9982a2975ddc9"
+    "tag": "v1.11.5",
+    "commit": "a2c149f0049133af6c7a09d0ba2b4cf32daa1e56"
   },
   "_source": "https://github.com/karsonzhang/fastadmin-bootstraptable.git",
-  "_target": "~1.11.3",
+  "_target": "~1.11.5",
   "_originalSource": "fastadmin-bootstraptable"
 }
