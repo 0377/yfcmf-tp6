@@ -46,5 +46,5 @@ return [
     //插件启用禁用时是否备份对应的全局文件
     'backup_global_files'   => true,
     //插件纯净模式，插件启用后是否删除插件目录的application、public和assets文件夹
-    'addon_pure_mode'       => false,
+    'addon_pure_mode'       => true,
 ];
