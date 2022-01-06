@@ -53,7 +53,7 @@ class Attachment extends Backend
             if (isset($filterArr['category']) && $filterArr['category'] == 'unclassed') {
                 $filterArr['category'] = ',unclassed';
                 $get = $this->request->get();
-                $arr = array_merge($get,['filter' => json_encode(array_diff_key($filterArr, ['category' => '']))]);
+                $arr = array_merge($get, ['filter' => json_encode(array_diff_key($filterArr, ['category' => '']))]);
                 $this->request->withGet($arr);
             }
             if (isset($filterArr['mimetype']) && preg_match("/[]\,|\*]/", $filterArr['mimetype'])) {
@@ -72,7 +72,7 @@ class Attachment extends Backend
             }
 
             $get = $this->request->get();
-            $arr = array_merge($get,['filter' => json_encode($filterArr)]);
+            $arr = array_merge($get, ['filter' => json_encode($filterArr)]);
             $this->request->withGet($arr);
 
             [$where, $sort, $order, $offset, $limit] = $this->buildparams();
@@ -92,7 +92,12 @@ class Attachment extends Backend
 
             $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', $this->request->domain());
             foreach ($list as $k => &$v) {
-                $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']).$v['url'];
+                if (strpos($v['url'], 'http') === false) {
+                    $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']) . $v['url'];
+                } else {
+                    $v['fullurl'] = $v['url'];
+                }
+
             }
             unset($v);
             $result = ['total' => $total, 'rows' => $list];
@@ -141,7 +146,7 @@ class Attachment extends Backend
         if ($ids) {
             \think\facade\Event::listen('upload_delete', function ($params) {
                 if ($params['storage'] == 'local') {
-                    $attachmentFile = app()->getRootPath().'/public'.$params['url'];
+                    $attachmentFile = app()->getRootPath() . '/public' . $params['url'];
                     if (is_file($attachmentFile)) {
                         @unlink($attachmentFile);
                     }
@@ -163,7 +168,7 @@ class Attachment extends Backend
     public function classify()
     {
         if (!$this->auth->check('general/attachment/edit')) {
-            hook('admin_nopermission',$this);
+            hook('admin_nopermission', $this);
             $this->error(__('You have no permission'), '');
         }
         if (!$this->request->isPost()) {
