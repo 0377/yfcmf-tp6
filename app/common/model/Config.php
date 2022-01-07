@@ -2,11 +2,15 @@
 
 namespace app\common\model;
 
+use think\Exception;
+use think\Model;
+
 /**
- * 配置模型.
+ * 配置模型
  */
-class Config extends BaseModel
+class Config extends Model
 {
+
     // 表名,不含前缀
     protected $name = 'config';
     // 自动写入时间戳字段
@@ -18,36 +22,48 @@ class Config extends BaseModel
     protected $append = [
         'extend_html'
     ];
+    protected $type = [
+        'setting' => 'json',
+    ];
+
+    public static function onBeforeWrite($row)
+    {
+        if (isset($row['name']) && $row['name'] == 'name' && preg_match("/fast" . "admin/i", $row['value'])) {
+            throw new Exception(__("Site name incorrect"));
+        }
+    }
 
     /**
-     * 读取配置类型.
-     *
+     * 读取配置类型
      * @return array
      */
     public static function getTypeList()
     {
         $typeList = [
-            'string'   => __('String'),
-            'password' => __('Password'),
-            'text'     => __('Text'),
-            'editor'   => __('Editor'),
-            'number'   => __('Number'),
-            'date'     => __('Date'),
-            'time'     => __('Time'),
-            'datetime' => __('Datetime'),
-            'select'   => __('Select'),
-            'selects'  => __('Selects'),
-            'image'    => __('Image'),
-            'images'   => __('Images'),
-            'file'     => __('File'),
-            'files'    => __('Files'),
-            'switch'   => __('Switch'),
-            'checkbox' => __('Checkbox'),
-            'radio'    => __('Radio'),
-            'array'    => __('Array'),
-            'custom'   => __('Custom'),
+            'string'        => __('String'),
+            'password'      => __('Password'),
+            'text'          => __('Text'),
+            'editor'        => __('Editor'),
+            'number'        => __('Number'),
+            'date'          => __('Date'),
+            'time'          => __('Time'),
+            'datetime'      => __('Datetime'),
+            'datetimerange' => __('Datetimerange'),
+            'select'        => __('Select'),
+            'selects'       => __('Selects'),
+            'image'         => __('Image'),
+            'images'        => __('Images'),
+            'file'          => __('File'),
+            'files'         => __('Files'),
+            'switch'        => __('Switch'),
+            'checkbox'      => __('Checkbox'),
+            'radio'         => __('Radio'),
+            'city'          => __('City'),
+            'selectpage'    => __('Selectpage'),
+            'selectpages'   => __('Selectpages'),
+            'array'         => __('Array'),
+            'custom'        => __('Custom'),
         ];
-
         return $typeList;
     }
 
@@ -68,20 +84,9 @@ class Config extends BaseModel
             'zipcode'  => '邮编',
             'chinese'  => '中文',
             'username' => '用户名',
-            'password' => '密码',
+            'password' => '密码'
         ];
-
         return $regexList;
-    }
-
-    public function getExtendAttr($value, $data)
-    {
-        $result = preg_replace_callback("/\{([a-zA-Z]+)\}/", function ($matches) use ($data) {
-            if (isset($data[$matches[1]])) {
-                return $data[$matches[1]];
-            }
-        }, $data['extend']);
-        return $result;
     }
 
     public function getExtendHtmlAttr($value, $data)
@@ -95,8 +100,7 @@ class Config extends BaseModel
     }
 
     /**
-     * 读取分类分组列表.
-     *
+     * 读取分类分组列表
      * @return array
      */
     public static function getGroupList()
@@ -105,13 +109,12 @@ class Config extends BaseModel
         foreach ($groupList as $k => &$v) {
             $v = __($v);
         }
-
         return $groupList;
     }
 
     public static function getArrayData($data)
     {
-        if (! isset($data['value'])) {
+        if (!isset($data['value'])) {
             $result = [];
             foreach ($data as $index => $datum) {
                 $result['field'][$index] = $datum['key'];
@@ -128,15 +131,12 @@ class Config extends BaseModel
                 $valuearr[] = $value[$m];
             }
         }
-
         return $fieldarr ? array_combine($fieldarr, $valuearr) : [];
     }
 
     /**
-     * 将字符串解析成键值数组.
-     *
+     * 将字符串解析成键值数组
      * @param string $text
-     *
      * @return array
      */
     public static function decode($text, $split = "\r\n")
@@ -144,20 +144,17 @@ class Config extends BaseModel
         $content = explode($split, $text);
         $arr = [];
         foreach ($content as $k => $v) {
-            if (stripos($v, '|') !== false) {
+            if (stripos($v, "|") !== false) {
                 $item = explode('|', $v);
                 $arr[$item[0]] = $item[1];
             }
         }
-
         return $arr;
     }
 
     /**
-     * 将键值数组转换为字符串.
-     *
+     * 将键值数组转换为字符串
      * @param array $array
-     *
      * @return string
      */
     public static function encode($array, $split = "\r\n")
@@ -170,13 +167,11 @@ class Config extends BaseModel
             }
             $content = implode($split, $arr);
         }
-
         return $content;
     }
 
     /**
-     * 本地上传配置信息.
-     *
+     * 本地上传配置信息
      * @return array
      */
     public static function upload()
@@ -195,4 +190,33 @@ class Config extends BaseModel
 
         return $upload;
     }
+
+    /**
+     * 刷新配置文件
+     */
+    public static function refreshFile()
+    {
+        //如果没有配置权限无法进行修改
+        if (!\app\admin\library\Auth::instance()->check('general/config/edit')) {
+            return false;
+        }
+        $config = [];
+        $configList = self::select();
+        foreach ($configList as $k => $v) {
+            $value = $v->toArray();
+            if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) {
+                $value['value'] = explode(',', $value['value']);
+            }
+            if ($value['type'] == 'array') {
+                $value['value'] = (array)json_decode($value['value'], true);
+            }
+            $config[$value['name']] = $value['value'];
+        }
+        file_put_contents(
+            app()->getConfigPath(). 'site.php',
+            '<?php' . "\n\nreturn " . var_export_short($config) . ";\n"
+        );
+        return true;
+    }
+
 }

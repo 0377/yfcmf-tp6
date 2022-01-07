@@ -1,45 +1,38 @@
 <?php
-/**
- * *
- *  * ============================================================================
- *  * Created by PhpStorm.
- *  * User: Ice
- *  * 邮箱: ice@sbing.vip
- *  * 网址: https://sbing.vip
- *  * Date: 2019/9/19 下午5:05
- *  * ============================================================================.
- */
 
 namespace app\admin\controller\general;
 
-use think\Exception;
-use think\facade\Validate;
-use app\common\library\Email;
 use app\common\controller\Backend;
+use app\common\library\Email;
 use app\common\model\Config as ConfigModel;
+use think\facade\Db;
+use think\facade\Env;
+use think\facade\Validate;
+
 
 /**
- * 系统配置.
+ * 系统配置
  *
- * @icon fa fa-cogs
+ * @icon   fa fa-cogs
  * @remark 可以在此增改系统的变量和分组,也可以自定义分组和变量,如果需要删除请从数据库中删除
  */
 class Config extends Backend
 {
+
     /**
      * @var \app\common\model\Config
      */
     protected $model = null;
-    protected $noNeedRight = ['check', 'rulelist'];
+    protected $noNeedRight = ['check', 'rulelist', 'selectpage', 'get_fields_list'];
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new ConfigModel();
+        $this->model = new ConfigModel;
     }
 
     /**
-     * 查看.
+     * 查看
      */
     public function index()
     {
@@ -50,8 +43,9 @@ class Config extends Backend
             $siteList[$k]['title'] = $v;
             $siteList[$k]['list'] = [];
         }
+
         foreach ($this->model->select() as $k => $v) {
-            if (! isset($siteList[$v['group']])) {
+            if (!isset($siteList[$v['group']])) {
                 continue;
             }
             $value = $v->toArray();
@@ -60,66 +54,72 @@ class Config extends Backend
                 $value['value'] = explode(',', $value['value']);
             }
             $value['content'] = json_decode($value['content'], true);
+            if (in_array($value['name'], ['categorytype', 'configgroup', 'attachmentcategory'])) {
+                $dictValue = (array)json_decode($value['value'], true);
+                foreach ($dictValue as $index => &$item) {
+                    $item = __($item);
+                }
+                unset($item);
+                $value['value'] = json_encode($dictValue, JSON_UNESCAPED_UNICODE);
+            }
             $value['tip'] = htmlspecialchars($value['tip']);
             $siteList[$v['group']]['list'][] = $value;
         }
         $index = 0;
         foreach ($siteList as $k => &$v) {
-            $v['active'] = ! $index ? true : false;
+            $v['active'] = !$index ? true : false;
             $index++;
         }
         $this->view->assign('siteList', $siteList);
         $this->view->assign('typeList', ConfigModel::getTypeList());
         $this->view->assign('ruleList', ConfigModel::getRegexList());
         $this->view->assign('groupList', ConfigModel::getGroupList());
-
         return $this->view->fetch();
     }
 
     /**
-     * 添加.
+     * 添加
      */
     public function add()
     {
+        if (!env('app_debug')) {
+            $this->error(__('Only work at development environment'));
+        }
         if ($this->request->isPost()) {
             $this->token();
             $params = $this->request->post("row/a", [], 'trim');
             if ($params) {
                 foreach ($params as $k => &$v) {
-                    $v = is_array($v) ? implode(',', $v) : $v;
+                    $v = is_array($v) && $k !== 'setting' ? implode(',', $v) : $v;
                 }
-
+                if (in_array($params['type'], ['select', 'selects', 'checkbox', 'radio', 'array'])) {
+                    $params['content'] = json_encode(ConfigModel::decode($params['content']), JSON_UNESCAPED_UNICODE);
+                } else {
+                    $params['content'] = '';
+                }
                 try {
-                    if (in_array($params['type'], ['select', 'selects', 'checkbox', 'radio', 'array'])) {
-                        $params['content'] = json_encode(ConfigModel::decode($params['content']),
-                            JSON_UNESCAPED_UNICODE);
-                    } else {
-                        $params['content'] = '';
-                    }
                     $result = $this->model->create($params);
-                    if ($result !== false) {
-                        try {
-                            $this->refreshFile();
-                        } catch (Exception $e) {
-                            $this->error($e->getMessage());
-                        }
-                        $this->success();
-                    } else {
-                        $this->error($this->model->getError());
-                    }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $this->error($e->getMessage());
+                }
+                if ($result !== false) {
+                    try {
+                        ConfigModel::refreshFile();
+                    } catch (\Exception $e) {
+                        $this->error($e->getMessage());
+                    }
+                    $this->success();
+                } else {
+                    $this->error(__('No rows were inserted'));
                 }
             }
             $this->error(__('Parameter %s can not be empty', ''));
         }
-
         return $this->view->fetch();
     }
 
     /**
-     * 编辑.
-     *
+     * 编辑
      * @param null $ids
      */
     public function edit($ids = null)
@@ -141,11 +141,14 @@ class Config extends Backend
                         $configList[] = $v->toArray();
                     }
                 }
-                $this->model->saveAll($configList);
-
                 try {
-                    $this->refreshFile();
-                } catch (Exception $e) {
+                    $this->model->saveAll($configList);
+                } catch (\Exception $e) {
+                    $this->error($e->getMessage());
+                }
+                try {
+                    ConfigModel::refreshFile();
+                } catch (\Exception $e) {
                     $this->error($e->getMessage());
                 }
                 $this->success();
@@ -154,15 +157,22 @@ class Config extends Backend
         }
     }
 
-    public function del($ids = '')
+    /**
+     * 删除
+     * @param string $ids
+     */
+    public function del($ids = "")
     {
+        if (!env('app_debug')) {
+            $this->error(__('Only work at development environment'));
+        }
         $name = $this->request->post('name');
         $config = ConfigModel::getByName($name);
         if ($name && $config) {
             try {
                 $config->delete();
-                $this->refreshFile();
-            } catch (Exception $e) {
+                ConfigModel::refreshFile();
+            } catch (\Exception $e) {
                 $this->error($e->getMessage());
             }
             $this->success();
@@ -172,42 +182,21 @@ class Config extends Backend
     }
 
     /**
-     * 刷新配置文件.
-     */
-    protected function refreshFile()
-    {
-        $config = [];
-        foreach ($this->model->select() as $k => $v) {
-            $value = $v->toArray();
-            if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) {
-                $value['value'] = explode(',', $value['value']);
-            }
-            if ($value['type'] == 'array') {
-                $value['value'] = (array) json_decode($value['value'], true);
-            }
-            $config[$value['name']] = $value['value'];
-        }
-        file_put_contents(app()->getConfigPath().'site.php',
-            '<?php'."\n\nreturn ".varexport($config, true).';');
-    }
-
-    /**
-     * 检测配置项是否存在.
-     *
+     * 检测配置项是否存在
      * @internal
      */
     public function check()
     {
-        $params = $this->request->post('row/a');
+        $params = $this->request->post("row/a");
         if ($params) {
             $config = $this->model->find($params);
-            if (! $config) {
-                return $this->success();
+            if (!$config) {
+                $this->success();
             } else {
-                return $this->error(__('Name already exist'));
+                $this->error(__('Name already exist'));
             }
         } else {
-            return $this->error(__('Invalid parameters'));
+            $this->error(__('Invalid parameters'));
         }
     }
 
@@ -223,7 +212,7 @@ class Config extends Backend
         $keyValue = $this->request->request("keyValue", "");
 
         $keyValueArr = array_filter(explode(',', $keyValue));
-        $regexList = \app\common\model\Config::getRegexList();
+        $regexList = ConfigModel::getRegexList();
         $list = [];
         foreach ($regexList as $k => $v) {
             if ($keyValueArr) {
@@ -238,8 +227,7 @@ class Config extends Backend
     }
 
     /**
-     * 发送测试邮件.
-     *
+     * 发送测试邮件
      * @internal
      */
     public function emailtest()
@@ -254,8 +242,8 @@ class Config extends Backend
             $email = new Email;
             $result = $email
                 ->to($receiver)
-                ->subject(__("This is a test mail"))
-                ->message('<div style="min-height:550px; padding: 100px 55px 200px;">' . __('This is a test mail content') . '</div>')
+                ->subject(__("This is a test mail", config('site.name')))
+                ->message('<div style="min-height:550px; padding: 100px 55px 200px;">' . __('This is a test mail content', config('site.name')) . '</div>')
                 ->send();
             if ($result) {
                 $this->success();
@@ -265,5 +253,50 @@ class Config extends Backend
         } else {
             $this->error(__('Invalid parameters'));
         }
+    }
+
+    public function selectpage()
+    {
+        $id = $this->request->get("id/d");
+        $config = ConfigModel::find($id);
+        if (!$config) {
+            $this->error(__('Invalid parameters'));
+        }
+        $setting = $config['setting'];
+        //自定义条件
+        $custom = isset($setting['conditions']) ? (array)json_decode($setting['conditions'], true) : [];
+        $custom = array_filter($custom);
+
+        $this->request->request(['showField' => $setting['field'], 'keyField' => $setting['primarykey'], 'custom' => $custom, 'searchField' => [$setting['field'], $setting['primarykey']]]);
+        //halt($setting,$this->request->request());
+        $this->model = Db::connect()->table($setting['table']);
+        return parent::selectpage();
+    }
+
+    /**
+     * 获取表列表
+     * @internal
+     */
+    public function get_table_list()
+    {
+        $tableList = [];
+        $dbname = Env::get('database.database');
+        $tableList = Db::query("SELECT `TABLE_NAME` AS `name`,`TABLE_COMMENT` AS `title` FROM `information_schema`.`TABLES` where `TABLE_SCHEMA` = '{$dbname}';");
+        $this->success('', null, ['tableList' => $tableList]);
+    }
+
+    /**
+     * 获取表字段列表
+     * @internal
+     */
+    public function get_fields_list()
+    {
+        $table = $this->request->request('table');
+        $dbname = Env::get('database.database');
+        //从数据库中获取表字段信息
+        $sql = "SELECT `COLUMN_NAME` AS `name`,`COLUMN_COMMENT` AS `title`,`DATA_TYPE` AS `type` FROM `information_schema`.`columns` WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? ORDER BY ORDINAL_POSITION";
+        //加载主表的列
+        $fieldList = Db::query($sql, [$dbname, $table]);
+        $this->success("", null, ['fieldList' => $fieldList]);
     }
 }
