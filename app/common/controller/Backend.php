@@ -224,7 +224,6 @@ class Backend extends BaseController
             'fastadmin'      => Config::get('fastadmin'),
             'referer'        => Session::get('referer'),
         ];
-        $config = array_merge($config, Config::get("view_replace_str"));
         Config::set(array_merge(Config::get('upload'), $upload), 'upload');
         // 配置信息后
         $event_config = Event::trigger('config_init', $config,true);

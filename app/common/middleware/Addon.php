@@ -39,7 +39,6 @@ class Addon
         $addon = $request->param('addon')?$request->param('addon'):'';
         $tpl_replace_string['__ADDON__'] = $cdnurl . "/assets/addons/" . $addon;
         Config::set(['tpl_replace_string'=>$tpl_replace_string],'view');
-        Config::set($tpl_replace_string,'view_replace_str');
 
         hook('addon_middleware', $request);
 

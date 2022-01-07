@@ -40,7 +40,6 @@ class Builder
     public function __construct($classes = [])
     {
         $this->classes = array_merge($this->classes, $classes);
-        //$this->view = new \think\View(Config::get('view'), Config::get('view_replace_str'));
         $this->view = \think\facade\View::instance();
     }
 

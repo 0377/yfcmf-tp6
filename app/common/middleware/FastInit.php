@@ -80,7 +80,6 @@ class FastInit
             $tpl_replace_string['__ROOT__']= preg_replace("/\/public\/$/", '', $url . '/');
         }
         Config::set(['tpl_replace_string'=>$tpl_replace_string],'view');
-        Config::set($tpl_replace_string,'view_replace_str');
         if (! Config::get('site.cdnurl')) {
             Config::set(['cdnurl' => $url], 'site');
         }
