@@ -3,59 +3,28 @@
 namespace app\common\library;
 
 use fast\Tree;
+use think\AddonService;
 use think\Exception;
 use app\admin\model\AuthRule;
-use think\exception\PDOException;
+use think\facade\Db;
 
 class Menu
 {
     /**
-     * 创建菜单.
-     *
+     * 创建菜单
      * @param array $menu
      * @param mixed $parent 父类的name或pid
      */
-    public static function create($menu, $parent = 0)
+    public static function create($menu = [], $parent = 0)
     {
-        if (! is_numeric($parent)) {
-            $parentRule = AuthRule::getByName($parent);
-            $pid = $parentRule ? $parentRule['id'] : 0;
-        } else {
-            $pid = $parent;
-        }
-        $allow = array_flip(['file', 'name', 'title', 'icon', 'condition', 'remark', 'ismenu', 'route']);
-        foreach ($menu as $k => $v) {
-            $hasChild = isset($v['sublist']) && $v['sublist'] ? true : false;
-            $data = array_intersect_key($v, $allow);
-            if (! isset($data['route'])) {
-                if (empty($data['route'])) {
-                    $_arr = explode('/', $data['name']);
-                    if (count($_arr) >= 3) {
-                        $route = '';
-                        foreach ($_arr as $_k => $_v) {
-                            $route .= $_v;
-                            ($_k == 0) ? $route .= '.' : $route .= '/';
-                        }
-                        $route = rtrim($route, '/');
-                        $data['route'] = $route;
-                    } elseif (count($_arr) == 2) {
-                        $data['route'] = implode('.', $_arr).'/index';
-                    }
-                }
-            }
-            $data['ismenu'] = isset($data['ismenu']) ? $data['ismenu'] : ($hasChild ? 1 : 0);
-            $data['icon'] = isset($data['icon']) ? $data['icon'] : ($hasChild ? 'fa fa-list' : 'fa fa-circle-o');
-            $data['pid'] = $pid;
-            $data['status'] = 'normal';
+        $old = [];
+        self::menuUpdate($menu, $old, $parent);
 
-            try {
-                $menu = AuthRule::create($data, [], true);
-                if ($hasChild) {
-                    self::create($v['sublist'], $menu->id);
-                }
-            } catch (PDOException $e) {
-                throw new Exception($e->getMessage());
-            }
+        //菜单刷新处理
+        $info = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+        preg_match('/addons\\\\([a-z0-9]+)\\\\/i', $info['class'], $matches);
+        if ($matches && isset($matches[1])) {
+            Menu::refresh($matches[1], $menu);
         }
     }
 
@@ -114,6 +83,79 @@ class Menu
     }
 
     /**
+     * 升级菜单
+     * @param string $name 插件名称
+     * @param array  $menu 新菜单
+     * @return bool
+     */
+    public static function upgrade($name, $menu)
+    {
+        $ids = self::getAuthRuleIdsByName($name);
+        $old = AuthRule::where('id', 'in', $ids)->select();
+        $old = $old ? $old->toArray() : [];
+        $old = array_column($old, null, 'name');
+        Db::startTrans();
+        try {
+            self::menuUpdate($menu, $old);
+
+            $ids = [];
+            foreach ($old as $index => $item) {
+                if (!isset($item['keep'])) {
+                    $ids[] = $item['id'];
+                }
+            }
+            if ($ids) {
+                //旧版本的菜单需要做删除处理
+                $config = AddonService::config($name);
+                $menus = isset($config['menus']) ? $config['menus'] : [];
+                $where[] = ['id' ,'in', $ids];
+
+                if ($menus) {
+                    //必须是旧版本中的菜单,可排除用户自主创建的菜单
+                    $where[] = ['name' ,'in', $menus];
+                }
+                AuthRule::where($where)->delete();
+            }
+
+            Db::commit();
+        } catch (\PDOException $e) {
+            Db::rollback();
+            return false;
+        }
+
+        Menu::refresh($name, $menu);
+        return true;
+    }
+
+    /**
+     * 刷新插件菜单配置缓存
+     * @param string $name
+     * @param array  $menu
+     */
+    public static function refresh($name, $menu = [])
+    {
+        if (!$menu) {
+            // $menu为空时表示首次安装，首次安装需刷新插件菜单标识缓存
+            $menuIds = self::getAuthRuleIdsByName($name);
+            $menus = Db::name("auth_rule")->where('id', 'in', $menuIds)->column('name');
+        } else {
+            // 刷新新的菜单缓存
+            $getMenus = function ($menu) use (&$getMenus) {
+                $result = [];
+                foreach ($menu as $index => $item) {
+                    $result[] = $item['name'];
+                    $result = array_merge($result, isset($item['sublist']) && is_array($item['sublist']) ? $getMenus($item['sublist']) : []);
+                }
+                return $result;
+            };
+            $menus = $getMenus($menu);
+        }
+
+        //刷新新的插件核心菜单缓存
+        AddonService::config($name, ['menus' => $menus]);
+    }
+
+    /**
      * 导出指定名称的菜单规则.
      *
      * @param string $name
@@ -134,6 +176,43 @@ class Menu
         }
 
         return $menuList;
+    }
+
+    /**
+     * 菜单升级
+     * @param array $newMenu
+     * @param array $oldMenu
+     * @param int   $parent
+     * @throws Exception
+     */
+    private static function menuUpdate($newMenu, &$oldMenu, $parent = 0)
+    {
+        if (!is_numeric($parent)) {
+            $parentRule = AuthRule::getByName($parent);
+            $pid = $parentRule ? $parentRule['id'] : 0;
+        } else {
+            $pid = $parent;
+        }
+        $allow = array_flip(['file', 'name', 'title', 'icon', 'condition', 'remark', 'ismenu', 'weigh']);
+        foreach ($newMenu as $k => $v) {
+            $hasChild = isset($v['sublist']) && $v['sublist'] ? true : false;
+            $data = array_intersect_key($v, $allow);
+            $data['ismenu'] = isset($data['ismenu']) ? $data['ismenu'] : ($hasChild ? 1 : 0);
+            $data['icon'] = isset($data['icon']) ? $data['icon'] : ($hasChild ? 'fa fa-list' : 'fa fa-circle-o');
+            $data['pid'] = $pid;
+            $data['status'] = 'normal';
+            if (!isset($oldMenu[$data['name']])) {
+                $menu = AuthRule::create($data);
+            } else {
+                $menu = $oldMenu[$data['name']];
+                //更新旧菜单
+                AuthRule::update($data, ['id' => $menu['id']]);
+                $oldMenu[$data['name']]['keep'] = true;
+            }
+            if ($hasChild) {
+                self::menuUpdate($v['sublist'], $oldMenu, $menu['id']);
+            }
+        }
     }
 
     /**
