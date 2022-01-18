@@ -138,6 +138,7 @@ class Config extends Backend
                             $value = is_array($value) ? implode(',', $value) : $value;
                         }
                         $v['value'] = $value;
+                        $v['setting'] = $v['setting'] ? $v['setting'] : '';
                         $configList[] = $v->toArray();
                     }
                 }
