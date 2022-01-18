@@ -169,7 +169,7 @@ class Addon extends Backend
         }
         //只有开启调试且为超级管理员才允许删除相关数据库
         $tables = [];
-        if ($droptables && Config::get("app_debug") && $this->auth->isSuperAdmin()) {
+        if ($droptables && env("app_debug") && $this->auth->isSuperAdmin()) {
             $tables = get_addon_tables($name);
         }
         try {
