@@ -31,6 +31,16 @@ class Config extends Model
         if (isset($row['name']) && $row['name'] == 'name' && preg_match("/fast" . "admin/i", $row['value'])) {
             throw new Exception(__("Site name incorrect"));
         }
+        if (isset($row['setting']) && !$row['setting'] ) {
+            $row->setting ='';
+        }
+    }
+
+    public static function onBeforeUpdate($row)
+    {
+        if (isset($row['setting']) && !$row['setting'] ) {
+            $row->setting ='';
+        }
     }
 
     /**
