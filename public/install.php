@@ -831,7 +831,7 @@ function step3(&$install_error, &$install_recover)
         $install_error = "数据库文件无法打开";
         return;
     }
-    $sql = str_replace("`fa_", "`{$db_prefix}", $sql);
+    $sql = str_replace("`__PREFIX__", "`{$db_prefix}", $sql);
     try {
         $pdo = new PDO("mysql:host={$db_host};port={$db_port}", $db_user, $db_pwd, array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
