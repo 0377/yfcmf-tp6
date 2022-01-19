@@ -20,26 +20,30 @@ class Config extends Model
     protected $updateTime = false;
     // 追加属性
     protected $append = [
-        'extend_html'
+        'extend_html',
+        'setting',
     ];
-    protected $type = [
-        'setting' => 'json',
-    ];
+
+    public function getSettingAttr($value, $data)
+    {
+        $value = $value ? $value : ($data['setting'] ?? '');
+        if ($value){
+            $arr = json_decode($value, true);
+        }else{
+            $arr = [];
+        }
+        return $arr;
+    }
+
+    protected function setSettingAttr($value)
+    {
+        return $value ? json_encode($value, JSON_UNESCAPED_UNICODE) : '';
+    }
 
     public static function onBeforeWrite($row)
     {
         if (isset($row['name']) && $row['name'] == 'name' && preg_match("/fast" . "admin/i", $row['value'])) {
             throw new Exception(__("Site name incorrect"));
-        }
-        if (isset($row['setting']) && !$row['setting'] ) {
-            $row->setting ='';
-        }
-    }
-
-    public static function onBeforeUpdate($row)
-    {
-        if (isset($row['setting']) && !$row['setting'] ) {
-            $row->setting ='';
         }
     }
 
