@@ -41,7 +41,7 @@ class FastInit
 
         // 修复多语言
         app()->lang = new \think\Lang(app(),\config('lang'));
-        app()->lang->detect($request);
+        // app()->lang->detect($request);
         app()->lang->switchLangSet(Lang::getLangSet());
 
         // 设置替换内容
